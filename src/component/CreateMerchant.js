@@ -132,14 +132,14 @@ function FormRegister() {
         phone: yup.string()
             .matches(/^0\d{9}$/, "Phone number must have 10 digits")
             .required(),
-        email: yup.string().matches(/^[A-Za-z0-9._-]+@[A-Za-z]+\.[A-Za-z]{2,}$/, ("with @ and no special characters")),
+        email: yup.string().required().matches(/^[A-Za-z0-9._-]+@[A-Za-z]+\.[A-Za-z]{2,}$/, ("with @ and no special characters")),
         open_time: yup.string().required(),
         close_time: yup.string().required(),
-        image: yup.string().required('Image is required'),
-        city: yup.string().required('City is required'),
-        district: yup.string().required('District is required'),
-        ward: yup.string().required('Ward is required'),
-        address_detail: yup.string().required('Address Detail is required')
+        // image: yup.string().required('Image is required'),
+        // city: yup.string().required('City is required'),
+        // district: yup.string().required('District is required'),
+        // ward: yup.string().required('Ward is required'),
+        // address_detail: yup.string().required('Address Detail is required')
     });
 
     return (
@@ -200,9 +200,9 @@ function FormRegister() {
                                                     </div>
                                                     <div className="row" style={{marginLeft: "0px", marginRight: "0px"}}>
                                                         <div className="mb-3 col-6" style={{paddingLeft: "0px"}}>
-                                                            <label className="form-label" htmlFor="ward">City</label>
-                                                            <select required onChange={handleInputChangeCity}
-                                                                    className="form-select col-6">
+                                                            <label className="form-label" htmlFor="city">City</label>
+                                                            <select id="city" required onChange={handleInputChangeCity}
+                                                                    className="form-select">
                                                                 <option>City</option>
                                                                 {city && city.map(item => (
                                                                     <option value={item.id_city}>{item.name}</option>
@@ -210,9 +210,9 @@ function FormRegister() {
                                                             </select>
                                                         </div>
                                                         <div className="mb-3 col-6" style={{paddingRight: "0px"}}>
-                                                            <label className="form-label" htmlFor="ward">District</label>
-                                                            <select required onChange={handleInputChangeDistrict}
-                                                                    className="form-select col-6">
+                                                            <label className="form-label" htmlFor="district">District</label>
+                                                            <select required id="district" onChange={handleInputChangeDistrict}
+                                                                    className="form-select">
                                                                 <option> District</option>
                                                                 {district && district.map(item => (
                                                                     <option value={item.id_district}>{item.name}</option>
@@ -233,7 +233,7 @@ function FormRegister() {
                                                         </div>
                                                         <div className="mb-3 col-6" style={{paddingRight: "0px"}}>
                                                             <label className="form-label">Detail</label>
-                                                            <input required className="form-control" onChange={(e) => setAddress({
+                                                            <input className="form-control" onChange={(e) => setAddress({
                                                                 ...address,
                                                                 address_detail: e.target.value
                                                             })}/>
@@ -246,7 +246,7 @@ function FormRegister() {
                                                                onChange={(e) => handleInputChangeImage(e)}/>
                                                     </div>
                                                     <div style={{textAlign: 'center'}}>
-                                                        <button style={{width: '300px'}} type="submit"
+                                                        <button style={{width: '300px'}} type={"submit"}
                                                                 className="btn btn-outline-success">Register
                                                         </button>
                                                     </div>
