@@ -1,5 +1,4 @@
 import axios from "axios";
-import {useNavigate} from "react-router-dom";
 
 export function saveProduct(product){
     return new Promise(resolve => {
@@ -50,11 +49,26 @@ export function deleteProduct(id_product){
         )
     })
 }
-export const useHandleUpdate = () => {
-    const navigate = useNavigate();
-    const handleUpdate = (id_product) => {
-        const updateUrl = `http://localhost:8080/api/products/merchant/${id_product}`;
-        navigate(updateUrl);
-    };
-    return handleUpdate;
-};
+
+export function searchByCategory(id_category){
+    return new Promise(resolve => {
+        resolve(
+            axios.get(`http://localhost:8080/api/products/search/${id_category}`).then(res =>{
+                return res.data;
+            }).catch(Error =>{
+                return []
+            })
+        )
+    })
+}
+
+export function findAll(){
+    return new Promise(resolve => {
+        resolve(
+            axios.get("http://localhost:8080/api/products").then(res =>{
+                return res.data;
+            }).catch(Error =>{
+            })
+        )
+    })
+}
