@@ -10,6 +10,7 @@ export default function ProductList(props) {
     const btn_modal = useRef()
     const [message, setMessage] = useState("")
     const [modalDelete, setModalDelete] = useState(false);
+    const [isDelete, setDelete] = useState(false);
     const [indexDelete, setIndexDelete] = useState();
 
     useEffect(() => {
@@ -21,7 +22,7 @@ export default function ProductList(props) {
             .catch((error) => {
                 console.log(error);
             });
-    }, [searchInput]);
+    }, [searchInput, isDelete]);
 
 
 
@@ -29,6 +30,7 @@ export default function ProductList(props) {
         deleteProduct(indexDelete).then( r => {
             if (r === true){
                 setModalDelete(false)
+                setDelete(!isDelete)
                 setMessage("Delete product success!!!")
                 btn_modal.current.click();
             } else {
