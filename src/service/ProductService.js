@@ -35,3 +35,25 @@ export function deleteProduct(id_product){
         )
     })
 }
+
+export function searchByCategory(id_category){
+    return new Promise(resolve => {
+        resolve(
+            axios.get(`http://localhost:8080/api/products/searchCategory${id_category}`).then(res =>{
+                return res.data;
+            }).catch(Error =>{
+            })
+        )
+    })
+}
+
+export function findAll(){
+    return new Promise(resolve => {
+        resolve(
+            axios.get("http://localhost:8080/api/products").then(res =>{
+                return res.data;
+            }).catch(Error =>{
+            })
+        )
+    })
+}
