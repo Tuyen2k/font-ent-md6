@@ -30,7 +30,7 @@ root.render(
           <Route path="/product/create" element={<CreateProduct/>}></Route>
           <Route path="/product/update/:id" element={<UpdateProduct/>}></Route>
           <Route path={'/register'} element={<FormRegister/>}></Route>c
-          <Route path={'/update'} element={<UpdateMerchant/>}></Route>
+          <Route path={'/update/:id'} element={<UpdateMerchant/>}></Route>
       </Routes>
   </BrowserRouter>
 );

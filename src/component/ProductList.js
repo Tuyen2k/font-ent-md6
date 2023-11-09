@@ -96,8 +96,6 @@ export default function ProductList(props) {
                                                         </div>
                                                     </div>
                                                 </div>
-
-
                                             </div>
                                         </div>
                                     </div>
