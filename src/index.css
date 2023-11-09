@@ -10,7 +10,10 @@ code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-
+.btn-red {
+    background-color: #ff2020 !important;
+    color: white !important;
+}
 .text-lg-right {
     text-align: right !important;
 }
