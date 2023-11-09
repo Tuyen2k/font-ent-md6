@@ -1,23 +1,30 @@
 import BannerSlide from "./BannerSlide";
-import {useEffect, useState} from "react";
-import {findAll, searchByCategory, searchByName} from "../service/ProductService";
+import {useEffect, useRef, useState} from "react";
+import {findAll, searchByCategory} from "../service/ProductService";
+import {getAllCategories} from "../service/CategoryService";
 export default function Home(){
     const [products, setProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
     const [shouldCallFindAll, setShouldCallFindAll] = useState(true);
+    const btn_modal = useRef()
+    const [message, setMessage] = useState("")
+    const [nameProduct, setNameProduct] = useState("")
 
     useEffect(() => {
         if (shouldCallFindAll) {
             findAll().then(r => {
+                setNameProduct("New Product")
                 setProducts(r);
                 setShouldCallFindAll(false);
             });
         }
+        getAllCategories().then(category => {
+            setCategories(category)
+        })
     }, [products, shouldCallFindAll]);
-
 
     const handleInputName = (e) => {
         const value = e.target.value.toLowerCase();
-        console.log(value);
         if (value === ""){
             setShouldCallFindAll(true)
         } {
@@ -25,18 +32,24 @@ export default function Home(){
                 const productName = product.name.toLowerCase();
                 return productName.includes(value);
             });
+            setNameProduct("Product")
             setProducts(filteredProducts);
         }
     }
 
-
-    const handleInputCategory = (e) => {
-        const value = e.target.value;
-        searchByCategory(value).then(r => {
-            setProducts(r)
+    const handleInputCategory = (id_category) => {
+        console.log(id_category)
+        searchByCategory(id_category).then(r => {
+            if (r.length > 0){
+                setNameProduct("Product")
+                setProducts(r)
+            } else {
+                setMessage("There are no results on this category!!!")
+                btn_modal.current.click();
+            }
         })
-    }
 
+    }
     return(
         <>
             {/*Home*/}
@@ -83,206 +96,18 @@ export default function Home(){
                                 <section className="section-newsfeed">
                                     <div className="content-category">
                                         <div className="list-view">
-                                            <a className="list-item category-item" href="" >
+                                            {categories && categories.map(item => (
+                                            <div className="list-item category-item" >
                                                 <div className="img-lazy figure square">
-                                                    <div className="img" style={{backgroundImage : `url("https://tea-3.lozi.vn/v1/images/resized/category-web-1168-1590480600?w=100&type=f")`}}></div>
+                                                    <div onClick={ () => handleInputCategory(item.id_category)} className="img" style={{backgroundImage : `url(${item.image})`}}></div>
                                                 </div>
                                                 <div className="content">
                                                     <div className="metadata">
-                                                        <b>Breakfast</b>
+                                                        <b>{item.name}</b>
                                                     </div>
                                                 </div>
-                                            </a>
-                                            <a className="list-item category-item" href="" >
-                                                <div className="img-lazy figure square">
-                                                    <div className="img" style={{backgroundImage : `url("https://tea-3.lozi.vn/v1/images/resized/category-web-1168-1590480600?w=100&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="metadata">
-                                                        <b>Lunch</b>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item category-item" href="" >
-                                                <div className="img-lazy figure square">
-                                                    <div className="img" style={{backgroundImage : `url("https://tea-3.lozi.vn/v1/images/resized/category-web-1168-1590480600?w=100&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="metadata">
-                                                        <b>Dinner</b>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item category-item" href="" >
-                                                <div className="img-lazy figure square">
-                                                    <div className="img" style={{backgroundImage : `url("https://tea-3.lozi.vn/v1/images/resized/category-web-1168-1590480600?w=100&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="metadata">
-                                                        <b>Breakfast</b>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item category-item" href="" >
-                                                <div className="img-lazy figure square">
-                                                    <div className="img" style={{backgroundImage : `url("https://tea-3.lozi.vn/v1/images/resized/category-web-1168-1590480600?w=100&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="metadata">
-                                                        <b>Breakfast</b>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item category-item" href="" >
-                                                <div className="img-lazy figure square">
-                                                    <div className="img" style={{backgroundImage : `url("https://tea-3.lozi.vn/v1/images/resized/category-web-1168-1590480600?w=100&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="metadata">
-                                                        <b>Breakfast</b>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item category-item" href="" >
-                                                <div className="img-lazy figure square">
-                                                    <div className="img" style={{backgroundImage : `url("https://tea-3.lozi.vn/v1/images/resized/category-web-1168-1590480600?w=100&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="metadata">
-                                                        <b>Breakfast</b>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item category-item" href="" >
-                                                <div className="img-lazy figure square">
-                                                    <div className="img" style={{backgroundImage : `url("https://tea-3.lozi.vn/v1/images/resized/category-web-1168-1590480600?w=100&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="metadata">
-                                                        <b>Breakfast</b>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item category-item" href="" >
-                                                <div className="img-lazy figure square">
-                                                    <div className="img" style={{backgroundImage : `url("https://tea-3.lozi.vn/v1/images/resized/category-web-1168-1590480600?w=100&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="metadata">
-                                                        <b>Breakfast</b>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item category-item" href="" >
-                                                <div className="img-lazy figure square">
-                                                    <div className="img" style={{backgroundImage : `url("https://tea-3.lozi.vn/v1/images/resized/category-web-1168-1590480600?w=100&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="metadata">
-                                                        <b>Breakfast</b>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item category-item" href="" >
-                                                <div className="img-lazy figure square">
-                                                    <div className="img" style={{backgroundImage : `url("https://tea-3.lozi.vn/v1/images/resized/category-web-1168-1590480600?w=100&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="metadata">
-                                                        <b>Breakfast</b>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item category-item" href="" >
-                                                <div className="img-lazy figure square">
-                                                    <div className="img" style={{backgroundImage : `url("https://tea-3.lozi.vn/v1/images/resized/category-web-1168-1590480600?w=100&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="metadata">
-                                                        <b>Breakfast</b>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item category-item" href="" >
-                                                <div className="img-lazy figure square">
-                                                    <div className="img" style={{backgroundImage : `url("https://tea-3.lozi.vn/v1/images/resized/category-web-1168-1590480600?w=100&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="metadata">
-                                                        <b>Breakfast</b>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item category-item" href="" >
-                                                <div className="img-lazy figure square">
-                                                    <div className="img" style={{backgroundImage : `url("https://tea-3.lozi.vn/v1/images/resized/category-web-1168-1590480600?w=100&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="metadata">
-                                                        <b>Breakfast</b>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item category-item" href="" >
-                                                <div className="img-lazy figure square">
-                                                    <div className="img" style={{backgroundImage : `url("https://tea-3.lozi.vn/v1/images/resized/category-web-1168-1590480600?w=100&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="metadata">
-                                                        <b>Breakfast</b>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item category-item" href="" >
-                                                <div className="img-lazy figure square">
-                                                    <div className="img" style={{backgroundImage : `url("https://tea-3.lozi.vn/v1/images/resized/category-web-1168-1590480600?w=100&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="metadata">
-                                                        <b>Breakfast</b>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item category-item" href="" >
-                                                <div className="img-lazy figure square">
-                                                    <div className="img" style={{backgroundImage : `url("https://tea-3.lozi.vn/v1/images/resized/category-web-1168-1590480600?w=100&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="metadata">
-                                                        <b>Breakfast</b>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item category-item" href="" >
-                                                <div className="img-lazy figure square">
-                                                    <div className="img" style={{backgroundImage : `url("https://tea-3.lozi.vn/v1/images/resized/category-web-1168-1590480600?w=100&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="metadata">
-                                                        <b>Breakfast</b>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item category-item" href="" >
-                                                <div className="img-lazy figure square">
-                                                    <div className="img" style={{backgroundImage : `url("https://tea-3.lozi.vn/v1/images/resized/category-web-1168-1590480600?w=100&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="metadata">
-                                                        <b>Breakfast</b>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item category-item" href="" >
-                                                <div className="img-lazy figure square">
-                                                    <div className="img" style={{backgroundImage : `url("https://loship.vn/dist/images/symbol-food.png?w=50&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="metadata">
-                                                        <b>See all</b>
-                                                    </div>
-                                                </div>
-                                            </a>
+                                            </div>
+                                            ))}
                                         </div>
                                     </div>
                                 </section>
@@ -290,10 +115,10 @@ export default function Home(){
 
 
 
-                                list sp
+                                {/*list sp*/}
                                 <section className="section-newsfeed">
                                     <div className="title with-action">
-                                        <h2>New Product</h2>
+                                        <h2>{nameProduct}</h2>
                                     </div>
 
                                     <div className="content">
@@ -550,6 +375,33 @@ export default function Home(){
                 </main>
             </section>
             {/*End Home*/}
+
+            {/*button modal*/}
+            <button type="button" ref={btn_modal} className="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#exampleModal" style={{display: "none"}}>
+            </button>
+
+            {/*modal*/}
+            <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="exampleModalLabel">Notification</h5>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                            <span>{message}</span>
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </>
     )
 }
