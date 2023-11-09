@@ -51,7 +51,7 @@ export default function ProductList(props) {
                                         <div className="col-2">
                                             <div className="img-lazy figure square">
                                                 <div className="img"
-                                                     style={{backgroundImage: `url("https://dfstudio-d420.kxcdn.com/wordpress/wp-content/uploads/2019/06/digital_camera_photo-1080x675.jpg")`}}></div>
+                                                     style={{backgroundImage: `url(${product.image})`}}></div>
                                             </div>
                                         </div>
                                         <div className="col-8">
@@ -70,9 +70,10 @@ export default function ProductList(props) {
                                         </div>
                                         <div className="col-2">
                                             <div className="d-flex justify-content-end">
-                                                <button className="mr-2">Sửa</button>
+
+                                                <button className="mr-2">Update</button>
                                                 <button type="button" className="btn btn-danger" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
-                                                        onClick={()=> displayModal(product.id_product)}>Xóa</button>
+                                                        onClick={()=> displayModal(product.id_product)}>Delete</button>
 
                                                 <div className="modal fade" id="staticBackdrop" data-bs-backdrop="static"
                                                      data-bs-keyboard="false" tabIndex="10" aria-labelledby="staticBackdropLabel"
