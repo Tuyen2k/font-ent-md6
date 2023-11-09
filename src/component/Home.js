@@ -13,6 +13,7 @@ export default function Home(){
     useEffect(() => {
         if (shouldCallFindAll) {
             findAll().then(r => {
+                console.log(r)
                 setNameProduct("New Product")
                 setProducts(r);
                 setShouldCallFindAll(false);
@@ -24,6 +25,7 @@ export default function Home(){
     }, [products, shouldCallFindAll]);
 
     const handleInputName = (e) => {
+        setProducts([])
         const value = e.target.value.toLowerCase();
         if (value === ""){
             setShouldCallFindAll(true)
