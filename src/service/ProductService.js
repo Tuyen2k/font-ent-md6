@@ -24,6 +24,20 @@ export function getProductById(id){
     })
 }
 
+export function getAllProductByMerchant(id, name) {
+    return new Promise(resolve => {
+        resolve(
+            axios.get(`http://localhost:8080/api/products?id_merchant=1&name=${name}`)
+                .then(res => {
+                    return res.data;
+                })
+                .catch(error => {
+                    return undefined;
+                })
+        )
+    })
+}
+
 export function deleteProduct(id_product){
     return new Promise(resolve => {
         resolve(
