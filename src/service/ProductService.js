@@ -23,3 +23,15 @@ export function getProductById(id){
         )
     })
 }
+
+export function deleteProduct(id_product){
+    return new Promise(resolve => {
+        resolve(
+            axios.delete("http://localhost:8080/api/products/" + id_product).then(res =>{
+                return true;
+            }).catch(Error =>{
+                return false;
+            })
+        )
+    })
+}
