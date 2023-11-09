@@ -13,7 +13,7 @@ import {
 }
     from 'mdb-react-ui-kit';
 import {ErrorMessage, Field, Form, Formik} from "formik";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import {findCity, findDistrict, findWard, saveMerchant} from "../service/MerchantService";
 import {upImageFirebase} from "../firebase/Upfirebase";
 import {mailRegisterSuccess} from "../service/MailService";
@@ -21,6 +21,7 @@ import {mailRegisterSuccess} from "../service/MailService";
 function FormRegister() {
     let navigate = useNavigate();
     const [load, setLoad] = useState(true)
+    const [isExist, setExist] = useState(true)
     const [city, setCity] = useState([])
     const [district, setDistrict] = useState([])
     const [ward, setWard] = useState([])
@@ -51,11 +52,10 @@ function FormRegister() {
                     btn_modal.current.click();
                     mailRegisterSuccess(e.email)
                     setLoad(true)
-                    navigate('/register')
+                    setExist(false)
                 }  else {
                     setMessage("Register error!")
                     btn_modal.current.click();
-                    navigate('/register')
                 }         }
             )
         })
@@ -250,6 +250,9 @@ function FormRegister() {
                                                         <button style={{width: '300px'}} type={"submit"}
                                                                 className="btn btn-outline-success">Register
                                                         </button>
+                                                            <Link to={'/'} style={{width: '100px', marginLeft: '20px'}} type="submit"
+                                                                  className="btn btn-info">Back
+                                                            </Link>
                                                     </div>
                                                 </Form>
                                             </Formik>
@@ -290,8 +293,14 @@ function FormRegister() {
                             <span>{message}</span>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close
-                            </button>
+                            {isExist ? (
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close
+                                </button>
+                            ):(
+                                <button type="button" className="btn btn-secondary" onClick={() => navigate("/")}
+                                        data-bs-dismiss="modal">Close
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -13,7 +13,7 @@ import {
 }
     from 'mdb-react-ui-kit';
 import {ErrorMessage, Field, Form, Formik} from "formik";
-import {useNavigate, useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import {
     findAllActivity,
     findCity,
@@ -27,8 +27,9 @@ import axios from "axios";
 
 function UpdateMerchant() {
     let navigate = useNavigate();
-    let { id } = useParams();
+    let {id} = useParams();
     const [load, setLoad] = useState(true)
+    const [isExist, setExist] = useState(true)
     const [city, setCity] = useState([])
     const [district, setDistrict] = useState([])
     const [ward, setWard] = useState([])
@@ -51,6 +52,7 @@ function UpdateMerchant() {
     const [address_detail, setAddress_detail] = useState()
 
     useEffect(() => {
+        console.log(id)
         //id này đợi có acc sẽ dùng acc để tìm
         findMerchantById(id).then(dataMerchant => {
             console.log(dataMerchant)
@@ -58,7 +60,7 @@ function UpdateMerchant() {
             setAddress_detail(dataMerchant.addressShop.address_detail)
             findAllActivity().then(dataActivity => {
                 setActivity(dataActivity)
-            }).catch(()=>{
+            }).catch(() => {
                 setMessage("Error display Activity")
                 btn_modal.current.click();
             })
@@ -69,7 +71,7 @@ function UpdateMerchant() {
                 setDistrict(dataDistrict)
             })
             findWard(dataMerchant.addressShop.district.id_district).then(dataWard => {
-               setWard(dataWard)
+                setWard(dataWard)
             })
         }).catch(e => {
             setMessage("There is no data on this merchant")
@@ -90,26 +92,22 @@ function UpdateMerchant() {
             if (address !== undefined) {
                 updatedAddress = address;
             }
-            const registerMerchant = { ...e, addressShop: updatedAddress , image: updatedImage };
+            const registerMerchant = {...e, addressShop: updatedAddress, image: updatedImage};
             updateMerchant(registerMerchant).then(r => {
                     setMessage("Update success!")
                     btn_modal.current.click();
                     setLoad(true)
-                    navigate('/update')
+                    setExist(false)
                 }
             ).catch(e => {
                     setMessage("Update error!")
                     btn_modal.current.click();
-                    navigate('/update')
                 }
             )
-            // setMessage("Update success!");
-        // } catch (error) {
-        //     setMessage("Update error!");
-        } finally {
+        } catch (Error) {
+            setMessage("Update error!")
             btn_modal.current.click();
             setLoad(true);
-            navigate('/update');
         }
     }
 
@@ -200,11 +198,11 @@ function UpdateMerchant() {
                                                 letterSpacing: '1px',
                                                 fontWeight: 'bolder',
                                                 textAlign: "center"
-                                            }}>Register Merchant</h5>
+                                            }}>Update Merchant</h5>
 
                                         <div style={{width: "500px", margin: 'auto'}}>
                                             <Formik initialValues={merchant} onSubmit={(e) => handleUpdateMerchant(e)}
-                                                    validationSchema={schema} enableReinitialize={true} >
+                                                    validationSchema={schema} enableReinitialize={true}>
                                                 <Form>
                                                     <div className="mb-3">
                                                         <label className="form-label">Name</label>
@@ -252,13 +250,15 @@ function UpdateMerchant() {
                                                             <select onChange={handleInputChangeCity}
                                                                     className="form-select col-6">
                                                                 {city && city.map(item => {
-                                                                    if (item.id_city === merchant.addressShop.city.id_city){
-                                                                        return(
-                                                                            <option selected value={item.id_city}>{item.name}</option>
+                                                                    if (item.id_city === merchant.addressShop.city.id_city) {
+                                                                        return (
+                                                                            <option selected
+                                                                                    value={item.id_city}>{item.name}</option>
                                                                         )
-                                                                    }else {
-                                                                        return(
-                                                                            <option value={item.id_city}>{item.name}</option>
+                                                                    } else {
+                                                                        return (
+                                                                            <option
+                                                                                value={item.id_city}>{item.name}</option>
                                                                         )
                                                                     }
                                                                 })}
@@ -269,13 +269,15 @@ function UpdateMerchant() {
                                                             <select onChange={handleInputChangeDistrict}
                                                                     className="form-select col-6">
                                                                 {district && district.map(item => {
-                                                                    if (item.id_district === merchant.addressShop.district.id_district){
-                                                                        return(
-                                                                            <option selected value={item.id_district}>{item.name}</option>
+                                                                    if (item.id_district === merchant.addressShop.district.id_district) {
+                                                                        return (
+                                                                            <option selected
+                                                                                    value={item.id_district}>{item.name}</option>
                                                                         )
-                                                                    }else {
-                                                                        return(
-                                                                            <option value={item.id_district}>{item.name}</option>
+                                                                    } else {
+                                                                        return (
+                                                                            <option
+                                                                                value={item.id_district}>{item.name}</option>
                                                                         )
                                                                     }
                                                                 })}
@@ -290,13 +292,15 @@ function UpdateMerchant() {
                                                                 {/*<option>{merchant.addressShop.ward.name}</option>*/}
                                                                 <option>Ward</option>
                                                                 {ward && ward.map(item => {
-                                                                    if (item.id_ward === merchant.addressShop.ward.id_ward){
-                                                                        return(
-                                                                            <option selected value={item.id_ward}>{item.name}</option>
+                                                                    if (item.id_ward === merchant.addressShop.ward.id_ward) {
+                                                                        return (
+                                                                            <option selected
+                                                                                    value={item.id_ward}>{item.name}</option>
                                                                         )
-                                                                    }else {
-                                                                        return(
-                                                                            <option value={item.id_ward}>{item.name}</option>
+                                                                    } else {
+                                                                        return (
+                                                                            <option
+                                                                                value={item.id_ward}>{item.name}</option>
                                                                         )
                                                                     }
                                                                 })}
@@ -304,10 +308,11 @@ function UpdateMerchant() {
                                                         </div>
                                                         <div className="mb-3 col-6" style={{paddingRight: "0px"}}>
                                                             <label className="form-label">Detail</label>
-                                                            <input defaultValue={address_detail} className="form-control" onChange={(e) => setAddress({
-                                                                ...address,
-                                                                address_detail: e.target.value
-                                                            })}/>
+                                                            <input defaultValue={address_detail} className="form-control"
+                                                                   onChange={(e) => setAddress({
+                                                                       ...address,
+                                                                       address_detail: e.target.value
+                                                                   })}/>
                                                         </div>
                                                     </div>
 
@@ -317,9 +322,13 @@ function UpdateMerchant() {
                                                                onChange={(e) => handleInputChangeImage(e)}/>
                                                     </div>
                                                     <div style={{textAlign: 'center'}}>
-                                                        <button style={{width: '300px'}} type="submit"
-                                                                className="btn btn-outline-success">Register
+                                                        <button style={{width: '300px'}} type={"submit"}
+                                                                className="btn btn-outline-success">Update
                                                         </button>
+                                                        <Link to={'/'} style={{width: '100px', marginLeft: '20px'}}
+                                                              type="submit"
+                                                              className="btn btn-info">Back
+                                                        </Link>
                                                     </div>
                                                 </Form>
                                             </Formik>
@@ -360,8 +369,14 @@ function UpdateMerchant() {
                             <span>{message}</span>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close
-                            </button>
+                            {isExist ? (
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close
+                                </button>
+                            ) : (
+                                <button type="button" className="btn btn-secondary" onClick={() => navigate("/list")}
+                                        data-bs-dismiss="modal">Close
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

@@ -1,6 +1,6 @@
 import {ErrorMessage, Field, Form, Formik} from "formik";
-import {useEffect, useRef, useState} from "react";
-import {useNavigate, useParams} from "react-router-dom";
+import React, {useEffect, useRef, useState} from "react";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import {getAllCategories} from "../service/CategoryService";
 import {getProductById, saveProduct} from "../service/ProductService";
 import * as yup from "yup";
@@ -202,8 +202,12 @@ export default function UpdateProduct() {
                                 </div>
                                 <hr/>
                                 <div className="div-button">
-                                    <button className="btn btn-outline-primary" type={"submit"}>Save</button>
-                                    <button className="btn btn-outline-primary" type={"button"}>Back Home</button>
+                                    <button style={{width: '300px'}} type="submit"
+                                            className="btn btn-outline-success">Update
+                                    </button>
+                                    <Link to={'/'} style={{width: '100px', marginLeft: '20px'}} type="submit"
+                                            className="btn btn-info">Back
+                                    </Link>
                                 </div>
                             </Form>
                         </Formik>
