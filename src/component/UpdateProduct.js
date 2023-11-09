@@ -10,6 +10,7 @@ import {upImageFirebase} from "../firebase/Upfirebase";
 export default function UpdateProduct() {
     const [product, setProduct] = useState(undefined)
     const [load, setLoad] = useState(true)
+    const [isExist, setExist] = useState(true)
     const [categoriesDB, setCategoriesDB] = useState([])
     const [categories, setCategories] = useState([])
     const navigate = useNavigate()
@@ -33,15 +34,15 @@ export default function UpdateProduct() {
                 setProduct(res)
                 setCategories(res.categories)
             } else {
+                setExist(false)
                 setMessage("Product not found!!!")
                 btn_modal.current.click()
             }
-
         })
     }, [])
 
 
-    async function handledUpdate  (e){
+    async function handledUpdate(e) {
         if (categories === undefined || categories.length === 0) {
             setMessage("Please select category for the product!!!")
             btn_modal.current.click();
@@ -53,14 +54,14 @@ export default function UpdateProduct() {
         try {
             if (file !== undefined) {
                 let image = await upImageFirebase(file)
-                product = {...product, image : image.name}
+                product = {...product, image: image.name}
             }
             saveProduct(product).then(response => {
                 if (response) {
                     setMessage("Update product success!!!")
                     btn_modal.current.click();          // onclick btn modal
                     setLoad(true)
-                    navigate("/product/update/"+id)      //điều hướng
+                    setExist(false)
                 } else {
                     setMessage("Action error occurred. Please check again!!!")
                     btn_modal.current.click();          // onclick btn modal
@@ -74,9 +75,11 @@ export default function UpdateProduct() {
             setMessage("Action error occurred. Please check again!!!")
             btn_modal.current.click();          // onclick btn modal
             setLoad(true)
+            setExist(false)
             console.log("up file" + Error)
         }
     }
+
     const handledClickInput = () => {
         inputFile.current.click();
     }
@@ -234,8 +237,14 @@ export default function UpdateProduct() {
                             <span>{message}</span>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close
-                            </button>
+                            {isExist ? (
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close
+                                </button>
+                            ):(
+                                <button type="button" className="btn btn-secondary" onClick={() => navigate("/list")}
+                                        data-bs-dismiss="modal">Close
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
