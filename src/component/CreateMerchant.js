@@ -16,6 +16,7 @@ import {ErrorMessage, Field, Form, Formik} from "formik";
 import {useNavigate} from "react-router-dom";
 import {findCity, findDistrict, findWard, saveMerchant} from "../service/MerchantService";
 import {upImageFirebase} from "../firebase/Upfirebase";
+import {mailRegisterSuccess} from "../service/MailService";
 
 function FormRegister() {
     let navigate = useNavigate();
@@ -48,9 +49,9 @@ function FormRegister() {
                 if (r === true){
                     setMessage("Register success!")
                     btn_modal.current.click();
+                    mailRegisterSuccess(e.email)
                     setLoad(true)
                     navigate('/register')
-
                 }  else {
                     setMessage("Register error!")
                     btn_modal.current.click();
