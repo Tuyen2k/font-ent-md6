@@ -27,7 +27,7 @@ export function getProductById(id){
 export function getAllProductByMerchant(id, name) {
     return new Promise(resolve => {
         resolve(
-            axios.get(`http://localhost:8080/api/products?id_merchant=1&name=${name}`)
+            axios.get(`http://localhost:8080/api/products/search?id_merchant=1&name=${name}`)
                 .then(res => {
                     return res.data;
                 })
@@ -45,6 +45,29 @@ export function deleteProduct(id_product){
                 return true;
             }).catch(Error =>{
                 return false;
+            })
+        )
+    })
+}
+
+export function searchByCategory(id_category){
+    return new Promise(resolve => {
+        resolve(
+            axios.get(`http://localhost:8080/api/products/search/${id_category}`).then(res =>{
+                return res.data;
+            }).catch(Error =>{
+                return []
+            })
+        )
+    })
+}
+
+export function findAll(){
+    return new Promise(resolve => {
+        resolve(
+            axios.get("http://localhost:8080/api/products").then(res =>{
+                return res.data;
+            }).catch(Error =>{
             })
         )
     })

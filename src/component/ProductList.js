@@ -2,6 +2,7 @@ import {getAllProductByMerchant} from "../service/ProductService";
 import {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import {deleteProduct} from "../service/ProductService";
+import {useNavigate} from "react-router-dom";
 
 export default function ProductList(props) {
     const [products, setProducts] = useState([]);
@@ -12,6 +13,8 @@ export default function ProductList(props) {
     const [modalDelete, setModalDelete] = useState(false);
     const [isDelete, setDelete] = useState(false);
     const [indexDelete, setIndexDelete] = useState();
+    const navigate = useNavigate();
+
 
     useEffect(() => {
         getAllProductByMerchant(props.id, searchInput)
@@ -65,13 +68,8 @@ export default function ProductList(props) {
                             <div className="input-group rounded ">
                                 <input type="search" className="form-control rounded"
                                        placeholder="Search" aria-label="Search"
-                                       aria-describedby="search-addon" value={searchInput}
-                                       onChange={(e) => setSearchInput(e.target.value)}
+                                       aria-describedby="search-addon" onKeyUp={(e)=>searchName(e.target.value)}
                                 />
-                                {/*<input type="search" className="form-control rounded"*/}
-                                {/*       placeholder="Search" aria-label="Search"*/}
-                                {/*       aria-describedby="search-addon" onKeyUp={(e)=>searchName(e.target.value)}*/}
-                                {/*/>*/}
                             </div>
                         </div>
                         <div className="col-8">
@@ -105,7 +103,8 @@ export default function ProductList(props) {
                                             <div className="col-2">
                                                 <div className="d-flex justify-content-end">
 
-                                                    <button className="mr-2 btn btn-red">Update</button>
+                                                    <button className="mr-2 btn btn-red" onClick={() => navigate(`/product/update/${product.id_product}`)}>Update</button>
+
                                                     <button type="button" className="mx-2 btn btn-red" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
                                                             onClick={()=> displayModal(product.id_product)}>Delete</button>
 

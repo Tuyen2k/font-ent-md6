@@ -13,7 +13,7 @@ import {
 }
     from 'mdb-react-ui-kit';
 import {ErrorMessage, Field, Form, Formik} from "formik";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {
     findAllActivity,
     findCity,
@@ -27,6 +27,7 @@ import axios from "axios";
 
 function UpdateMerchant() {
     let navigate = useNavigate();
+    let { id } = useParams();
     const [load, setLoad] = useState(true)
     const [city, setCity] = useState([])
     const [district, setDistrict] = useState([])
@@ -51,7 +52,7 @@ function UpdateMerchant() {
 
     useEffect(() => {
         //id này đợi có acc sẽ dùng acc để tìm
-        findMerchantById(18).then(dataMerchant => {
+        findMerchantById(id).then(dataMerchant => {
             console.log(dataMerchant)
             setMerchant(dataMerchant)
             setAddress_detail(dataMerchant.addressShop.address_detail)
