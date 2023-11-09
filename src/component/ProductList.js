@@ -16,15 +16,6 @@ export default function ProductList(props) {
     }, [searchInput]);
 
 
-    const handleSearchSubmit = () => {
-        getAllProductByMerchant(props.id, searchInput)
-            .then((data) => {
-                setProducts(data);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-    };
 
     return (
         <>
@@ -32,11 +23,7 @@ export default function ProductList(props) {
                 <section className="section-newsfeed">
                     <div className="content row">
                         <div className="col-4">
-                            {/*<div className="content">*/}
-                            {/*    <input type="text" value={searchInput}*/}
-                            {/*           onChange={(e) => setSearchInput(e.target.value)}/>*/}
-                            {/*    <button onClick={handleSearchSubmit}>Search</button>*/}
-                            {/*</div>*/}
+
                             <div className="input-group rounded ">
                                 <input type="search" className="form-control rounded"
                                        placeholder="Search" aria-label="Search"
