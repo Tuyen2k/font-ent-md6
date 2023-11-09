@@ -1,58 +1,90 @@
 import {useEffect, useState} from "react";
-import axios from "axios";
+import {getAllProductByMerchant} from "../service/ProductService";
 
 export default function ProductList(props) {
     const [products, setProducts] = useState([]);
+    const [searchInput, setSearchInput] = useState('');
 
     useEffect(() => {
-        axios.get('http://localhost:8080/api/products/1')
-            .then(response => {
-                setProducts(response.data);
+        getAllProductByMerchant(props.id, searchInput)
+            .then((data) => {
+                setProducts(data);
             })
-            .catch(error => {
+            .catch((error) => {
                 console.log(error);
             });
-    }, []);
+    }, [searchInput]);
+
+
+    const handleSearchSubmit = () => {
+        getAllProductByMerchant(props.id, searchInput)
+            .then((data) => {
+                setProducts(data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
 
     return (
         <>
             <div className="container">
                 <section className="section-newsfeed">
                     <div className="content row">
-                        <div className="col-4">a</div>
+                        <div className="col-4">
+                            {/*<div className="content">*/}
+                            {/*    <input type="text" value={searchInput}*/}
+                            {/*           onChange={(e) => setSearchInput(e.target.value)}/>*/}
+                            {/*    <button onClick={handleSearchSubmit}>Search</button>*/}
+                            {/*</div>*/}
+                            <div className="input-group rounded ">
+                                <input type="search" className="form-control rounded"
+                                       placeholder="Search" aria-label="Search"
+                                       aria-describedby="search-addon" value={searchInput}
+                                       onChange={(e) => setSearchInput(e.target.value)}
+                                />
+                            </div>
+                        </div>
                         <div className="col-8">
-                            {products.map((product, index) => (
-                                <div className="list-item eatery-item-landing" key={index}>
-                                    <div className="row">
-                                        <div className="col-2">
-                                            <div className="img-lazy figure square">
-                                                <div className="img"
-                                                     style={{backgroundImage: `url(${product.image})`}}></div>
-                                            </div>
-                                        </div>
-                                        <div className="col-8">
-                                            <div className="content">
-                                                <div className="name mb-5">
-                                                    {product.name}
-                                                </div>
-                                                <div className="name mb-5">
-                                                    {product.address}
-                                                </div>
-                                                <div className="promotion">
-                                                    <i className="fa-solid fa-tag"></i>
-                                                    <span>{product.price}</span>
+                            {products.length > 0 ? (
+                                products.map((product, index) => (
+                                    <div
+                                        className="list-item eatery-item-landing"
+                                        key={index}
+                                    >
+                                        <div className="row">
+                                            <div className="col-2">
+                                                <div className="img-lazy figure square">
+                                                    <div
+                                                        className="img"
+                                                        style={{
+                                                            backgroundImage: `url(${product.image})`,
+                                                        }}
+                                                    ></div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="col-2">
-                                            <div className="d-flex justify-content-end">
-                                                <button className="mr-2">Update</button>
-                                                <button>Delete</button>
+                                            <div className="col-8">
+                                                <div className="content">
+                                                    <div className="name mb-5">{product.name}</div>
+                                                    <div className="name mb-5">{product.address}</div>
+                                                    <div className="promotion">
+                                                        <i className="fa-solid fa-tag"></i>
+                                                        <span>{product.price}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="col-2">
+                                                <div className="d-flex justify-content-end">
+                                                    <button className="mr-3 btn btn-red">Update</button>
+                                                    <button className="mx-2 btn btn-red">Delete</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))
+                            ) : (
+                                <div>No search results found.</div>
+                            )}
                         </div>
                     </div>
                 </section>
