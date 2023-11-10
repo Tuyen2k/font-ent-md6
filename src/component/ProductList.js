@@ -2,7 +2,7 @@ import {getAllProductByMerchant} from "../service/ProductService";
 import {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import {deleteProduct} from "../service/ProductService";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 export default function ProductList(props) {
     const [products, setProducts] = useState([]);
@@ -19,8 +19,9 @@ export default function ProductList(props) {
     useEffect(() => {
         getAllProductByMerchant(props.id, searchInput)
             .then((data) => {
-                setProducts(data);
-                setList(data)
+                let arr = data.reverse();
+                setProducts(arr);
+                setList(arr)
             })
             .catch((error) => {
                 console.log(error);
@@ -65,7 +66,16 @@ export default function ProductList(props) {
                     <div className="content row">
                         <div className="col-4">
 
-                            <div className="input-group rounded ">
+                            <div className="user-nav-menu text-lg-right">
+                                <div className="nav-item user-panel">
+                                    <div className="user-panel">
+                                        <span className="btn bg-light-gray text-black btn-login">
+                                            <Link style={{color: "black"}} to={"/product/create"}>Create </Link></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style={{marginTop: "30px"}} className="input-group rounded ">
                                 <input type="search" className="form-control rounded"
                                        placeholder="Search" aria-label="Search"
                                        aria-describedby="search-addon" onKeyUp={(e)=>searchName(e.target.value)}
@@ -103,7 +113,7 @@ export default function ProductList(props) {
                                             <div className="col-2">
                                                 <div className="d-flex justify-content-end">
 
-                                                    <button className="mr-2 btn btn-red" onClick={() => navigate(`/product/update/${product.id_product}`)}>Update</button>
+                                                    <button className="mr-2 btn btn-warning" onClick={() => navigate(`/product/update/${product.id_product}`)}>Update</button>
 
                                                     <button type="button" className="mx-2 btn btn-red" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
                                                             onClick={()=> displayModal(product.id_product)}>Delete</button>
