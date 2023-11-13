@@ -1,6 +1,6 @@
 import {ErrorMessage, Field, Form, Formik} from "formik";
-import {useEffect, useRef, useState} from "react";
-import {useNavigate, useParams} from "react-router-dom";
+import React, {useEffect, useRef, useState} from "react";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import {getAllCategories} from "../service/CategoryService";
 import {getProductById, saveProduct} from "../service/ProductService";
 import * as yup from "yup";
@@ -29,7 +29,6 @@ export default function UpdateProduct() {
 
     useEffect(() => {
         getProductById(id).then(res => {
-            console.log(res)
             if (res !== undefined) {
                 setProduct(res)
                 setCategories(res.categories)
@@ -68,15 +67,12 @@ export default function UpdateProduct() {
                     setLoad(true)
                 }
             })
-            console.log("create")
-            console.log(product)
         } catch (Error) {
             setFile(undefined)
             setMessage("Action error occurred. Please check again!!!")
             btn_modal.current.click();          // onclick btn modal
             setLoad(true)
             setExist(false)
-            console.log("up file" + Error)
         }
     }
 
@@ -137,8 +133,14 @@ export default function UpdateProduct() {
                                            aria-describedby="timeMake"/>
                                     <ErrorMessage name="timeMake" component="span" className="error"/>
                                 </div>
+                                <div className="input-group mb-3">
+                                    <span className="input-group-text" style={{height: "37.6px", width:"150px"}} id="description">Description</span>
+                                    <Field as="textarea" className="form-control" style={{paddingLeft : "2px", height: "80px", resize: "none"}} name="description"
+                                           placeholder="Enter description product"
+                                           aria-describedby="description"/>
+                                </div>
                                 <div style={{display: "flex"}} className="div-checkbox input-group mb-3 row ">
-                                    <span className="input-group-text col-2" style={{height: "37.6px"}}>Categories</span>
+                                    <span className="input-group-text col-2" style={{height: "37.6px",  width:"150px"}}>Categories</span>
                                     <div className="form-checkbox col-10">
                                         {categoriesDB.map((category, index = 0) => {
                                             let flag = false;
@@ -202,8 +204,12 @@ export default function UpdateProduct() {
                                 </div>
                                 <hr/>
                                 <div className="div-button">
-                                    <button className="btn btn-outline-primary" type={"submit"}>Save</button>
-                                    <button className="btn btn-outline-primary" type={"button"}>Back Home</button>
+                                    <button style={{width: '300px'}} type="submit"
+                                            className="btn btn-outline-success">Update
+                                    </button>
+                                    <Link to={'/'} style={{width: '100px', marginLeft: '20px'}} type="submit"
+                                            className="btn btn-info">Back
+                                    </Link>
                                 </div>
                             </Form>
                         </Formik>

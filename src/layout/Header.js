@@ -1,6 +1,7 @@
+import {Link} from "react-router-dom";
+import {useState} from "react";
+
 export default function Header() {
-
-
     return (
         <>
             <header>
@@ -80,6 +81,23 @@ export default function Header() {
                                         <span className="btn bg-light-gray text-black btn-login">Login</span>
                                     </div>
                                 </div>
+                            </div>
+                            {/*<div className="user-nav-menu text-lg-right">*/}
+                            {/*    <div className="nav-item user-panel">*/}
+                            {/*        <div className="user-panel">*/}
+                            {/*            <span className="btn bg-light-gray text-black btn-login">*/}
+                            {/*                <Link style={{color: "black"}} to={"/merchant/register"}>Register Merchant</Link></span>*/}
+                            {/*        </div>*/}
+                            {/*    </div>*/}
+                            {/*</div>*/}
+                            <div className="btn-nav-city-select">
+                               Merchant
+                                <i className="fa-solid fa-sort-down"></i>
+                                <ul className="menu-nav-city-select">
+                                    <li className="city-item"><Link style={{color : "black"}} to={"merchant/register"}>Register Merchant</Link></li>
+                                    <li className="city-item"><Link style={{color : "black"}} to={"merchant/update/24"}>Update Merchant</Link></li>
+                                    <li className="city-item"><Link style={{color : "black"}} to={"list"}>List</Link></li>
+                                </ul>
                             </div>
                         </div>
                         {/*End Menu Navbar*/}

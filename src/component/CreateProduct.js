@@ -1,15 +1,16 @@
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import {saveProduct} from "../service/ProductService";
 import {getAllCategories} from "../service/CategoryService";
 import {upImageFirebase} from "../firebase/Upfirebase";
 import * as yup from "yup";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 import Demo from "./DemoNotification";
 
 export default function CreateProduct() {
     const [file, setFile] = useState(undefined)
     const [load, setLoad] = useState(true)
+    const [isExist, setExist] = useState(true)
     const inputFile = useRef()
     const btn_modal = useRef()
     const [message, setMessage] = useState("")
@@ -20,6 +21,7 @@ export default function CreateProduct() {
         price: "",
         image: "",
         timeMake: "",
+        description: ""
     })
     const navigate = useNavigate()
 
@@ -49,7 +51,7 @@ export default function CreateProduct() {
                     setMessage("Create product success!!!")
                     btn_modal.current.click();          // onclick btn modal
                     setLoad(true)
-                    navigate("/product/create")
+                    setExist(false)
                 } else {
                     setMessage("Action error occurred. Please check again!!!")
                     btn_modal.current.click();          // onclick btn modal
@@ -124,8 +126,14 @@ export default function CreateProduct() {
                                            aria-describedby="timeMake"/>
                                     <ErrorMessage name="timeMake" component="span" className="error"/>
                                 </div>
+                                <div className="input-group mb-3">
+                                    <span className="input-group-text" style={{height: "37.6px", width:"150px"}} id="description">Description</span>
+                                    <Field as="textarea" className="form-control" style={{paddingLeft : "2px", height: "80px", resize: "none"}} name="description"
+                                           placeholder="Enter description product"
+                                           aria-describedby="description"/>
+                                </div>
                                 <div style={{display: "flex"}} className="div-checkbox input-group mb-3 row ">
-                                    <span className="input-group-text col-2" style={{height: "37.6px"}}>Categories</span>
+                                    <span className="input-group-text col-2" style={{height: "37.6px", width:"150px"}}>Categories</span>
                                     <div className="form-checkbox col-10">
                                         {categoriesDB.map((category, index = 0) => {
                                             return (
@@ -163,8 +171,12 @@ export default function CreateProduct() {
                                 </div>
                                 <hr/>
                                 <div className="div-button">
-                                    <button className="btn btn-outline-primary" type={"submit"}>Save</button>
-                                    <button className="btn btn-outline-primary" type={"button"}>Back Home</button>
+                                    <button style={{width: '300px'}} type="submit"
+                                            className="btn btn-outline-success">Create
+                                    </button>
+                                    <Link to={'/'} style={{width: '100px', marginLeft: '20px'}} type="submit"
+                                          className="btn btn-info">Back
+                                    </Link>
                                 </div>
                             </Form>
                         </Formik>
@@ -200,8 +212,14 @@ export default function CreateProduct() {
                             <span>{message}</span>
                         </div>
                         <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close
-                            </button>
+                            {isExist ? (
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close
+                                </button>
+                            ):(
+                                <button type="button" className="btn btn-secondary" onClick={() => navigate("/list")}
+                                        data-bs-dismiss="modal">Close
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
