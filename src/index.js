@@ -14,6 +14,7 @@ import UpdateMerchant from "./component/UpdateMerchant";
 import ProductList from "./component/ProductList";
 import UpdateProduct from "./component/UpdateProduct";
 import FormRegister from "./component/CreateMerchant";
+import DisplayCart from "./component/cart/DisplayCart";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -31,6 +32,7 @@ root.render(
           <Route path="/product/update/:id" element={<UpdateProduct/>}></Route>
           <Route path={'/merchant/register'} element={<FormRegister/>}></Route>
           <Route path={'/merchant/update/:id'} element={<UpdateMerchant/>}></Route>
+          <Route path={'/cart/account/:id'} element={<DisplayCart/>}></Route>
       </Routes>
   </BrowserRouter>
 );
