@@ -100,7 +100,7 @@ export default function Header() {
                                 </ul>
                             </div>
                             <div className="user-nav-menu">
-                                <i className="fa-solid fa-cart-shopping fa-lg" style={{color: "#ff0000"}}></i>
+                                <Link to={"cart/account"}><i className="fa-solid fa-cart-shopping fa-lg" style={{color: "#ff0000"}}></i></Link>
                             </div>
                         </div>
                         {/*End Menu Navbar*/}

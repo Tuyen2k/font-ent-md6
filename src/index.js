@@ -32,7 +32,7 @@ root.render(
           <Route path="/product/update/:id" element={<UpdateProduct/>}></Route>
           <Route path={'/merchant/register'} element={<FormRegister/>}></Route>
           <Route path={'/merchant/update/:id'} element={<UpdateMerchant/>}></Route>
-          <Route path={'/cart/account/:id'} element={<DisplayCart/>}></Route>
+          <Route path={'/cart/account'} element={<DisplayCart/>}></Route>
       </Routes>
   </BrowserRouter>
 );
