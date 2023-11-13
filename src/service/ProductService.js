@@ -18,6 +18,40 @@ export function getProductById(id){
             axios.get(`http://localhost:8080/api/products/merchant/${id}`).then(res =>{
                 return res.data;
             }).catch(Error =>{
+            })
+        )
+    })
+}
+
+export function getAllProductByIdMerchant(id){
+    return new Promise(resolve => {
+        resolve(
+            axios.get(`http://localhost:8080/api/products/${id}`).then(res =>{
+                return res.data;
+            }).catch(Error =>{
+            })
+        )
+    })
+}
+
+export function MostPurchasedProducts(id){
+    return new Promise(resolve => {
+        resolve(
+            axios.get(`http://localhost:8080/api/products/purchased`).then(res =>{
+                return res.data;
+            }).catch(Error =>{
+            })
+        )
+    })
+}
+
+
+export function findOneProduct(id){
+    return new Promise(resolve => {
+        resolve(
+            axios.get(`http://localhost:8080/api/products/findOne/${id}`).then(res =>{
+                return res.data;
+            }).catch(Error =>{
                 return undefined;
             })
         )

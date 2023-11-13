@@ -2,6 +2,7 @@ import BannerSlide from "./BannerSlide";
 import {useEffect, useRef, useState} from "react";
 import {findAll, searchByCategory} from "../service/ProductService";
 import {getAllCategories} from "../service/CategoryService";
+import {Link} from "react-router-dom";
 export default function Home(){
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
@@ -126,7 +127,7 @@ export default function Home(){
                                     <div className="content">
                                         <div className="list-view">
                                             {products && products.map(item => (
-                                            <a className="list-item eatery-item-landing" href="">
+                                                <Link to={`detailProduct/${item.id_product}`} className="list-item eatery-item-landing" >
                                                 <div className="img-lazy figure square">
                                                     <div className="img" style={{backgroundImage : `url(${item.image})`}}>
                                                     </div>
@@ -143,7 +144,7 @@ export default function Home(){
                                                         <span>{item.priceSale} VND</span>
                                                     </div>
                                                 </div>
-                                            </a>
+                                            </Link>
                                             ))}
                                         </div>
                                         <a className="btn-view-all" href="">
