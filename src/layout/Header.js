@@ -73,7 +73,7 @@ export default function Header() {
                             <a href="" className="btn-nav-link">Vegan Location</a>
 
                             {/*End Menu Item*/}
-                            <div className="blank"></div>
+                            {/*<div className="blank"></div>*/}
                             {/*Login*/}
                             <div className="user-nav-menu text-lg-right">
                                 <div className="nav-item user-panel">
@@ -98,6 +98,9 @@ export default function Header() {
                                     <li className="city-item"><Link style={{color : "black"}} to={"merchant/update/24"}>Update Merchant</Link></li>
                                     <li className="city-item"><Link style={{color : "black"}} to={"list"}>List</Link></li>
                                 </ul>
+                            </div>
+                            <div className="user-nav-menu">
+                                <i className="fa-solid fa-cart-shopping fa-lg" style={{color: "#ff0000"}}></i>
                             </div>
                         </div>
                         {/*End Menu Navbar*/}
