@@ -141,6 +141,7 @@ export default function Header() {
                                 </div>
 
                             )}
+                            {/*login modal*/}
                             <div className="modal fade bd-example-modal-lg" id="exampleModal" tabIndex="-1"
                                  role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                                 <ToastContainer position="top-right" autoClose={2000} pauseOnHover={false}
@@ -188,8 +189,8 @@ export default function Header() {
                                         </div>
                                     </div>
                                 </div>
-                                {/*End Menu Navbar*/}
                             </div>
+                            {/*End login modal*/}
 
                             {/*End Navbar*/}
                         </div>
