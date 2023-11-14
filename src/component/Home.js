@@ -1,8 +1,11 @@
 import BannerSlide from "./BannerSlide";
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {findAll, searchByCategory} from "../service/ProductService";
 import {getAllCategories} from "../service/CategoryService";
+import {ToastContainer} from "react-toastify";
+
 export default function Home(){
+
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
     const [shouldCallFindAll, setShouldCallFindAll] = useState(true);
@@ -125,7 +128,7 @@ export default function Home(){
 
                                     <div className="content">
                                         <div className="list-view">
-                                            {products && products.map(item => (
+                                            {products && products.slice(0, 10).map(item => (
                                             <a className="list-item eatery-item-landing" href="">
                                                 <div className="img-lazy figure square">
                                                     <div className="img" style={{backgroundImage : `url(${item.image})`}}>

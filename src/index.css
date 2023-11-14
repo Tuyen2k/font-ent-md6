@@ -5,14 +5,27 @@ body {
     font-family: "Poppins", sans-serif !important;
     background-color: #f6f6f6 !important;
 }
-
+.modal-dialog {
+    max-width: 1000px!important;
+    max-height: 100px!important;
+}
+.login-buttons {
+    padding-top: 30px;
+}
+.input-login-form {
+    padding: 5px 12px!important;
+}
 code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
-.btn-red {
-    background-color: #ff2020 !important;
-    color: white !important;
+.btn-primary {
+    background-color: #ff2020!important;
+    border: #ff2020!important;
+}
+
+.btn-padding {
+    margin-bottom: 10px;
 }
 .text-lg-right {
     text-align: right !important;
@@ -58,7 +71,6 @@ a {
 
 .navbar .user-nav-menu .btn-nav-city-select {
     border: 0;
-    border-right: 1px solid #ebebeb;
     color: #333;
     cursor: pointer;
     display: flex;
@@ -426,7 +438,7 @@ i {
 }
 .home-page .section-newsfeed>.content .view-all, .home-page .section-newsfeed>.content .eatery-item-landing, .home-page .section-newsfeed>.content .eatery-item, .home-page .section-newsfeed>.content .eatery-dish-item {
     margin: 8px;
-    width: calc(16.6666666667% - 16px);
+    width: calc(20% - 16px);
 }
 .section-newsfeed>.content .eatery-item-landing, .section-newsfeed>.content .eatery-item, .section-newsfeed>.content .eatery-dish-item {
     border: 1px solid #ebebeb;
