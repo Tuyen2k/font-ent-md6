@@ -86,7 +86,7 @@ export default function Header() {
                             {/*    <div className="nav-item user-panel">*/}
                             {/*        <div className="user-panel">*/}
                             {/*            <span className="btn bg-light-gray text-black btn-login">*/}
-                            {/*                <Link style={{color: "black"}} to={"/merchant/register"}>Register Merchant</Link></span>*/}
+                            {/*                <Link style={{color: "black"}} to={"/merchant/register"}>Register1 Merchant</Link></span>*/}
                             {/*        </div>*/}
                             {/*    </div>*/}
                             {/*</div>*/}

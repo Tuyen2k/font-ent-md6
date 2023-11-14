@@ -48,13 +48,13 @@ function FormRegister() {
             console.log(registerMerchant)
             saveMerchant(registerMerchant).then(r => {
                 if (r === true){
-                    setMessage("Register success!")
+                    setMessage("Register1 success!")
                     btn_modal.current.click();
                     mailRegisterSuccess(e.email)
                     setLoad(true)
                     setExist(false)
                 }  else {
-                    setMessage("Register error!")
+                    setMessage("Register1 error!")
                     btn_modal.current.click();
                 }         }
             )

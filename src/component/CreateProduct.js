@@ -47,7 +47,7 @@ export default function CreateProduct() {
             let product = {...e, image: res.name, categories: categories, merchant: a, priceSale: e.price * 0.95}
             saveProduct(product).then(response => {
                 if (response) {
-                    setMessage("Create product success!!!")
+                    setMessage("Register1 product success!!!")
                     btn_modal.current.click();          // onclick btn modal
                     setLoad(true)
                     setExist(false)
