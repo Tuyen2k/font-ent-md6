@@ -185,11 +185,11 @@ h1 {
     width: calc(100% - 24px);
 }
 .top-banner .search-box {
-     background: #fff;
-     border-radius: 26px;
-     display: flex;
-     margin-top: 150px;
-     overflow: hidden;
+    background: #fff;
+    border-radius: 26px;
+    display: flex;
+    margin-top: 150px;
+    overflow: hidden;
 }
 .btn-search {
     border-radius: 50%;
@@ -200,9 +200,9 @@ h1 {
     width: 36px;
 }
 .btn-link {
-     font-weight: 400;
-     padding: 0;
-     white-space: nowrap;
+    font-weight: 400;
+    padding: 0;
+    white-space: nowrap;
 }
 .bg-transparent {
     background-color: #0000!important;
@@ -730,9 +730,12 @@ div.error{
 .item-cart{
     display: flex;
     align-items: center;
-    border: 1px solid rgba(0,0,0,.09);
+    /*box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);*/
     border-radius: 2px;
     margin: 22px 0px 22px 20px;
+}
+.item-list{
+    border: #9c9c9c 1px solid;
 }
 .header-item{
     margin: 22px 20px;
@@ -743,8 +746,28 @@ div.error{
     border-radius: 5px;
 }
 .input-checkbox{
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
     height: 20px;
     width: 20px;
+    border: #9c9c9c 1px solid;
+    border-radius: 4px;
+
+    background-color: #fff;
+    transition: background-color 0.3s ease;
+}
+.input-checkbox:checked{
+    background-color: red;
+}
+.input-checkbox:checked::before{
+    content: "\2713";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
+    color: white;
 }
 .item{
     display: flex;
@@ -766,19 +789,28 @@ div.error{
 }
 .footer-cart{
     padding: 15px;
-    width: 100%;
     background-color: white;
     z-index: 1;
     position: fixed;
     left: 0;
     bottom: 0;
     text-align: center;
-    border: 1px solid;
+    box-shadow: 0px 2px 4px grey;
+    /*border: #9c9c9c 1px solid ;*/
+    width: 1270px;
+    margin-left: 218px;
 }
 .img-cart{
     height: 80px;
     width: 100px;
     padding: 5px 0 5px 0;
 }
+.number::after {
+    content: attr(data-number);
+}
+
+
+
+
 
 

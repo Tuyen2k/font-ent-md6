@@ -14,26 +14,28 @@ import UpdateMerchant from "./component/UpdateMerchant";
 import ProductList from "./component/ProductList";
 import UpdateProduct from "./component/UpdateProduct";
 import FormRegister from "./component/CreateMerchant";
+import DetailProduct from "./component/DetailProduct";
 import DisplayCart from "./component/cart/DisplayCart";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <BrowserRouter>
-      <Routes>
-          <Route path="/" element={<>
-              <Header/>
-              <Home/>
-              <Footer/>
-              <PopupAppCart/>
-          </>}>
-          </Route>
-          <Route path="/list" element={<ProductList/>}></Route>
-          <Route path="/product/create" element={<CreateProduct/>}></Route>
-          <Route path="/product/update/:id" element={<UpdateProduct/>}></Route>
-          <Route path={'/merchant/register'} element={<FormRegister/>}></Route>
-          <Route path={'/merchant/update/:id'} element={<UpdateMerchant/>}></Route>
-          <Route path={'/cart/account'} element={<DisplayCart/>}></Route>
-      </Routes>
-  </BrowserRouter>
+    <BrowserRouter>
+        <Routes>
+            <Route path="/" element={<>
+                <Header/>
+                <Home/>
+                <Footer/>
+                <PopupAppCart/>
+            </>}>
+            </Route>
+            <Route path="/list" element={<ProductList/>}></Route>
+            <Route path="/product/create" element={<CreateProduct/>}></Route>
+            <Route path="/product/update/:id" element={<UpdateProduct/>}></Route>
+            <Route path={'/merchant/register'} element={<FormRegister/>}></Route>
+            <Route path={'/merchant/update/:id'} element={<UpdateMerchant/>}></Route>
+            <Route path={'/detailProduct/:id'} element={<DetailProduct/>}></Route>
+            <Route path={'/cart/account'} element={<DisplayCart/>}></Route>
+        </Routes>
+    </BrowserRouter>
 );
 

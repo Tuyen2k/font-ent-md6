@@ -1,5 +1,5 @@
-import {useEffect, useState} from "react";
-import {getListCart} from "../../service/CartService";
+import React, {useEffect, useRef, useState} from "react";
+import {deleteCartDetail, getListCart, updateQuantity} from "../../service/CartService";
 import {Link} from "react-router-dom";
 
 
@@ -7,13 +7,63 @@ export default function DisplayCart() {
 
     const account = JSON.parse(localStorage.getItem("account"))
     const [carts, setCart] = useState([]);
+    const [check, setCheck] = useState(false);
+    const btn_modal = useRef()
+    const [message, setMessage] = useState("");
 
-    const handleMinus=()=>{
-
+    const handleMinus = (id) => {
+        for (let i = 0; i < carts.length; i++) {
+            if (carts[i].id_cartDetail === id) {
+                if (carts[i].quantity > 1) {
+                    let quantity = carts[i].quantity - 1
+                    updateQuantity(id, quantity).then(res =>{
+                        if (res === true){
+                            setMessage("Update success!!!")
+                            btn_modal.current.click()
+                            setCheck(!check)
+                        }else {
+                            setMessage("An error occurred. Please check again")
+                            btn_modal.current.click()
+                        }
+                    })
+                }
+            }
+        }
     }
 
-    const handlePlus=()=>{
-
+    const handlePlus = (id) => {
+        for (let i = 0; i < carts.length; i++) {
+            if (carts[i].id_cartDetail == id) {
+                if (carts[i].quantity < 20) {
+                    let quantity = carts[i].quantity + 1
+                    updateQuantity(id, quantity).then(res =>{
+                        if (res === true){
+                            setMessage("Update success!!!")
+                            btn_modal.current.click()
+                            setCheck(!check)
+                        }else {
+                            setMessage("An error occurred. Please check again")
+                            btn_modal.current.click()
+                        }
+                    })
+                }
+            }
+        }
+    }
+    const deleteCart = (id) => {
+        if (window.confirm("Are you sure?")) {
+            deleteCartDetail(id).then(res => {
+                if (res){
+                    setMessage("Delete success!!!")
+                    btn_modal.current.click()
+                    setCheck(!check)
+                }
+                else {
+                    setMessage("An error occurred. Please check again")
+                    btn_modal.current.click()
+                }
+            })
+        }
     }
 
 
@@ -22,7 +72,7 @@ export default function DisplayCart() {
             setCart(res)
             console.log(res)
         })
-    }, [])
+    }, [check])
 
     return (
         <>
@@ -44,8 +94,8 @@ export default function DisplayCart() {
                 </div>
             </section>
 
-            {carts.map((cart, index)=>{
-                return(
+            {carts.map((cart, index) => {
+                return (
                     <section key={index}>
                         <div className="container">
                             <div className="display-cart">
@@ -66,27 +116,28 @@ export default function DisplayCart() {
                                                      alt="image"/>
                                             </div>
                                             <div className="col-8 item-name">
-                                                Bún đậu mắm tôm, kèm 1 chả, 1 nước, 1 cá cơm hai ba bốn năm sáu bayr
+                                                {cart.product.name}
                                             </div>
                                         </div>
-                                        <div className="col-2"><span>50.000đ</span></div>
+                                        <div className="col-2"><strong><span className="number">{cart.price.toLocaleString()}</span> đ</strong></div>
                                         <div className="col-2">
                                             <div style={{display: "flex"}}>
                                                 <button className="btn px-2"
-                                                        onClick={handleMinus}>
+                                                        onClick={() => handleMinus(cart.id_cartDetail)}>
                                                     <i className="fas fa-minus"></i>
                                                 </button>
                                                 <input id="form1" min="0" name="quantity" value={cart.quantity}
                                                        type="number"
                                                        className="form-control form-control-sm"/>
                                                 <button className="btn px-2"
-                                                        onClick={handlePlus}>
+                                                        onClick={() => handlePlus(cart.id_cartDetail)}>
                                                     <i className="fas fa-plus"></i>
                                                 </button>
                                             </div>
                                         </div>
-                                        <div className="col-2">50.000đ</div>
-                                        <div className="col-1"><i className="fa-solid fa-trash fa-lg" style={{color: "#ff0000"}}></i></div>
+                                        <div className="col-2"><strong><span className="number">{(cart.price*cart.quantity).toLocaleString()}</span> đ</strong></div>
+                                        <div className="col-1" onClick={() => deleteCart(cart.id_cartDetail)}><i
+                                            className="fa-solid fa-trash fa-lg" style={{color: "#ff0000"}}></i></div>
                                     </div>
                                 </div>
                             </div>
@@ -94,9 +145,6 @@ export default function DisplayCart() {
                     </section>
                 )
             })}
-
-
-
 
 
             <section>
@@ -109,6 +157,33 @@ export default function DisplayCart() {
                     </div>
                 </div>
             </section>
+
+
+            {/*button modal*/}
+            <button type="button" ref={btn_modal} className="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#exampleModal" style={{display: "none"}}>
+            </button>
+
+            {/*modal*/}
+            <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="exampleModalLabel">Notification</h5>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                            <span>{message}</span>
+                        </div>
+                        <div className="modal-footer">
+                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close
+                                </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </>
     )
 }
