@@ -134,7 +134,7 @@ export default function Header() {
                                         {/*<a href={"/login"} className="btn bg-light-gray text-black btn-login">Login</a>*/}
                                         <a className="btn bg-light-gray text-black btn-login" ref={btn_modal}
                                            data-bs-toggle="modal"
-                                           data-bs-target="#exampleModal">Login</a>
+                                           data-bs-target="#loginModal">Login</a>
 
 
                                     </div>
@@ -142,7 +142,7 @@ export default function Header() {
 
                             )}
                             {/*login modal*/}
-                            <div className="modal fade bd-example-modal-lg" id="exampleModal" tabIndex="-1"
+                            <div className="modal fade bd-example-modal-lg" id="loginModal" tabIndex="-1"
                                  role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                                 <ToastContainer position="top-right" autoClose={2000} pauseOnHover={false}
                                                 style={{width: "400px"}}/>
@@ -174,7 +174,7 @@ export default function Header() {
                                                             <button type="button" className="btn btn-lg btn-primary" disabled={isLoginDisabled} onClick={handleLogin}>Login</button>
                                                         </div>
                                                         <div>
-                                                            <p>New to our website? <a href="/register" style={{color:"red"}}>Register now</a></p>
+                                                            <p>New to our website? <a data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#registerModal" style={{color:"red"}}>Register now</a></p>
                                                         </div>
                                                     </div>
                                                     <div className="col-7 justify-content-center"  style={{
@@ -191,7 +191,56 @@ export default function Header() {
                                 </div>
                             </div>
                             {/*End login modal*/}
+                            {/*Register modal*/}
+                            <div className="modal fade bd-example-modal-lg" id="registerModal" tabIndex="-1"
+                                 role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+                                <ToastContainer position="top-right" autoClose={2000} pauseOnHover={false}
+                                                style={{width: "400px"}}/>
 
+                                <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                    <div className="modal-content">
+                                        <div className="modal-header">
+                                            <h5 className="modal-title" id="myLargeModalLabel">Register new account</h5>
+                                            <button type="button" className="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                        </div>
+                                        <div className="modal-body">
+                                            <form>
+                                                <div className="row">
+                                                    <div className="col-5">
+                                                        <div className="form-group row">
+                                                            <label>Username:</label>
+                                                            <input className="input-login-form" type="text" placeholder="Enter Password"
+                                                                   name="user" value={username}
+                                                                   onChange={(e) => setUsername(e.target.value)}/>
+                                                        </div>
+                                                        <div className="form-group row">
+                                                            <label>Password:</label>
+                                                            <input className="input-login-form" type="password" placeholder="Enter Password"
+                                                                   name="psw" value={password}
+                                                                   onChange={(e) => setPassword(e.target.value)}/>
+                                                        </div>
+                                                        <div className="form-group row login-buttons">
+                                                            <button type="button" className="btn btn-lg btn-primary" disabled={isLoginDisabled} onClick={handleLogin}>Login</button>
+                                                        </div>
+                                                        <div>
+                                                            <p>New to our website? <a data-bs-dismiss="modal" style={{color:"red"}}>Register now</a></p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-7 justify-content-center"  style={{
+                                                        backgroundImage: `url('https://firebasestorage.googleapis.com/v0/b/react-firebase-storage-f6ec9.appspot.com/o/file%2FdoAnNgon.jpg?alt=media&token=e3c3377c-463d-481d-bb04-ba2d890e27b9')`,
+                                                        backgroundSize: 'cover',
+                                                        height:'300px'
+                                                    }}>
+
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {/*End register modal*/}
                             {/*End Navbar*/}
                         </div>
                     </div>

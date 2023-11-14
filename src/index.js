@@ -14,6 +14,7 @@ import UpdateMerchant from "./component/UpdateMerchant";
 import ProductList from "./component/ProductList";
 import UpdateProduct from "./component/UpdateProduct";
 import FormRegister from "./component/CreateMerchant";
+import DetailProduct from "./component/DetailProduct";
 import {ToastContainer} from "react-toastify";
 import Login from "./component/Login";
 
@@ -22,7 +23,6 @@ root.render(
   <BrowserRouter>
       <Routes>
           <Route path="/" element={<>
-              {/*<ToastContainer position="top-right" autoClose={2000} pauseOnHover={false}/>*/}
               <Header/>
               <Home/>
               <Footer/>
@@ -34,7 +34,7 @@ root.render(
           <Route path="/product/update/:id" element={<UpdateProduct/>}></Route>
           <Route path={'/merchant/register'} element={<FormRegister/>}></Route>
           <Route path={'/merchant/update/:id'} element={<UpdateMerchant/>}></Route>
-          <Route path={'/login'} element={<Login/>}></Route>
+          <Route path={'/detailProduct/:id'} element={<DetailProduct/>}></Route>
       </Routes>
   </BrowserRouter>
 );
