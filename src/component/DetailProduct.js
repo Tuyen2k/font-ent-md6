@@ -1,13 +1,6 @@
 import {Link, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
-import {
-    findAll,
-    findOneProduct,
-    getAllProductByIdMerchant,
-    getProductById,
-    MostPurchasedProducts
-} from "../service/ProductService";
-import BannerSlide from "./BannerSlide";
+import {findOneProduct, getAllProductByIdMerchant, MostPurchasedProducts} from "../service/ProductService";
 import {couponByIdMerchant} from "../service/CouponService";
 
 function DetailProduct() {

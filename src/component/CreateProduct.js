@@ -5,7 +5,6 @@ import {getAllCategories} from "../service/CategoryService";
 import {upImageFirebase} from "../firebase/Upfirebase";
 import * as yup from "yup";
 import {Link, useNavigate} from "react-router-dom";
-import Demo from "./DemoNotification";
 
 export default function CreateProduct() {
     const [file, setFile] = useState(undefined)

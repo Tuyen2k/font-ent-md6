@@ -3,8 +3,7 @@ import {useEffect, useRef, useState} from "react";
 import {findAll, findOneProduct, searchByCategory} from "../service/ProductService";
 import {getAllCategories} from "../service/CategoryService";
 import {Link} from "react-router-dom";
-import {CouponByIdMerchant} from "../service/CouponService";
-import {ToastContainer} from "react-toastify";
+import {couponByIdMerchant} from "../service/CouponService";
 
 
 export default function Home() {
@@ -77,7 +76,7 @@ export default function Home() {
             const total = data.priceSale - coupon
             setTotalMoney(total)
             console.log(data);
-            const coupon = await CouponByIdMerchant(data.merchant.id_merchant)
+            const coupon = await couponByIdMerchant(data.merchant.id_merchant)
                 setCoupons(coupon)
             if (product) {
                 setLoad(true);

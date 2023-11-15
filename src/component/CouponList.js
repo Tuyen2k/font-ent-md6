@@ -1,7 +1,7 @@
 import {Link, useParams} from "react-router-dom";
 import React, {useEffect, useRef, useState} from "react";
 import {couponByIdMerchant, deleteCoupon} from "../service/CouponService";
-import {deleteProduct} from "../service/ProductService";
+
 
 function CouponList() {
     let {id} = useParams();
