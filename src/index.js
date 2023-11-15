@@ -40,7 +40,13 @@ root.render(
           <Route path={'/list_coupon/:id'} element={<CouponList/>}></Route>
           <Route path={'/create_Coupon/:id'} element={<CreateCoupon/>}></Route>
           <Route path={'/update_Coupon/:id'} element={<UpdateCoupon/>}></Route>
-          <Route path={'/detail_merchant/:id'} element={<DetailMerchant/>}></Route>
+          <Route path={'/detail_merchant/:id'} element={
+              <>
+              <DetailMerchant/>
+                  <Footer/>
+              </>
+          }>
+          </Route>
       </Routes>
   </BrowserRouter>
 );
