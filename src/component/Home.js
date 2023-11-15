@@ -3,7 +3,7 @@ import {useEffect, useRef, useState} from "react";
 import {findAll, findOneProduct, searchByCategory} from "../service/ProductService";
 import {getAllCategories} from "../service/CategoryService";
 import {Link} from "react-router-dom";
-import {CouponByIdMerchant} from "../service/CouponService";
+import {couponByIdMerchant} from "../service/CouponService";
 
 export default function Home() {
     const [products, setProducts] = useState([]);
@@ -75,7 +75,7 @@ export default function Home() {
             const total = data.priceSale - coupon
             setTotalMoney(total)
             console.log(data);
-            const coupon = await CouponByIdMerchant(data.merchant.id_merchant)
+            const coupon = await couponByIdMerchant(data.merchant.id_merchant)
                 setCoupons(coupon)
             if (product) {
                 setLoad(true);
@@ -546,7 +546,7 @@ export default function Home() {
                             <div style={{marginTop: '30px'}} className="now-detail-restaurant clearfix">
                                 <div className="container">
                                     <div className="row px-xl-5">
-                                        <div className="col-lg-5 pb-5">
+                                        <div className="col-lg-6 pb-5">
                                             <div id="product-carousel" className="carousel slide" data-ride="carousel">
                                                 <div style={{
                                                     width: '480px',
@@ -562,7 +562,7 @@ export default function Home() {
                                             </div>
                                         </div>
 
-                                        <div className="col-lg-7 pb-5">
+                                        <div className="col-lg-6 pb-5">
                                             <h3 className="font-weight-semi-bold">{product.name}</h3>
                                             {/*link dẫn tới merchant, cần có cả id merchant để lấy dữ liệu. */}
                                             <Link>{merchant.name} - Shop Online</Link>

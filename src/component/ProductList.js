@@ -1,5 +1,5 @@
 import {getAllProductByMerchant} from "../service/ProductService";
-import {useEffect, useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import {deleteProduct} from "../service/ProductService";
 import {Link, useNavigate} from "react-router-dom";
@@ -61,6 +61,10 @@ export default function ProductList(props) {
 
     return (
         <>
+            <Link to={"/"}><svg style={{color: 'black'}} xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" className="bi bi-x" viewBox="0 0 16 16">
+                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+            </svg>
+            </Link>
             <div className="container">
                 <section className="section-newsfeed">
                     <div className="content row">
@@ -69,18 +73,21 @@ export default function ProductList(props) {
                             <div className="user-nav-menu text-lg-right">
                                 <div className="nav-item user-panel">
                                     <div className="user-panel">
-                                        <span className="btn bg-light-gray text-black btn-login">
-                                            <Link style={{color: "black"}} to={"/product/create"}>Create </Link></span>
+
                                     </div>
                                 </div>
                             </div>
 
-                            <div style={{marginTop: "30px"}} className="input-group rounded ">
+                            <div  className="input-group rounded ">
                                 <input type="search" className="form-control rounded"
                                        placeholder="Search" aria-label="Search"
                                        aria-describedby="search-addon" onKeyUp={(e)=>searchName(e.target.value)}
                                 />
                             </div>
+                            <span style={{marginTop: "30px"}} className="btn btn-primary" >
+                                            <Link style={{color: "white"}} to={"/product/create"}>Create </Link></span>
+                            <span style={{marginTop: "30px", marginLeft: '20px'}} className="btn btn-info" >
+                                            <Link style={{color: "black"}} to={`/list_coupon/${1}`}>List coupon</Link></span>
                         </div>
                         <div className="col-8">
                             {products.length > 0 ? (
@@ -131,7 +138,7 @@ export default function ProductList(props) {
                                                                     Are you sure?
                                                                 </div>
                                                                 <div className="modal-footer">
-                                                                    <button type="button" className="btn btn-red" data-bs-dismiss="modal">Cancel</button>
+                                                                    <button type="button" className="btn btn-info" data-bs-dismiss="modal">Cancel</button>
                                                                     <button className="mx-2 btn btn-red" onClick={handleDeleteProduct} type="button">Confirm</button>
                                                                 </div>
                                                             </div>
