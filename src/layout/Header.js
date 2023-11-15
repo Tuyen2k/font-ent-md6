@@ -2,41 +2,162 @@ import {Link} from "react-router-dom";
 import React, {useState, useEffect, useRef} from "react";
 import {useNavigate} from "react-router-dom";
 import {toast, ToastContainer} from "react-toastify";
-import {loginUser} from "../service/AccountService";
+import {loginUser, saveAccount} from "../service/AccountService";
+import {ErrorMessage, Field, Form, Formik} from "formik";
+import {upImageFirebase} from "../firebase/Upfirebase";
+import {findCity, findDistrict, findWard} from "../service/MerchantService";
+import 'react-toastify/dist/ReactToastify.css';
 
+import * as yup from "yup";
 
 export default function Header() {
+    const [load, setLoad] = useState(true)
+    const [isExist, setExist] = useState(true)
+    const [isExistCheck, setExistCheck] = useState(true)
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [user, setUser] = useState(null);
     const btn_modal = useRef()
-
+    const [message, setMessage] = useState()
+    const [image, setImage] = useState()
+    const [city, setCity] = useState([])
+    const [district, setDistrict] = useState([])
+    const [ward, setWard] = useState([])
+    const [address, setAddress] = useState({})
+    const [color, setColor] = useState({borderColor: 'red', color: 'red', backgroundColor: 'white'});
+    const [account, setAccount] = useState({
+        name: '',
+        password: '',
+        confirmPassword: '',
+        phone: '',
+        image: ''
+    });
     const navigate = useNavigate();
     useEffect(() => {
         const userInfo = JSON.parse(localStorage.getItem('userInfo'));
         setUser(userInfo);
-    }, []);
+    }, [isExist]);
 
     const isLoginDisabled = username.trim() === '' || password.trim() === '';
+    const handleCreateAccount = (e) => {
+        upImageFirebase(image).then(r => {
+            let registerAccount = {...e, addressDelivery: address, image: r.name, role: {"id_role": 2}}
+            console.log(registerAccount)
+            saveAccount(registerAccount).then(r => {
+                    if (r === true) {
+                        toast.success('Register successfully!',{containerId:'register'});
+                        setTimeout(() => {
+                            window.document.getElementById("modal-register-close").click();
+                            window.document.getElementById("modal-login-open").click();
+                        }, 3000)
+                    } else {
+                        toast.error('Something went wrong! Try again!',{containerId:'register'});
+                    }
+                }
+            )
+        })
+    }
+
+    const handleInputChangeCity = (e) => {
+        const fieldValue = e.target.value;
+        findDistrict(fieldValue).then(r => {
+            setDistrict(r)
+            setAddress(x => {
+                return {
+                    ...x,
+                    city: {
+                        id_city: fieldValue
+                    }
+                };
+            });
+        }).catch(error => {
+            setMessage("Error display District")
+            btn_modal.current.click();
+        })
+    }
+    const handleInputChangeDistrict = (e) => {
+        const fieldValue = e.target.value;
+        findWard(fieldValue).then(r => {
+            setWard(r)
+            setAddress(x => {
+                return {
+                    ...x,
+                    district: {
+                        id_district: fieldValue
+                    }
+                };
+            });
+        }).catch(error => {
+            setMessage("Error display Ward")
+            btn_modal.current.click();
+        })
+    }
+
+    const handleInputChangeWard = (e) => {
+        const fieldValue = e.target.value;
+        setAddress(x => {
+            return {
+                ...x,
+                ward: {
+                    id_ward: fieldValue
+                }
+            };
+        });
+    }
+
+    const handleInputChangeImage = (e) => {
+        const file = e.target.files[0]
+        if (!file) {
+            setMessage("Please choose image for the merchant!!!")
+            btn_modal.current.click();
+        }
+        setImage(file)
+    }
+    const schema = yup.object().shape({
+        name: yup.string().required(),
+        password: yup
+            .string()
+            .required()
+            .matches(/^(?=.*[A-Z]).{8,20}$/, 'Password must have at least 8 characters, at most 20 characters, and at least one uppercase letter'),
+        confirmPassword: yup
+            .string()
+            .oneOf([yup.ref('password'), null], 'Passwords must match'),
+        phone: yup
+            .string()
+            .matches(/^0\d{9}$/, "Phone number must have 10 digits")
+            .required(),
+    });
     const handleLogin = async () => {
 
         try {
             const response = await loginUser(username, password);
             localStorage.setItem('userInfo', JSON.stringify(response.data));
-            toast.success('Logged in successfully!');
+            setUser(response)
+            toast.success('Logged in successfully!',{containerId:'login'});
+            setExist(!isExist)
             setTimeout(() => {
-                window.location.reload();
-
+                window.document.getElementById("modal-login-close").click();
             }, 3000)
         } catch (error) {
-            toast.error('Incorrect user or password, try again!');
+            toast.error('Incorrect user or password, try again!', {containerId:'login'});
         }
     }
 
+    useEffect(() => {
+        findCity().then(r => {
+            setCity(r)
+        }).catch(error => {
+                setMessage("Error display City")
+                btn_modal.current.click();
+            }
+        )
+    }, []);
     const handleLogout = () => {
         localStorage.removeItem('userInfo');
         setUser(null);
-        navigate('/');
+        setUsername("")
+        setPassword("")
+        // navigate('/');
     };
     return (
         <>
@@ -95,12 +216,10 @@ export default function Header() {
                                 <ul className="menu-nav-city-select">
                                     <li className="city-item">Hồ Chí Minh</li>
                                     <li className="city-item">Hải Phòng</li>
-                                    <li className="city-item">Đà Nẵng</li>
+                                    <li className="city-item">Đà NANG</li>
                                 </ul>
                             </div>
-                            {/*End City Select*/}
 
-                            {/*Menu Item*/}
                             <a href="" className="btn-nav-link">New Location</a>
                             <a href="" className="btn-nav-link">Hot Deals</a>
                             <a href="" className="btn-nav-link">Popular Brands</a>
@@ -108,50 +227,55 @@ export default function Header() {
                             <a href="" className="btn-nav-link">Recently Order</a>
                             <a href="" className="btn-nav-link">Healthy Choices</a>
                             <a href="" className="btn-nav-link">Vegan Location</a>
-
                             {/*End Menu Item*/}
-                            <div className="blank"></div>
                             {/*Login*/}
                             {user ? (
+
                                 <div className="nav-item user-panel">
-                                    <div className="btn-nav-city-select">
-                                        {user.name}
-                                        <i className="fa-solid fa-sort-down"></i>
-                                        <ul className="menu-nav-city-select">
-                                            <li className="city-item"><Link style={{color: "black"}}
-                                                                            to={"merchant/register"}>Register
-                                                Merchant</Link></li>
-                                            <li className="city-item"><Link style={{color: "black"}}
-                                                                            to={"merchant/update/24"}>Update
-                                                Merchant</Link></li>
-                                            {user && <li className="city-item" onClick={handleLogout}>Logout</li>}
-                                        </ul>
+                                    <div className="user-panel">
+                                        <div className="btn-nav-city-select">
+                                            {user.name}
+                                            <i className="fa-solid fa-sort-down"></i>
+                                            <ul className="menu-nav-city-select" style={{width: "150px"}}>
+                                                <li className="city-item"><Link style={{color: "black"}}
+                                                                                to={"merchant/register"}>Register
+                                                    Merchant</Link></li>
+                                                <li className="city-item"><Link style={{color: "black"}}
+                                                                                to={"merchant/update/2"}>Update
+                                                    Merchant</Link></li>
+                                                <li className="city-item"><Link style={{color: "black"}}
+                                                                                to={"list"}>Detail Merchant</Link></li>
+                                                {user && <li className="city-item" onClick={handleLogout}>Logout</li>}
+                                            </ul>
+                                        </div>
                                     </div>
                                 </div>
                             ) : (
                                 <div className="nav-item user-panel">
                                     <div className="user-panel">
                                         {/*<a href={"/login"} className="btn bg-light-gray text-black btn-login">Login</a>*/}
+                                        <a className="btn bg-light-gray text-black btn-login" id="modal-login-open" ref={btn_modal}
+                                           data-bs-toggle="modal"
+                                           data-bs-target="#loginModal" style={{marginRight: "10px"}}>Login</a>
                                         <a className="btn bg-light-gray text-black btn-login" ref={btn_modal}
                                            data-bs-toggle="modal"
-                                           data-bs-target="#loginModal">Login</a>
-
-
+                                           data-bs-target="#registerModal">Register</a>
                                     </div>
                                 </div>
 
                             )}
+                            {/*End Navbar*/}
                             {/*login modal*/}
                             <div className="modal fade bd-example-modal-lg" id="loginModal" tabIndex="-1"
                                  role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-                                <ToastContainer position="top-right" autoClose={2000} pauseOnHover={false}
+                                <ToastContainer enableMultiContainer containerId="login" position="top-right" autoClose={2000} pauseOnHover={false}
                                                 style={{width: "400px"}}/>
-
                                 <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
                                     <div className="modal-content">
                                         <div className="modal-header">
                                             <h5 className="modal-title" id="myLargeModalLabel">Login account</h5>
-                                            <button type="button" className="btn-close" data-bs-dismiss="modal"
+                                            <button type="button" id="modal-login-close" className="btn-close"
+                                                    data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
                                         </div>
                                         <div className="modal-body">
@@ -160,27 +284,36 @@ export default function Header() {
                                                     <div className="col-5">
                                                         <div className="form-group row">
                                                             <label>Username:</label>
-                                                            <input className="input-login-form" type="text" placeholder="Enter Password"
+                                                            <input className="input-login-form" type="text"
+                                                                   placeholder="Enter Password"
                                                                    name="user" value={username}
                                                                    onChange={(e) => setUsername(e.target.value)}/>
                                                         </div>
                                                         <div className="form-group row">
                                                             <label>Password:</label>
-                                                            <input className="input-login-form" type="password" placeholder="Enter Password"
+                                                            <input className="input-login-form" type="password"
+                                                                   placeholder="Enter Password"
                                                                    name="psw" value={password}
                                                                    onChange={(e) => setPassword(e.target.value)}/>
                                                         </div>
                                                         <div className="form-group row login-buttons">
-                                                            <button type="button" className="btn btn-lg btn-primary" disabled={isLoginDisabled} onClick={handleLogin}>Login</button>
+                                                            <button type="button" className="btn btn-lg btn-primary"
+                                                                    disabled={isLoginDisabled}
+                                                                    onClick={handleLogin}>Login
+                                                            </button>
                                                         </div>
                                                         <div>
-                                                            <p>New to our website? <a data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#registerModal" style={{color:"red"}}>Register now</a></p>
+                                                            <p>New to our website? <a data-bs-dismiss="modal"
+                                                                                      data-bs-toggle="modal"
+                                                                                      data-bs-target="#registerModal"
+                                                                                      style={{color: "red"}}>Register
+                                                                now</a></p>
                                                         </div>
                                                     </div>
-                                                    <div className="col-7 justify-content-center"  style={{
+                                                    <div className="col-7 justify-content-center" style={{
                                                         backgroundImage: `url('https://firebasestorage.googleapis.com/v0/b/react-firebase-storage-f6ec9.appspot.com/o/file%2FdoAnNgon.jpg?alt=media&token=e3c3377c-463d-481d-bb04-ba2d890e27b9')`,
                                                         backgroundSize: 'cover',
-                                                        height:'300px'
+                                                        height: '300px'
                                                     }}>
 
                                                     </div>
@@ -194,54 +327,129 @@ export default function Header() {
                             {/*Register modal*/}
                             <div className="modal fade bd-example-modal-lg" id="registerModal" tabIndex="-1"
                                  role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-                                <ToastContainer position="top-right" autoClose={2000} pauseOnHover={false}
+                                <ToastContainer enableMultiContainer containerId="register" position="top-center" autoClose={2000} pauseOnHover={false}
                                                 style={{width: "400px"}}/>
-
                                 <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
                                     <div className="modal-content">
                                         <div className="modal-header">
                                             <h5 className="modal-title" id="myLargeModalLabel">Register new account</h5>
-                                            <button type="button" className="btn-close" data-bs-dismiss="modal"
+                                            <button type="button" id="modal-register-close" className="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
                                         </div>
                                         <div className="modal-body">
-                                            <form>
-                                                <div className="row">
-                                                    <div className="col-5">
-                                                        <div className="form-group row">
-                                                            <label>Username:</label>
-                                                            <input className="input-login-form" type="text" placeholder="Enter Password"
-                                                                   name="user" value={username}
-                                                                   onChange={(e) => setUsername(e.target.value)}/>
+                                            <Formik initialValues={account} onSubmit={(e) => handleCreateAccount(e)}
+                                                    validationSchema={schema}>
+                                                <Form>
+                                                    <div className="mb-3">
+                                                        <label className="form-label">Name</label>
+                                                        <Field type="text" className="form-control input-focus input-register-form"
+                                                               name="name"/>
+                                                        <ErrorMessage className="error" name="name" component="div"/>
+                                                    </div>
+                                                    <div className="mb-3">
+                                                        <label className="form-label">Password</label>
+                                                        <Field type="password"
+                                                               className="form-control input-focus input-register-form"
+                                                               name="password"/>
+                                                        <ErrorMessage className="error" name="password"
+                                                                      component="div"/>
+                                                    </div>
+                                                    <div className="mb-3">
+                                                        <label className="form-label">Confirm Password</label>
+                                                        <Field type="password"
+                                                               className="form-control input-focus input-register-form"
+                                                               name="confirmPassword"/>
+                                                        <ErrorMessage className="error" name="confirmPassword"
+                                                                      component="div"/>
+                                                    </div>
+                                                    <div className="mb-3">
+                                                        <label className="form-label">Phone Number</label>
+                                                        <Field type="text" className="form-control input-focus input-register-form"
+                                                               name="phone"/>
+                                                        <ErrorMessage className="error" name="phone" component="div"/>
+                                                    </div>
+                                                    <div className="row"
+                                                         style={{marginLeft: "0px", marginRight: "0px"}}>
+                                                        <div className="mb-3 col-6" style={{paddingLeft: "0px"}}>
+                                                            <label className="form-label" htmlFor="city">City</label>
+                                                            <select id="city" required onChange={handleInputChangeCity}
+                                                                    className="form-select">
+                                                                <option>City</option>
+                                                                {city && city.map(item => (
+                                                                    <option value={item.id_city}>{item.name}</option>
+                                                                ))}
+                                                            </select>
                                                         </div>
-                                                        <div className="form-group row">
-                                                            <label>Password:</label>
-                                                            <input className="input-login-form" type="password" placeholder="Enter Password"
-                                                                   name="psw" value={password}
-                                                                   onChange={(e) => setPassword(e.target.value)}/>
-                                                        </div>
-                                                        <div className="form-group row login-buttons">
-                                                            <button type="button" className="btn btn-lg btn-primary" disabled={isLoginDisabled} onClick={handleLogin}>Login</button>
-                                                        </div>
-                                                        <div>
-                                                            <p>New to our website? <a data-bs-dismiss="modal" style={{color:"red"}}>Register now</a></p>
+                                                        <div className="mb-3 col-6" style={{paddingRight: "0px"}}>
+                                                            <label className="form-label"
+                                                                   htmlFor="district">District</label>
+                                                            <select required id="district"
+                                                                    onChange={handleInputChangeDistrict}
+                                                                    className="form-select">
+                                                                <option> District</option>
+                                                                {district && district.map(item => (
+                                                                    <option
+                                                                        value={item.id_district}>{item.name}</option>
+                                                                ))}
+                                                            </select>
                                                         </div>
                                                     </div>
-                                                    <div className="col-7 justify-content-center"  style={{
-                                                        backgroundImage: `url('https://firebasestorage.googleapis.com/v0/b/react-firebase-storage-f6ec9.appspot.com/o/file%2FdoAnNgon.jpg?alt=media&token=e3c3377c-463d-481d-bb04-ba2d890e27b9')`,
-                                                        backgroundSize: 'cover',
-                                                        height:'300px'
-                                                    }}>
+                                                    <div className="row"
+                                                         style={{marginLeft: "0px", marginRight: "0px"}}>
+                                                        <div className="mb-3 col-6" style={{paddingLeft: "0px"}}>
+                                                            <label className="form-label" htmlFor="ward">Ward</label>
+                                                            <select required onChange={handleInputChangeWard} id="ward"
+                                                                    className="form-select">
+                                                                <option>Ward</option>
+                                                                {ward && ward.map(item => (
+                                                                    <option value={item.id_ward}>{item.name}</option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+                                                        <div className="mb-3 col-6" style={{paddingRight: "0px"}}>
+                                                            <label className="form-label">Detail</label>
+                                                            <input className="form-control input-focus input-register-form"
+                                                                   onChange={(e) => setAddress({
+                                                                       ...address,
+                                                                       address_detail: e.target.value
+                                                                   })}/>
+                                                        </div>
+                                                    </div>
 
+                                                    <div className="mb-3">
+                                                        <label className="form-label">Image</label>
+                                                        <input className="form-control" type="file"
+                                                               onChange={(e) => handleInputChangeImage(e)}/>
                                                     </div>
-                                                </div>
-                                            </form>
+                                                    <div style={{textAlign: 'center'}}>
+                                                        <button style={{
+                                                            width: '300px',
+                                                            borderColor: color.borderColor,
+                                                            color: color.color,
+                                                            backgroundColor: color.backgroundColor
+                                                        }}
+                                                                type="submit"
+                                                                className="btn btn-outline-success"
+                                                                onMouseOver={() => setColor({
+                                                                    borderColor: 'white',
+                                                                    color: 'white',
+                                                                    backgroundColor: 'red'
+                                                                })}
+                                                                onMouseOut={() => setColor({
+                                                                    borderColor: 'red',
+                                                                    color: 'red',
+                                                                    backgroundColor: 'white'
+                                                                })}>
+                                                            Register
+                                                        </button>
+                                                    </div>
+                                                </Form>
+                                            </Formik>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             {/*End register modal*/}
-                            {/*End Navbar*/}
                         </div>
                     </div>
                 </nav>

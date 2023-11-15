@@ -16,3 +16,16 @@ export const loginUser = (username, password) => {
             });
     });
 }
+export const saveAccount = (account) => {
+    return new Promise((resolve) => {
+        resolve(
+            axios.post("http://localhost:8080/api/accounts/register", account)
+                .then(response => {
+                        return true
+                    }
+                ).catch(() => {
+                return false
+            })
+        )
+    })
+}

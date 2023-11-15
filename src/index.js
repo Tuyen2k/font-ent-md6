@@ -16,7 +16,6 @@ import UpdateProduct from "./component/UpdateProduct";
 import FormRegister from "./component/CreateMerchant";
 import DetailProduct from "./component/DetailProduct";
 import {ToastContainer} from "react-toastify";
-import Login from "./component/Login";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

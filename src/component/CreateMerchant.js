@@ -61,7 +61,7 @@ function FormRegister() {
         })
     }
 
-    const handleInputChangeCity = (e) => {
+    const   handleInputChangeCity = (e) => {
         const fieldValue = e.target.value;
         findDistrict(fieldValue).then(r => {
             setDistrict(r)
