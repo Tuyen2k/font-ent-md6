@@ -189,7 +189,7 @@ export default function Home() {
                                                              style={{backgroundImage: `url(${item.image})`}}></div>
                                                     </div>
                                                     <div className="content">
-                                                        <div style={{textAlign: 'center', marginTop: '8px'}} className="metadata">
+                                                        <div style={{textAlign: 'center', marginTop: '8px'}}in className="metadata">
                                                             <b>{item.name}</b>
                                                         </div>
                                                     </div>
