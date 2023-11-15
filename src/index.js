@@ -15,11 +15,10 @@ import ProductList from "./component/ProductList";
 import UpdateProduct from "./component/UpdateProduct";
 import FormRegister from "./component/CreateMerchant";
 import DetailProduct from "./component/DetailProduct";
-import {ToastContainer} from "react-toastify";
-import Login from "./component/Login";
 import CouponList from "./component/CouponList";
 import CreateCoupon from "./component/CreateCoupon";
 import UpdateCoupon from "./component/UpdateCoupon";
+import DetailMerchant from "./component/DetailMerchant";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -41,6 +40,7 @@ root.render(
           <Route path={'/list_coupon/:id'} element={<CouponList/>}></Route>
           <Route path={'/create_Coupon/:id'} element={<CreateCoupon/>}></Route>
           <Route path={'/update_Coupon/:id'} element={<UpdateCoupon/>}></Route>
+          <Route path={'/detail_merchant/:id'} element={<DetailMerchant/>}></Route>
       </Routes>
   </BrowserRouter>
 );

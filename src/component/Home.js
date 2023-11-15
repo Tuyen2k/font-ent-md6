@@ -4,6 +4,7 @@ import {findAll, findOneProduct, searchByCategory} from "../service/ProductServi
 import {getAllCategories} from "../service/CategoryService";
 import {Link} from "react-router-dom";
 import {couponByIdMerchant} from "../service/CouponService";
+import {getAllMerchantCheckDelete} from "../service/MerchantService";
 
 
 export default function Home() {
@@ -21,6 +22,7 @@ export default function Home() {
     const [totalMoney, setTotalMoney] = useState();
     const [coupons, setCoupons] = useState([]);
     const [coupon, setCoupon] = useState(1);
+    const [merchants, setMerchants] = useState([]);
 
     useEffect(() => {
         if (shouldCallFindAll) {
@@ -33,6 +35,11 @@ export default function Home() {
         }
         getAllCategories().then(category => {
             setCategories(category)
+        })
+        getAllMerchantCheckDelete().then(m => {
+            let arr = m.reverse();
+            setMerchants(arr)
+            console.log(m)
         })
     }, [products, shouldCallFindAll]);
 
@@ -182,7 +189,7 @@ export default function Home() {
                                                              style={{backgroundImage: `url(${item.image})`}}></div>
                                                     </div>
                                                     <div className="content">
-                                                        <div className="metadata">
+                                                        <div style={{textAlign: 'center', marginTop: '8px'}} className="metadata">
                                                             <b>{item.name}</b>
                                                         </div>
                                                     </div>
@@ -211,7 +218,7 @@ export default function Home() {
                                                             </div>
                                                         </div>
                                                         <div className="content">
-                                                            <div style={{ color: 'black'}} className="name mb-5">
+                                                            <div style={{textAlign: 'center', marginTop: '8px'}} style={{ color: 'black'}} className="name mb-5">
                                                                 {item.name}
                                                             </div>
                                                             <div style={{ color: 'black'}} className="name mb-5">
@@ -272,226 +279,37 @@ export default function Home() {
                                 {/*list merchant*/}
                                 <section className="section-newsfeed">
                                     <div className="title with-action">
-                                        <h2>New Restaurant</h2>
+                                        <h2>New Merchant</h2>
                                     </div>
                                     <div className="content">
                                         <div className="list-view">
-                                            <a className="list-item eatery-item-landing" href="">
+                                            {merchants && merchants.map(item => (
+                                                <Link to={`detail_merchant/${item.id_merchant}`} className="list-item eatery-item-landing">
                                                 <div className="img-lazy figure square">
                                                     <div className="img"
-                                                         style={{backgroundImage: `url("https://tea-3.lozi.vn/v1/images/resized/bep-co-gu-quan-ba-dinh-ha-noi-1698291728237514591-eatery-avatar-1698767119?w=200&type=f")`}}></div>
+                                                         style={{backgroundImage: `url(${item.image})`, color: 'black'}}>
+                                                    </div>
                                                 </div>
                                                 <div className="content">
-                                                    <div className="name mb-5">
-                                                        BẾP CÓ GU
-                                                    </div>
-                                                    <div className="name mb-5">
-                                                        address
+                                                    <div style={{textAlign: 'center', marginTop: '8px'}} className="name mb-5">
+                                                        {item.name}
                                                     </div>
                                                     <div className="promotion">
-                                                        <i className="fa-solid fa-tag"></i>
-                                                        <span>10.000đ off</span>
+                                                        <svg style={{marginBottom: '8px'}} xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" className="bi bi-house-check" viewBox="0 0 16 16">
+                                                            <path d="M7.293 1.5a1 1 0 0 1 1.414 0L11 3.793V2.5a.5.5 0 0 1 .5-.5h1a.5.5 0 0 1 .5.5v3.293l2.354 2.353a.5.5 0 0 1-.708.708L8 2.207l-5 5V13.5a.5.5 0 0 0 .5.5h4a.5.5 0 0 1 0 1h-4A1.5 1.5 0 0 1 2 13.5V8.207l-.646.647a.5.5 0 1 1-.708-.708L7.293 1.5Z"/>
+                                                            <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.707l.547.547 1.17-1.951a.5.5 0 1 1 .858.514Z"/>
+                                                        </svg>
+                                                        <span> {item.addressShop.address_detail}, {item.addressShop.ward.name}, {item.addressShop.district.name}, {item.addressShop.city.name}</span>
+                                                    </div>
+                                                    <div style={{marginLeft: '20px', marginTop: "12px"}} className="promotion">
+                                                        <svg style={{fontWeight : 'none'}} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-telephone-inbound" viewBox="0 0 16 16">
+                                                            <path d="M15.854.146a.5.5 0 0 1 0 .708L11.707 5H14.5a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5v-4a.5.5 0 0 1 1 0v2.793L15.146.146a.5.5 0 0 1 .708 0zm-12.2 1.182a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"/>
+                                                        </svg>
+                                                        <span >  Phone : <span style={{fontWeight: 'bold'}}>{item.phone}</span></span>
                                                     </div>
                                                 </div>
-                                            </a>
-                                            <a className="list-item eatery-item-landing" href="">
-                                                <div className="img-lazy figure square">
-                                                    <div className="img"
-                                                         style={{backgroundImage: `url("https://tea-3.lozi.vn/v1/images/resized/banh-my-tien-dat-quan-hai-ba-trung-ha-noi-1626492571915304108-eatery-avatar-1634906664?w=200&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="name mb-5">
-                                                        CƠM NGON 10 KHÓ CƠ SỞ 2 BÌNH THẠNH HỒ CHÍ MINH
-                                                    </div>
-                                                    <div className="name mb-5">
-                                                        số 44 ngõ 123/324 Nguyễn Chí Thanh, Ba Đình, Hà Nội
-                                                    </div>
-                                                    <div className="promotion">
-                                                        <i className="fa-solid fa-tag"></i>
-                                                        <span>10.000đ off</span>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item eatery-item-landing" href="">
-                                                <div className="img-lazy figure square">
-                                                    <div className="img"
-                                                         style={{backgroundImage: `url("https://tea-3.lozi.vn/v1/images/resized/com-hop-and-my-tron-seo-seo-quan-quan-ba-dinh-ha-noi-1656311621174026693-eatery-avatar-1656501784?w=200&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="name mb-5">
-                                                        BẾP CÓ GU
-                                                    </div>
-                                                    <div className="name mb-5">
-                                                        address
-                                                    </div>
-                                                    <div className="promotion">
-                                                        <i className="fa-solid fa-tag"></i>
-                                                        <span>10.000đ off</span>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item eatery-item-landing" href="">
-                                                <div className="img-lazy figure square">
-                                                    <div className="img"
-                                                         style={{backgroundImage: `url("https://tea-3.lozi.vn/v1/images/resized/bep-co-gu-quan-ba-dinh-ha-noi-1698291728237514591-eatery-avatar-1698767119?w=200&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="name mb-5">
-                                                        BẾP CÓ GU
-                                                    </div>
-                                                    <div className="name mb-5">
-                                                        address
-                                                    </div>
-                                                    <div className="promotion">
-                                                        <i className="fa-solid fa-tag"></i>
-                                                        <span>10.000đ off</span>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item eatery-item-landing" href="">
-                                                <div className="img-lazy figure square">
-                                                    <div className="img"
-                                                         style={{backgroundImage: `url("https://tea-3.lozi.vn/v1/images/resized/bep-co-gu-quan-ba-dinh-ha-noi-1698291728237514591-eatery-avatar-1698767119?w=200&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="name mb-5">
-                                                        BẾP CÓ GU
-                                                    </div>
-                                                    <div className="name mb-5">
-                                                        address
-                                                    </div>
-                                                    <div className="promotion">
-                                                        <i className="fa-solid fa-tag"></i>
-                                                        <span>10.000đ off</span>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item eatery-item-landing" href="">
-                                                <div className="img-lazy figure square">
-                                                    <div className="img"
-                                                         style={{backgroundImage: `url("https://tea-3.lozi.vn/v1/images/resized/bep-co-gu-quan-ba-dinh-ha-noi-1698291728237514591-eatery-avatar-1698767119?w=200&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="name mb-5">
-                                                        BẾP CÓ GU
-                                                    </div>
-                                                    <div className="name mb-5">
-                                                        address
-                                                    </div>
-                                                    <div className="promotion">
-                                                        <i className="fa-solid fa-tag"></i>
-                                                        <span>10.000đ off</span>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item eatery-item-landing" href="">
-                                                <div className="img-lazy figure square">
-                                                    <div className="img"
-                                                         style={{backgroundImage: `url("https://tea-3.lozi.vn/v1/images/resized/bep-co-gu-quan-ba-dinh-ha-noi-1698291728237514591-eatery-avatar-1698767119?w=200&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="name mb-5">
-                                                        BẾP CÓ GU
-                                                    </div>
-                                                    <div className="name mb-5">
-                                                        address
-                                                    </div>
-                                                    <div className="promotion">
-                                                        <i className="fa-solid fa-tag"></i>
-                                                        <span>10.000đ off</span>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item eatery-item-landing" href="">
-                                                <div className="img-lazy figure square">
-                                                    <div className="img"
-                                                         style={{backgroundImage: `url("https://tea-3.lozi.vn/v1/images/resized/bep-co-gu-quan-ba-dinh-ha-noi-1698291728237514591-eatery-avatar-1698767119?w=200&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="name mb-5">
-                                                        BẾP CÓ GU
-                                                    </div>
-                                                    <div className="name mb-5">
-                                                        address
-                                                    </div>
-                                                    <div className="promotion">
-                                                        <i className="fa-solid fa-tag"></i>
-                                                        <span>10.000đ off</span>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item eatery-item-landing" href="">
-                                                <div className="img-lazy figure square">
-                                                    <div className="img"
-                                                         style={{backgroundImage: `url("https://tea-3.lozi.vn/v1/images/resized/bep-co-gu-quan-ba-dinh-ha-noi-1698291728237514591-eatery-avatar-1698767119?w=200&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="name mb-5">
-                                                        BẾP CÓ GU
-                                                    </div>
-                                                    <div className="name mb-5">
-                                                        address
-                                                    </div>
-                                                    <div className="promotion">
-                                                        <i className="fa-solid fa-tag"></i>
-                                                        <span>10.000đ off</span>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item eatery-item-landing" href="">
-                                                <div className="img-lazy figure square">
-                                                    <div className="img"
-                                                         style={{backgroundImage: `url("https://tea-3.lozi.vn/v1/images/resized/bep-co-gu-quan-ba-dinh-ha-noi-1698291728237514591-eatery-avatar-1698767119?w=200&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="name mb-5">
-                                                        BẾP CÓ GU
-                                                    </div>
-                                                    <div className="name mb-5">
-                                                        address
-                                                    </div>
-                                                    <div className="promotion">
-                                                        <i className="fa-solid fa-tag"></i>
-                                                        <span>10.000đ off</span>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item eatery-item-landing" href="">
-                                                <div className="img-lazy figure square">
-                                                    <div className="img"
-                                                         style={{backgroundImage: `url("https://tea-3.lozi.vn/v1/images/resized/bep-co-gu-quan-ba-dinh-ha-noi-1698291728237514591-eatery-avatar-1698767119?w=200&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="name mb-5">
-                                                        BẾP CÓ GU
-                                                    </div>
-                                                    <div className="name mb-5">
-                                                        address
-                                                    </div>
-                                                    <div className="promotion">
-                                                        <i className="fa-solid fa-tag"></i>
-                                                        <span>10.000đ off</span>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                            <a className="list-item eatery-item-landing" href="">
-                                                <div className="img-lazy figure square">
-                                                    <div className="img"
-                                                         style={{backgroundImage: `url("https://tea-3.lozi.vn/v1/images/resized/bep-co-gu-quan-ba-dinh-ha-noi-1698291728237514591-eatery-avatar-1698767119?w=200&type=f")`}}></div>
-                                                </div>
-                                                <div className="content">
-                                                    <div className="name mb-5">
-                                                        BẾP CÓ GU
-                                                    </div>
-                                                    <div className="name mb-5">
-                                                        address
-                                                    </div>
-                                                    <div className="promotion">
-                                                        <i className="fa-solid fa-tag"></i>
-                                                        <span>10.000đ off</span>
-                                                    </div>
-                                                </div>
-                                            </a>
+                                            </Link>
+                                                ))}
                                         </div>
                                         <a className="btn-view-all" href="">
                                             See all <i className="fa-solid fa-angle-right fa-bounce fa-lg"></i>
@@ -499,6 +317,7 @@ export default function Home() {
                                     </div>
                                 </section>
                                 {/*end list merchant*/}
+
                             </div>
                         </div>
                     </section>
