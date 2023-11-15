@@ -38,9 +38,15 @@ export default function Header() {
         navigate('/');
     };
 
+    const notificationLogin=()=>{
+        toast.error('Please log in!');
+    }
+
     return (
         <>
             <header>
+                <ToastContainer position="top-right" autoClose={2000} pauseOnHover={false}
+                                style={{width: "400px"}}/>
                 {/*Topbar*/}
                 <nav className="info-navbar">
                     <section className="topbar-wrapper">
@@ -214,8 +220,13 @@ export default function Header() {
                             {/*    </ul>*/}
                             {/*</div>*/}
                             <div className="user-nav-menu">
-                                <Link to={"cart/account"}><i className="fa-solid fa-cart-shopping fa-lg"
-                                                             style={{color: "#ff0000"}}></i></Link>
+                                {user ? (
+                                    <Link to={"cart/account"}><i className="fa-solid fa-cart-shopping fa-lg"
+                                                                 style={{color: "#ff0000"}}></i></Link>
+                                ) : (
+                                    <span onClick={notificationLogin}><i className="fa-solid fa-cart-shopping fa-lg"
+                                                                 style={{color: "#ff0000"}}></i></span>
+                                )}
                             </div>
                             {/*End login modal*/}
                             {/*Register modal*/}
