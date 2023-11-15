@@ -15,6 +15,10 @@ body {
 .input-login-form {
     padding: 5px 12px!important;
 }
+.input-register-form {
+    padding: 5px!important;
+    height: 40px;
+}
 code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;

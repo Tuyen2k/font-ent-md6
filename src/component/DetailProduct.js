@@ -81,6 +81,8 @@ function DetailProduct() {
         })
     }
 
+
+
     return (
         <>
             <Link to={"/"}>
@@ -113,8 +115,7 @@ function DetailProduct() {
                             <h2 className="font-weight-semi-bold">{product.name}</h2>
                             {/*link dẫn tới merchant, cần có cả id merchant để lấy dữ liệu. */}
 
-                            <Link>{merchant.name} - Shop Online</Link>
-
+                            <Link to={`/detail_merchant/${merchant.id_merchant}`}>{merchant.name} - Shop Online</Link>
                             <div style={{marginTop: "8px"}} className="d-flex mb-3">
                                 <div className="text-primary mr-2">
                                     <small style={{color: '#d1d124'}} className="fas fa-star"></small>

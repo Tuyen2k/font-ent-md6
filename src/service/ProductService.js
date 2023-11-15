@@ -61,7 +61,7 @@ export function findOneProduct(id){
 export function getAllProductByMerchant(id, name) {
     return new Promise(resolve => {
         resolve(
-            axios.get(`http://localhost:8080/api/products/search?id_merchant=1&name=${name}`)
+            axios.get(`http://localhost:8080/api/products/search?id_merchant=${id}&name=${name}`)
                 .then(res => {
                     return res.data;
                 })
