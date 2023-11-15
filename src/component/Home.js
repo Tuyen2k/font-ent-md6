@@ -3,7 +3,12 @@ import {useEffect, useRef, useState} from "react";
 import {findAll, findOneProduct, searchByCategory} from "../service/ProductService";
 import {getAllCategories} from "../service/CategoryService";
 import {Link} from "react-router-dom";
+<<<<<<< HEAD
 import {CouponByIdMerchant} from "../service/CouponService";
+=======
+import {couponByIdMerchant} from "../service/CouponService";
+
+>>>>>>> 70c31dc9bd1de1b7f200a866ed2f0f1934ee0400
 
 export default function Home() {
     const [products, setProducts] = useState([]);
@@ -75,8 +80,13 @@ export default function Home() {
             const total = data.priceSale - coupon
             setTotalMoney(total)
             console.log(data);
+<<<<<<< HEAD
             const coupon = await CouponByIdMerchant(data.merchant.id_merchant)
             setCoupons(coupon)
+=======
+            const coupon = await couponByIdMerchant(data.merchant.id_merchant)
+                setCoupons(coupon)
+>>>>>>> 70c31dc9bd1de1b7f200a866ed2f0f1934ee0400
             if (product) {
                 setLoad(true);
             }
@@ -224,11 +234,19 @@ export default function Home() {
                                                     </Link>
                                                     <div className="name mb-5">
                                                         <button  data-bs-toggle="modal"
+<<<<<<< HEAD
                                                                  data-bs-target="#show_product"
                                                                  className="container-fluid.modal-body"
                                                                  onClick={() => displayModal(item.id_product)}
                                                                  type="button" data-toggle="modal"
                                                                  data-target="#exampleModalLong" style={{
+=======
+                                                                data-bs-target="#show_product"
+                                                                className="container-fluid.modal-body"
+                                                                onClick={() => displayModal(item.id_product)}
+                                                                type="button" data-toggle="modal"
+                                                                data-target="#exampleModalLong" style={{
+>>>>>>> 70c31dc9bd1de1b7f200a866ed2f0f1934ee0400
                                                             backgroundColor: '#d78c8c',
                                                             padding: '7px',
                                                             borderRadius: '10px',
@@ -252,7 +270,12 @@ export default function Home() {
                                                                         d="M1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.083c.058-.344.145-.678.258-1H3a2 2 0 0 0-2-2V3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v3.528c.38.34.717.728 1 1.154V1a1 1 0 0 0-1-1H1z"/>
                                                                     <path
                                                                         d="M9.998 5.083 10 5a2 2 0 1 0-3.132 1.65 5.982 5.982 0 0 1 3.13-1.567z"/>
+<<<<<<< HEAD
                                                                 </svg> Order now</a>
+=======
+                                                                </svg>
+                                                                Oder now</a>
+>>>>>>> 70c31dc9bd1de1b7f200a866ed2f0f1934ee0400
                                                         </button>
                                                     </div>
                                                 </div>
@@ -537,7 +560,11 @@ export default function Home() {
                 <div className="modal-dialog modal-dialog-centered modal-lg">
                     <div className="modal-content" style={{minHeight: '75vh', minWidth: '100vh'}}>
                         <div className="modal-header">
+<<<<<<< HEAD
                             <h3 style={{marginLeft: '350px'}} className="modal-title" id="show_productLabel">ORDER NOW</h3>
+=======
+                            <h3 style={{marginLeft: '350px'}} className="modal-title" id="show_productLabel">ODER NOW</h3>
+>>>>>>> 70c31dc9bd1de1b7f200a866ed2f0f1934ee0400
                             <button type="button" className="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                         </div>
@@ -545,7 +572,11 @@ export default function Home() {
                             <div style={{marginTop: '30px'}} className="now-detail-restaurant clearfix">
                                 <div className="container">
                                     <div className="row px-xl-5">
+<<<<<<< HEAD
                                         <div className="col-lg-6 pb-5">
+=======
+                                        <div className="col-lg-5 pb-5">
+>>>>>>> 70c31dc9bd1de1b7f200a866ed2f0f1934ee0400
                                             <div id="product-carousel" className="carousel slide" data-ride="carousel">
                                                 <div style={{
                                                     width: '480px',
@@ -561,7 +592,11 @@ export default function Home() {
                                             </div>
                                         </div>
 
+<<<<<<< HEAD
                                         <div className="col-lg-6 pb-5">
+=======
+                                        <div className="col-lg-7 pb-5">
+>>>>>>> 70c31dc9bd1de1b7f200a866ed2f0f1934ee0400
                                             <h3 className="font-weight-semi-bold">{product.name}</h3>
                                             {/*link dẫn tới merchant, cần có cả id merchant để lấy dữ liệu. */}
                                             <Link>{merchant.name} - Shop Online</Link>
@@ -663,11 +698,19 @@ export default function Home() {
 
                             <button style={{backgroundColor: 'white', border: "none"}}>
                                 <span style={{marginLeft: '40px'}}> Coupon</span>
+<<<<<<< HEAD
                                 <div> <svg style={{marginLeft: '50px'}} xmlns="http://www.w3.org/2000/svg" width="45" height="45"
                                            fill="currentColor" className="bi bi-credit-card" viewBox="0 0 16 16">
                                     <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"/>
                                     <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
                                 </svg></div>
+=======
+                               <div> <svg style={{marginLeft: '50px'}} xmlns="http://www.w3.org/2000/svg" width="45" height="45"
+                                          fill="currentColor" className="bi bi-credit-card" viewBox="0 0 16 16">
+                                   <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"/>
+                                   <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
+                               </svg></div>
+>>>>>>> 70c31dc9bd1de1b7f200a866ed2f0f1934ee0400
                             </button>
                             <div>
                                 <h4 style={{ marginRight: '60px', marginBottom: 0, display: 'flex', alignItems: 'center' }}>
