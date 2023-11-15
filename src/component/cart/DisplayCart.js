@@ -8,9 +8,11 @@ export default function DisplayCart() {
     const account = JSON.parse(localStorage.getItem("userInfo"))
     const [carts, setCart] = useState(undefined);
     const [list, setList] = useState([]);
+    const [orders, setOrders] = useState([]);
     const [check, setCheck] = useState(false);
     const btn_modal = useRef()
     const [message, setMessage] = useState("");
+
 
     const findCartDetail = (id) => {
         let item;
@@ -91,6 +93,7 @@ export default function DisplayCart() {
         getListCart(account.id).then(res => {
             if (res.length !== 0){
                 setList(res)
+                console.log(res)
                 groupByMerchant(res)
             }
         })
@@ -109,6 +112,7 @@ export default function DisplayCart() {
                 count++
             }
         }
+        console.log(arr)
         setCart(arr)
     }
 
@@ -124,10 +128,15 @@ export default function DisplayCart() {
                 checkbox.checked = false;
             });
         }
+        checkboxes.forEach(function (checkbox){
+            if (checkbox.checked === false){
+                checkboxAll.checked = false
+            }
+        })
     }
     const handleOrderByMerchant = (id_merchant) => {
         let checkboxAll = document.getElementById(`checkbox-${id_merchant}`);
-        let checkboxes = document.querySelectorAll(`input[type="checkbox"][id="checkbox-${id_merchant}"]`);
+        let checkboxes = document.querySelectorAll(`input[type="checkbox"][id="checkbox-item-${id_merchant}"]`);
         if (checkboxAll.checked) {
             checkboxes.forEach(function (checkbox) {
                 checkbox.checked = true;
@@ -138,6 +147,30 @@ export default function DisplayCart() {
             });
         }
     }
+    const handleOrderCart=(id_merchant ,id_cart)=>{
+        let checkboxAll = document.getElementById(`checkbox-${id_merchant}`);
+        let checkboxes = document.querySelectorAll(`input[type="checkbox"][id="checkbox-item-${id_merchant}"]`);
+        let flag = true
+        checkboxes.forEach(function (checkbox) {
+            if (checkbox.checked === false){
+                flag = false
+            }
+        });
+        checkboxAll.checked = flag;
+        console.log(id_cart)
+    }
+
+    // window.document.getElementById("root").addEventListener('click', function (){
+    //     let checkboxAll = document.getElementById("checkbox-all");
+    //     let checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    //     let flag = true
+    //     checkboxes.forEach(checkbox =>{
+    //         if (checkbox.checked === false){
+    //             flag = false
+    //         }
+    //     })
+    //     checkboxAll.checked = false
+    // })
 
 
     return (
@@ -184,7 +217,9 @@ export default function DisplayCart() {
                                                         <div className="row item">
                                                             <div className="col-1"><input className="input-checkbox"
                                                                                           type="checkbox"
-                                                                                          id={`checkbox-${cart.merchant.id_merchant}`}/>
+                                                                                          id={`checkbox-item-${cart.merchant.id_merchant}`}
+                                                                                          onClick={()=>handleOrderCart(cart.merchant.id_merchant, item.id_cartDetail)}
+                                                            />
                                                             </div>
                                                             <div className="col-4 row">
                                                                 <div className="col-4">
@@ -246,10 +281,10 @@ export default function DisplayCart() {
             <section>
                 <div className="container">
                     <div className="footer-cart">
-                        <h6 className="mb-0"><Link to={"/"}
+                        <h5 className="mb-0"><Link to={"/"}
                                                    className="text-body"><i
                             className="fas fa-long-arrow-alt-left me-2"></i>Back
-                            Home</Link></h6>
+                            Home</Link></h5>
                     </div>
                 </div>
             </section>
