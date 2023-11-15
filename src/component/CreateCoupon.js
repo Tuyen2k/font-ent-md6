@@ -65,7 +65,7 @@ function CreateCoupon() {
     }
 
     const schema = yup.object().shape({
-        name: yup.string().required().max(20),
+        name: yup.string().required().max(250),
         quantity: yup.number().required()
     });
 

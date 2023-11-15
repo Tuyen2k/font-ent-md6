@@ -1,10 +1,6 @@
 import axios from "axios";
 
-<<<<<<< HEAD
-export function CouponByIdMerchant(id_merchant){
-=======
 export function couponByIdMerchant(id_merchant){
->>>>>>> 70c31dc9bd1de1b7f200a866ed2f0f1934ee0400
     return new Promise(resolve => {
         resolve(
             axios.get(`http://localhost:8080/api/coupons/${id_merchant}`).then(res =>{
@@ -13,8 +9,7 @@ export function couponByIdMerchant(id_merchant){
             })
         )
     })
-<<<<<<< HEAD
-=======
+
 }
 
 export function findOneCoupon(id_coupon){
@@ -62,5 +57,4 @@ export function deleteCoupon(id){
             })
         )
     })
->>>>>>> 70c31dc9bd1de1b7f200a866ed2f0f1934ee0400
 }
