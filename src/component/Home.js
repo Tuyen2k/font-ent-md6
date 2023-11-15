@@ -7,8 +7,7 @@ import {CouponByIdMerchant} from "../service/CouponService";
 import {ToastContainer} from "react-toastify";
 
 
-export default function Home(){
-
+export default function Home() {
     const [products, setProducts] = useState([]);
     const [categories, setCategories] = useState([]);
     const [shouldCallFindAll, setShouldCallFindAll] = useState(true);
@@ -41,9 +40,10 @@ export default function Home(){
     const handleInputName = (e) => {
         setProducts([])
         const value = e.target.value.toLowerCase();
-        if (value === ""){
+        if (value === "") {
             setShouldCallFindAll(true)
-        } {
+        }
+        {
             const filteredProducts = products.filter(product => {
                 const productName = product.name.toLowerCase();
                 return productName.includes(value);
@@ -56,7 +56,7 @@ export default function Home(){
     const handleInputCategory = (id_category) => {
         console.log(id_category)
         searchByCategory(id_category).then(r => {
-            if (r.length > 0){
+            if (r.length > 0) {
                 setNameProduct("Product")
                 setProducts(r)
             } else {
@@ -131,7 +131,8 @@ export default function Home(){
         <>
             {/*Home*/}
             <section className="home-page">
-                <section className="top-banner loship" style={{backgroundImage:`url("https://loship.vn/dist/images/home-banner-18062021.jpg")`}}>
+                <section className="top-banner loship"
+                         style={{backgroundImage: `url("https://loship.vn/dist/images/home-banner-18062021.jpg")`}}>
                     <h1>
                         <span>
                             Order Your Favorite
@@ -194,7 +195,6 @@ export default function Home(){
                                 {/*End List Category*/}
 
 
-
                                 {/*list sp*/}
                                 <section className="section-newsfeed">
                                     <div className="title with-action">
@@ -203,7 +203,7 @@ export default function Home(){
 
                                     <div className="content">
                                         <div className="list-view">
-                                            {products && products.slice(0, 10).map(item => (
+                                            {products && products.map(item => (
                                                 <div className="list-item eatery-item-landing">
                                                     <Link to={`detailProduct/${item.id_product}`}>
                                                         <div className="img-lazy figure square">
@@ -266,8 +266,9 @@ export default function Home(){
                                             See all <i className="fa-solid fa-angle-right fa-bounce fa-lg"></i>
                                         </a>
                                     </div>
-                                    </section>
+                                </section>
                                 {/*end list sp*/}
+
 
                                 {/*list merchant*/}
                                 <section className="section-newsfeed">
@@ -547,7 +548,7 @@ export default function Home(){
                             <div style={{marginTop: '30px'}} className="now-detail-restaurant clearfix">
                                 <div className="container">
                                     <div className="row px-xl-5">
-                                        <div className="col-lg-6 pb-5">
+                                        <div className="col-lg-5 pb-5">
                                             <div id="product-carousel" className="carousel slide" data-ride="carousel">
                                                 <div style={{
                                                     width: '480px',
@@ -563,7 +564,7 @@ export default function Home(){
                                             </div>
                                         </div>
 
-                                        <div className="col-lg-6 pb-5">
+                                        <div className="col-lg-7 pb-5">
                                             <h3 className="font-weight-semi-bold">{product.name}</h3>
                                             {/*link dẫn tới merchant, cần có cả id merchant để lấy dữ liệu. */}
                                             <Link>{merchant.name} - Shop Online</Link>

@@ -17,6 +17,9 @@ import FormRegister from "./component/CreateMerchant";
 import DetailProduct from "./component/DetailProduct";
 import {ToastContainer} from "react-toastify";
 import Login from "./component/Login";
+import CouponList from "./component/CouponList";
+import CreateCoupon from "./component/CreateCoupon";
+import UpdateCoupon from "./component/UpdateCoupon";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -35,6 +38,9 @@ root.render(
           <Route path={'/merchant/register'} element={<FormRegister/>}></Route>
           <Route path={'/merchant/update/:id'} element={<UpdateMerchant/>}></Route>
           <Route path={'/detailProduct/:id'} element={<DetailProduct/>}></Route>
+          <Route path={'/list_coupon/:id'} element={<CouponList/>}></Route>
+          <Route path={'/create_Coupon/:id'} element={<CreateCoupon/>}></Route>
+          <Route path={'/update_Coupon/:id'} element={<UpdateCoupon/>}></Route>
       </Routes>
   </BrowserRouter>
 );

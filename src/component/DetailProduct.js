@@ -8,7 +8,7 @@ import {
     MostPurchasedProducts
 } from "../service/ProductService";
 import BannerSlide from "./BannerSlide";
-import {CouponByIdMerchant} from "../service/CouponService";
+import {couponByIdMerchant} from "../service/CouponService";
 
 function DetailProduct() {
     let {id} = useParams();
@@ -27,7 +27,7 @@ function DetailProduct() {
                 let arr = r.reverse();
                 setProducts(arr.slice(0,6));
             });
-            CouponByIdMerchant(data.merchant.id_merchant).then(r => {
+            couponByIdMerchant(data.merchant.id_merchant).then(r => {
                 setCoupons(r)
             })
         })
