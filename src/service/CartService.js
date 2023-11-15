@@ -35,3 +35,15 @@ export function deleteCartDetail(id) {
         )
     })
 }
+
+export function addToCart(id_account, cartDetail) {
+    return new Promise(resolve => {
+        resolve(
+            axios.post(`http://localhost:8080/api/carts/account/${id_account}/create/7/status`, cartDetail).then(res => {
+                return true
+            }).catch(Error => {
+                return false
+            })
+        )
+    })
+}
