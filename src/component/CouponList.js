@@ -107,8 +107,8 @@ function CouponList() {
                                                             Are you sure?
                                                         </div>
                                                         <div className="modal-footer">
-                                                            <button type="button" className="btn btn-info" data-bs-dismiss="modal">Cancel</button>
-                                                            <button className="mx-2 btn btn-red" onClick={handleDeleteCoupon} type="button">Confirm</button>
+                                                            <button type="button" className="mx-2 btn btn-red" data-bs-dismiss="modal">Cancel</button>
+                                                            <button className="btn btn-danger"   onClick={handleDeleteCoupon} type="button">Confirm</button>
                                                         </div>
                                                     </div>
                                                 </div>

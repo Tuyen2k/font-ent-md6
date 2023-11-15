@@ -27,7 +27,6 @@ export default function Home() {
     useEffect(() => {
         if (shouldCallFindAll) {
             findAll().then(r => {
-                console.log(r)
                 setNameProduct("New Product")
                 setProducts(r);
                 setShouldCallFindAll(false);
@@ -39,7 +38,6 @@ export default function Home() {
         getAllMerchantCheckDelete().then(m => {
             let arr = m.reverse();
             setMerchants(arr)
-            console.log(m)
         })
     }, [products, shouldCallFindAll]);
 
@@ -74,7 +72,6 @@ export default function Home() {
     }
 
     const displayModal = async (id_product) => {
-        console.log(id_product);
         try {
             const data = await findOneProduct(id_product);
             setProduct(data);
@@ -82,7 +79,6 @@ export default function Home() {
             setTotalOderMoney(data.priceSale)
             const total = data.priceSale - coupon
             setTotalMoney(total)
-            console.log(data);
             const coupon = await couponByIdMerchant(data.merchant.id_merchant)
                 setCoupons(coupon)
             if (product) {

@@ -62,6 +62,8 @@ function DetailProduct() {
     }
 
 
+
+
     return (
         <>
             <Link to={"/"}><svg style={{color: 'black'}} xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" className="bi bi-x" viewBox="0 0 16 16">
@@ -88,7 +90,7 @@ function DetailProduct() {
                         <div className="col-lg-7 pb-5">
                             <h2 className="font-weight-semi-bold">{product.name}</h2>
                             {/*link dẫn tới merchant, cần có cả id merchant để lấy dữ liệu. */}
-                            <Link >{merchant.name} - Shop Online</Link>
+                            <Link to={`/detail_merchant/${merchant.id_merchant}`}>{merchant.name} - Shop Online</Link>
                             <div style={{marginTop: "8px"}} className="d-flex mb-3">
                                 <div className="text-primary mr-2">
                                     <small style={{color: '#d1d124'}} className="fas fa-star"></small>
