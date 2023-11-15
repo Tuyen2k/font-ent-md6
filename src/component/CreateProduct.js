@@ -6,6 +6,7 @@ import {upImageFirebase} from "../firebase/Upfirebase";
 import * as yup from "yup";
 import {Link, useNavigate} from "react-router-dom";
 
+
 export default function CreateProduct() {
     const [file, setFile] = useState(undefined)
     const [load, setLoad] = useState(true)
@@ -20,6 +21,7 @@ export default function CreateProduct() {
         price: "",
         image: "",
         timeMake: "",
+        description: ""
     })
     const navigate = useNavigate()
 
@@ -124,8 +126,14 @@ export default function CreateProduct() {
                                            aria-describedby="timeMake"/>
                                     <ErrorMessage name="timeMake" component="span" className="error"/>
                                 </div>
+                                <div className="input-group mb-3">
+                                    <span className="input-group-text" style={{height: "37.6px", width:"150px"}} id="description">Description</span>
+                                    <Field as="textarea" className="form-control" style={{paddingLeft : "2px", height: "80px", resize: "none"}} name="description"
+                                           placeholder="Enter description product"
+                                           aria-describedby="description"/>
+                                </div>
                                 <div style={{display: "flex"}} className="div-checkbox input-group mb-3 row ">
-                                    <span className="input-group-text col-2" style={{height: "37.6px"}}>Categories</span>
+                                    <span className="input-group-text col-2" style={{height: "37.6px", width:"150px"}}>Categories</span>
                                     <div className="form-checkbox col-10">
                                         {categoriesDB.map((category, index = 0) => {
                                             return (

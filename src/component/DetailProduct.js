@@ -1,5 +1,7 @@
 import {Link, useParams} from "react-router-dom";
-import {useEffect, useState} from "react";
+
+import React, {useEffect, useRef, useState} from "react";
+import {addToCart} from "../service/CartService";
 import {findOneProduct, getAllProductByIdMerchant, MostPurchasedProducts} from "../service/ProductService";
 import {couponByIdMerchant} from "../service/CouponService";
 
@@ -12,13 +14,18 @@ function DetailProduct() {
     const [load, setLoad] = useState(false);
     const [merchant, setMerchant] = useState({})
     const [quantity, setQuantity] = useState(1);
+    const account = JSON.parse(localStorage.getItem("account"))
+    const btn_modal = useRef()
+    const [message, setMessage] = useState("");
+
+
     useEffect(() => {
         findOneProduct(id).then(data => {
             setProduct(data)
             setMerchant(data.merchant)
             getAllProductByIdMerchant(data.merchant.id_merchant).then(r => {
                 let arr = r.reverse();
-                setProducts(arr.slice(0,6));
+                setProducts(arr.slice(0, 6));
             });
             couponByIdMerchant(data.merchant.id_merchant).then(r => {
                 setCoupons(r)
@@ -43,17 +50,17 @@ function DetailProduct() {
     const addition = () => {
         let quantityInput = document.getElementById("quantity_p");
         let currentValue = parseInt(quantityInput.value, 10);
-        if (currentValue <=  19){
+        if (currentValue <= 19) {
             let newValue = currentValue + 1;
             quantityInput.value = newValue;
         } else {
             quantityInput.value = currentValue
         }
     }
-    const subtraction  = () => {
+    const subtraction = () => {
         let quantityInput = document.getElementById("quantity_p");
         let currentValue = parseInt(quantityInput.value, 10);
-        if (currentValue >= 2){
+        if (currentValue >= 2) {
             let newValue = currentValue - 1;
             quantityInput.value = newValue;
         } else {
@@ -61,14 +68,31 @@ function DetailProduct() {
         }
     }
 
+    const handleAddToCart = () => {
+        let price = document.getElementById("price_sale").value
+        let quantity = document.getElementById("quantity_p").value
+        let cartDetail = {price: price, quantity: quantity, product: product}
+        console.log(cartDetail)
+        addToCart(11, cartDetail).then(res => {
+            if (res === true) {
+                setMessage("Add to cart success!!!")
+                btn_modal.current.click()
+            }
+        })
+    }
 
 
 
     return (
         <>
-            <Link to={"/"}><svg style={{color: 'black'}} xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" className="bi bi-x" viewBox="0 0 16 16">
-                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-            </svg></Link>
+            <Link to={"/"}>
+                <svg style={{color: 'black'}} xmlns="http://www.w3.org/2000/svg" width="40" height="40"
+                     fill="currentColor" className="bi bi-x" viewBox="0 0 16 16">
+                    <path
+                        d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+                </svg>
+            </Link>
+
             <div className="now-detail-restaurant clearfix">
                 <div className="container">
                     <div className="row px-xl-5">
@@ -90,6 +114,7 @@ function DetailProduct() {
                         <div className="col-lg-7 pb-5">
                             <h2 className="font-weight-semi-bold">{product.name}</h2>
                             {/*link dẫn tới merchant, cần có cả id merchant để lấy dữ liệu. */}
+
                             <Link to={`/detail_merchant/${merchant.id_merchant}`}>{merchant.name} - Shop Online</Link>
                             <div style={{marginTop: "8px"}} className="d-flex mb-3">
                                 <div className="text-primary mr-2">
@@ -115,7 +140,8 @@ function DetailProduct() {
                                 {product.categories && product.categories.map(item => (
                                     <form>
                                         <div className="custom-control custom-radio custom-control-inline">
-                                            <label style={{marginLeft: '5px'}} htmlFor="size-1"> {item.name}</label>
+                                            <label style={{marginLeft: '5px'}}
+                                                   htmlFor="size-1"> {item.name}</label>
                                         </div>
                                     </form>
                                 ))}
@@ -156,9 +182,10 @@ function DetailProduct() {
                                         marginLeft: '10px',
                                         color: 'white',
                                         backgroundColor: '#df8686',
-                                    }} type="text" className="form-control bg-secondary text-center" id="quantity_p"
+                                    }} type="text" className="form-control bg-secondary text-center"
+                                           id="quantity_p"
                                            defaultValue={quantity}
-                                           onChange={handleQuantityChange} />
+                                           onChange={handleQuantityChange}/>
                                     <div style={{marginLeft: '10px'}} className="input-group-btn" id="plus_div">
                                         <button onClick={addition} style={{
                                             backgroundColor: '#df8686',
@@ -183,7 +210,7 @@ function DetailProduct() {
                                     borderRadius: '10px',
                                     width: '128px'
                                 }}>
-                                    <a href="#" style={{display: "block", color: 'white'}}>
+                                    <a onClick={handleAddToCart} style={{display: "block", color: 'white'}}>
                                         <i className="fa fa-shopping-cart mr-1"></i> Add to card</a>
                                 </div>
                             </div>
@@ -222,9 +249,11 @@ function DetailProduct() {
                                     {products && products.map(item => (
                                         <button onClick={() => {
                                             setProduct(item)
+                                            setMerchant(item.merchant)
                                         }} className="list-item eatery-item-landing">
                                             <div className="img-lazy figure square">
-                                                <div className="img" style={{backgroundImage: `url(${item.image})`}}>
+                                                <div className="img"
+                                                     style={{backgroundImage: `url(${item.image})`}}>
                                                 </div>
                                             </div>
                                             <div className="content">
@@ -266,7 +295,8 @@ function DetailProduct() {
                                     {coupons && coupons.map(item => (
                                         <button className="list-item eatery-item-landing">
                                             <div className="img-lazy figure square">
-                                                <div className="img" style={{backgroundImage: `url(${item.image})`}}>
+                                                <div className="img"
+                                                     style={{backgroundImage: `url(${item.image})`}}>
                                                 </div>
                                             </div>
                                             <div className="content">
@@ -306,9 +336,12 @@ function DetailProduct() {
                                     {everyoneLikes && everyoneLikes.map(item => (
                                         <button onClick={() => {
                                             setProduct(item)
+
+                                            setMerchant(item.merchant)
                                         }} className="list-item eatery-item-landing">
                                             <div className="img-lazy figure square">
-                                                <div className="img" style={{backgroundImage: `url(${item.image})`}}>
+                                                <div className="img"
+                                                     style={{backgroundImage: `url(${item.image})`}}>
                                                 </div>
                                             </div>
                                             <div className="content">
@@ -336,6 +369,31 @@ function DetailProduct() {
             </section>
             {/*end list sp*/}
 
+            {/*button modal*/}
+            <button type="button" ref={btn_modal} className="btn btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#exampleModal" style={{display: "none"}}>
+            </button>
+
+            {/*modal*/}
+            <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel"
+                 aria-hidden="true">
+                <div className="modal-dialog">
+                    <div className="modal-content">
+                        <div className="modal-header">
+                            <h5 className="modal-title" id="exampleModalLabel">Notification</h5>
+                            <button type="button" className="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                        </div>
+                        <div className="modal-body">
+                            <span>{message}</span>
+                        </div>
+                        <div className="modal-footer">
+                            <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
         </>
     );

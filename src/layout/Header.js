@@ -1,6 +1,5 @@
-import {Link} from "react-router-dom";
 import React, {useState, useEffect, useRef} from "react";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, Link} from "react-router-dom";
 import {toast, ToastContainer} from "react-toastify";
 import {loginUser} from "../service/AccountService";
 
@@ -38,6 +37,7 @@ export default function Header() {
         setUser(null);
         navigate('/');
     };
+
     return (
         <>
             <header>
@@ -110,7 +110,7 @@ export default function Header() {
                             <a href="" className="btn-nav-link">Vegan Location</a>
 
                             {/*End Menu Item*/}
-                            <div className="blank"></div>
+                            {/*<div className="blank"></div>*/}
                             {/*Login*/}
                             {user ? (
                                 <div className="nav-item user-panel">
@@ -135,11 +135,8 @@ export default function Header() {
                                         <a className="btn bg-light-gray text-black btn-login" ref={btn_modal}
                                            data-bs-toggle="modal"
                                            data-bs-target="#loginModal">Login</a>
-
-
                                     </div>
                                 </div>
-
                             )}
                             {/*login modal*/}
                             <div className="modal fade bd-example-modal-lg" id="loginModal" tabIndex="-1"
@@ -160,27 +157,36 @@ export default function Header() {
                                                     <div className="col-5">
                                                         <div className="form-group row">
                                                             <label>Username:</label>
-                                                            <input className="input-login-form" type="text" placeholder="Enter Password"
+                                                            <input className="input-login-form" type="text"
+                                                                   placeholder="Enter Password"
                                                                    name="user" value={username}
                                                                    onChange={(e) => setUsername(e.target.value)}/>
                                                         </div>
                                                         <div className="form-group row">
                                                             <label>Password:</label>
-                                                            <input className="input-login-form" type="password" placeholder="Enter Password"
+                                                            <input className="input-login-form" type="password"
+                                                                   placeholder="Enter Password"
                                                                    name="psw" value={password}
                                                                    onChange={(e) => setPassword(e.target.value)}/>
                                                         </div>
                                                         <div className="form-group row login-buttons">
-                                                            <button type="button" className="btn btn-lg btn-primary" disabled={isLoginDisabled} onClick={handleLogin}>Login</button>
+                                                            <button type="button" className="btn btn-lg btn-primary"
+                                                                    disabled={isLoginDisabled}
+                                                                    onClick={handleLogin}>Login
+                                                            </button>
                                                         </div>
                                                         <div>
-                                                            <p>New to our website? <a data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#registerModal" style={{color:"red"}}>Register now</a></p>
+                                                            <p>New to our website? <a data-bs-dismiss="modal"
+                                                                                      data-bs-toggle="modal"
+                                                                                      data-bs-target="#registerModal"
+                                                                                      style={{color: "red"}}>Register
+                                                                now</a></p>
                                                         </div>
                                                     </div>
-                                                    <div className="col-7 justify-content-center"  style={{
+                                                    <div className="col-7 justify-content-center" style={{
                                                         backgroundImage: `url('https://firebasestorage.googleapis.com/v0/b/react-firebase-storage-f6ec9.appspot.com/o/file%2FdoAnNgon.jpg?alt=media&token=e3c3377c-463d-481d-bb04-ba2d890e27b9')`,
                                                         backgroundSize: 'cover',
-                                                        height:'300px'
+                                                        height: '300px'
                                                     }}>
 
                                                     </div>
@@ -189,6 +195,27 @@ export default function Header() {
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            {/*<div className="user-nav-menu text-lg-right">*/}
+                            {/*    <div className="nav-item user-panel">*/}
+                            {/*        <div className="user-panel">*/}
+                            {/*            <span className="btn bg-light-gray text-black btn-login">*/}
+                            {/*                <Link style={{color: "black"}} to={"/merchant/register"}>Register Merchant</Link></span>*/}
+                            {/*        </div>*/}
+                            {/*    </div>*/}
+                            {/*</div>*/}
+                            {/*<div className="btn-nav-city-select">*/}
+                            {/*   Merchant*/}
+                            {/*    <i className="fa-solid fa-sort-down"></i>*/}
+                            {/*    <ul className="menu-nav-city-select">*/}
+                            {/*        <li className="city-item"><Link style={{color : "black"}} to={"merchant/register"}>Register Merchant</Link></li>*/}
+                            {/*        <li className="city-item"><Link style={{color : "black"}} to={"merchant/update/24"}>Update Merchant</Link></li>*/}
+                            {/*        <li className="city-item"><Link style={{color : "black"}} to={"list"}>List</Link></li>*/}
+                            {/*    </ul>*/}
+                            {/*</div>*/}
+                            <div className="user-nav-menu">
+                                <Link to={"cart/account"}><i className="fa-solid fa-cart-shopping fa-lg"
+                                                             style={{color: "#ff0000"}}></i></Link>
                             </div>
                             {/*End login modal*/}
                             {/*Register modal*/}
@@ -210,27 +237,34 @@ export default function Header() {
                                                     <div className="col-5">
                                                         <div className="form-group row">
                                                             <label>Username:</label>
-                                                            <input className="input-login-form" type="text" placeholder="Enter Password"
+                                                            <input className="input-login-form" type="text"
+                                                                   placeholder="Enter Password"
                                                                    name="user" value={username}
                                                                    onChange={(e) => setUsername(e.target.value)}/>
                                                         </div>
                                                         <div className="form-group row">
                                                             <label>Password:</label>
-                                                            <input className="input-login-form" type="password" placeholder="Enter Password"
+                                                            <input className="input-login-form" type="password"
+                                                                   placeholder="Enter Password"
                                                                    name="psw" value={password}
                                                                    onChange={(e) => setPassword(e.target.value)}/>
                                                         </div>
                                                         <div className="form-group row login-buttons">
-                                                            <button type="button" className="btn btn-lg btn-primary" disabled={isLoginDisabled} onClick={handleLogin}>Login</button>
+                                                            <button type="button" className="btn btn-lg btn-primary"
+                                                                    disabled={isLoginDisabled}
+                                                                    onClick={handleLogin}>Login
+                                                            </button>
                                                         </div>
                                                         <div>
-                                                            <p>New to our website? <a data-bs-dismiss="modal" style={{color:"red"}}>Register now</a></p>
+                                                            <p>New to our website? <a data-bs-dismiss="modal"
+                                                                                      style={{color: "red"}}>Register
+                                                                now</a></p>
                                                         </div>
                                                     </div>
-                                                    <div className="col-7 justify-content-center"  style={{
+                                                    <div className="col-7 justify-content-center" style={{
                                                         backgroundImage: `url('https://firebasestorage.googleapis.com/v0/b/react-firebase-storage-f6ec9.appspot.com/o/file%2FdoAnNgon.jpg?alt=media&token=e3c3377c-463d-481d-bb04-ba2d890e27b9')`,
                                                         backgroundSize: 'cover',
-                                                        height:'300px'
+                                                        height: '300px'
                                                     }}>
 
                                                     </div>

@@ -9,6 +9,7 @@ export function couponByIdMerchant(id_merchant){
             })
         )
     })
+
 }
 
 export function findOneCoupon(id_coupon){
