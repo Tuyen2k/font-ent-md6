@@ -29,7 +29,6 @@ export default function UpdateProduct() {
 
     useEffect(() => {
         getProductById(id).then(res => {
-            console.log(res)
             if (res !== undefined) {
                 setProduct(res)
                 setCategories(res.categories)
@@ -68,15 +67,12 @@ export default function UpdateProduct() {
                     setLoad(true)
                 }
             })
-            console.log("create")
-            console.log(product)
         } catch (Error) {
             setFile(undefined)
             setMessage("Action error occurred. Please check again!!!")
             btn_modal.current.click();          // onclick btn modal
             setLoad(true)
             setExist(false)
-            console.log("up file" + Error)
         }
     }
 
@@ -137,8 +133,14 @@ export default function UpdateProduct() {
                                            aria-describedby="timeMake"/>
                                     <ErrorMessage name="timeMake" component="span" className="error"/>
                                 </div>
+                                <div className="input-group mb-3">
+                                    <span className="input-group-text" style={{height: "37.6px", width:"150px"}} id="description">Description</span>
+                                    <Field as="textarea" className="form-control" style={{paddingLeft : "2px", height: "80px", resize: "none"}} name="description"
+                                           placeholder="Enter description product"
+                                           aria-describedby="description"/>
+                                </div>
                                 <div style={{display: "flex"}} className="div-checkbox input-group mb-3 row ">
-                                    <span className="input-group-text col-2" style={{height: "37.6px"}}>Categories</span>
+                                    <span className="input-group-text col-2" style={{height: "37.6px",  width:"150px"}}>Categories</span>
                                     <div className="form-checkbox col-10">
                                         {categoriesDB.map((category, index = 0) => {
                                             let flag = false;

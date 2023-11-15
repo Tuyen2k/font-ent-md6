@@ -17,6 +17,20 @@ export const saveMerchant = (merchant) => {
     })
 }
 
+export const getAllMerchantCheckDelete = () => {
+    return new Promise((resolve) => {
+        resolve(
+            axios.get("http://localhost:8080/api/merchants/merchant")
+                .then(response => {
+                        return response.data
+                    }
+                ).catch(() => {
+                return []
+            })
+        )
+    })
+}
+
 export const updateMerchant = (merchant) => {
     return new Promise((resolve) => {
         resolve(

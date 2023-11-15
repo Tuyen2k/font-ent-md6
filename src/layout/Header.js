@@ -216,10 +216,12 @@ export default function Header() {
                                 <ul className="menu-nav-city-select">
                                     <li className="city-item">Hồ Chí Minh</li>
                                     <li className="city-item">Hải Phòng</li>
-                                    <li className="city-item">Đà NANG</li>
+                                    <li className="city-item">Đà Nẵng</li>
                                 </ul>
                             </div>
+                            {/*End City Select*/}
 
+                            {/*Menu Item*/}
                             <a href="" className="btn-nav-link">New Location</a>
                             <a href="" className="btn-nav-link">Hot Deals</a>
                             <a href="" className="btn-nav-link">Popular Brands</a>
@@ -227,10 +229,11 @@ export default function Header() {
                             <a href="" className="btn-nav-link">Recently Order</a>
                             <a href="" className="btn-nav-link">Healthy Choices</a>
                             <a href="" className="btn-nav-link">Vegan Location</a>
+
                             {/*End Menu Item*/}
+                            <div className="blank"></div>
                             {/*Login*/}
                             {user ? (
-
                                 <div className="nav-item user-panel">
                                     <div className="user-panel">
                                         <div className="btn-nav-city-select">
@@ -270,6 +273,7 @@ export default function Header() {
                                  role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                                 <ToastContainer enableMultiContainer containerId="login" position="top-right" autoClose={2000} pauseOnHover={false}
                                                 style={{width: "400px"}}/>
+
                                 <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
                                     <div className="modal-content">
                                         <div className="modal-header">
@@ -329,6 +333,7 @@ export default function Header() {
                                  role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                                 <ToastContainer enableMultiContainer containerId="register" position="top-center" autoClose={2000} pauseOnHover={false}
                                                 style={{width: "400px"}}/>
+
                                 <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
                                     <div className="modal-content">
                                         <div className="modal-header">
@@ -450,6 +455,7 @@ export default function Header() {
                                 </div>
                             </div>
                             {/*End register modal*/}
+                            {/*End Navbar*/}
                         </div>
                     </div>
                 </nav>

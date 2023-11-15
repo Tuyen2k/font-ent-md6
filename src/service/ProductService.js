@@ -2,13 +2,13 @@ import axios from "axios";
 
 export function saveProduct(product){
     return new Promise(resolve => {
-       resolve(
-           axios.post("http://localhost:8080/api/products", product).then(res =>{
-               return true;
-           }).catch(Error =>{
-               return false;
-           })
-       )
+        resolve(
+            axios.post("http://localhost:8080/api/products", product).then(res =>{
+                return true;
+            }).catch(Error =>{
+                return false;
+            })
+        )
     })
 }
 
@@ -61,7 +61,7 @@ export function findOneProduct(id){
 export function getAllProductByMerchant(id, name) {
     return new Promise(resolve => {
         resolve(
-            axios.get(`http://localhost:8080/api/products/search?id_merchant=1&name=${name}`)
+            axios.get(`http://localhost:8080/api/products/search?id_merchant=${id}&name=${name}`)
                 .then(res => {
                     return res.data;
                 })
