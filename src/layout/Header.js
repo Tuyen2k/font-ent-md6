@@ -39,14 +39,12 @@ export default function Header() {
     };
 
     const notificationLogin=()=>{
-        toast.error('Please log in!');
+        toast.error('Please log in!', {containerId : "page"});
     }
 
     return (
         <>
             <header>
-                <ToastContainer position="top-right" autoClose={2000} pauseOnHover={false}
-                                style={{width: "400px"}}/>
                 {/*Topbar*/}
                 <nav className="info-navbar">
                     <section className="topbar-wrapper">
@@ -85,6 +83,8 @@ export default function Header() {
                     </section>
                     {/*End Topbar*/}
                 </nav>
+                <ToastContainer enableMultiContainer containerId={"page"} position="top-right" autoClose={2000} pauseOnHover={false}
+                                style={{width: "400px"}}/>
                 <nav className="navbar">
                     {/*Navbar*/}
                     <div className="container">
@@ -147,7 +147,7 @@ export default function Header() {
                             {/*login modal*/}
                             <div className="modal fade bd-example-modal-lg" id="loginModal" tabIndex="-1"
                                  role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
-                                <ToastContainer position="top-right" autoClose={2000} pauseOnHover={false}
+                                <ToastContainer enableMultiContainer containerId="modal-login" position="top-right" autoClose={2000} pauseOnHover={false}
                                                 style={{width: "400px"}}/>
 
                                 <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
