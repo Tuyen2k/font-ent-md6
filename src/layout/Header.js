@@ -5,7 +5,7 @@ import {toast, ToastContainer} from "react-toastify";
 import {loginUser, saveAccount} from "../service/AccountService";
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import {upImageFirebase} from "../firebase/Upfirebase";
-import {findCity, findDistrict, findWard} from "../service/MerchantService";
+import {findCity, findDistrict, findMerchantByAccount, findWard} from "../service/MerchantService";
 import 'react-toastify/dist/ReactToastify.css';
 
 import * as yup from "yup";
@@ -27,8 +27,10 @@ export default function Header() {
     const [color, setColor] = useState({borderColor: 'red', color: 'red', backgroundColor: 'white'});
     const [account, setAccount] = useState({
         name: '',
+        fullName: '',
         password: '',
         confirmPassword: '',
+        email: '',
         phone: '',
         image: ''
     });
@@ -126,12 +128,17 @@ export default function Header() {
             .string()
             .matches(/^0\d{9}$/, "Phone number must have 10 digits")
             .required(),
+        email: yup.string().required().matches(/^[A-Za-z0-9._-]+@[A-Za-z]+\.[A-Za-z]{2,}$/, ("with @ and no special characters"))
     });
     const handleLogin = async () => {
 
         try {
             const response = await loginUser(username, password);
             localStorage.setItem('userInfo', JSON.stringify(response.data));
+            if (response.data.authorities[0].authority === "ROLE_MERCHANT"){
+                const merchant = await findMerchantByAccount(response.data.id)
+                localStorage.setItem("merchant", JSON.stringify(merchant))
+            }
             setUser(response)
             toast.success('Logged in successfully!',{containerId:'login'});
             setExist(!isExist)
@@ -154,6 +161,7 @@ export default function Header() {
     }, []);
     const handleLogout = () => {
         localStorage.removeItem('userInfo');
+        localStorage.removeItem('merchant');
         setUser(null);
         setUsername("")
         setPassword("")
