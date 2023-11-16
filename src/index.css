@@ -803,19 +803,18 @@ div.error{
 #form1{
     width: 68px !important;
 }
-.footer-cart{
-    padding: 15px;
-    background-color: white;
-    z-index: 1;
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    text-align: center;
-    box-shadow: 0px 2px 4px grey;
-    /*border: #9c9c9c 1px solid ;*/
-    width: 1270px;
-    margin-left: 218px;
-}
+/*.footer-cart {*/
+
+/*    left: 0;*/
+/*    bottom: 0;*/
+/*    text-align: center;*/
+/*    !*box-shadow: 0px 2px 4px grey;*!*/
+/*}*/
+/*.display-footer{*/
+/*    padding: 15px;*/
+/*    background-color: white;*/
+/*    !*z-index: 1;*!*/
+/*}*/
 .img-cart{
     height: 80px;
     width: 100px;

@@ -14,7 +14,7 @@ function DetailProduct() {
     const [load, setLoad] = useState(false);
     const [merchant, setMerchant] = useState({})
     const [quantity, setQuantity] = useState(1);
-    const account = JSON.parse(localStorage.getItem("account"))
+    const account = JSON.parse(localStorage.getItem("userInfo"))
     const btn_modal = useRef()
     const [message, setMessage] = useState("");
 

@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import {deleteCartDetail, getListCart, updateQuantity} from "../../service/CartService";
 import {Link} from "react-router-dom";
+import {addBill} from "../../service/BillService";
 
 
 export default function DisplayCart() {
@@ -12,6 +13,7 @@ export default function DisplayCart() {
     const [check, setCheck] = useState(false);
     const btn_modal = useRef()
     const [message, setMessage] = useState("");
+    const [total, setTotal] = useState(0)
 
 
     const findCartDetail = (id) => {
@@ -65,7 +67,7 @@ export default function DisplayCart() {
                     btn_modal.current.click()
                 }
             })
-        }else {
+        } else {
             setMessage("If you want to order a quantity over 30, please contact the merchant!")
             btn_modal.current.click()
         }
@@ -89,7 +91,7 @@ export default function DisplayCart() {
     useEffect(() => {
         console.log(account)
         getListCart(account.id).then(res => {
-            if (res.length !== 0){
+            if (res.length !== 0) {
                 setList(res)
                 console.log(res)
                 groupByMerchant(res)
@@ -117,6 +119,7 @@ export default function DisplayCart() {
     const handleAllOrder = () => {
         let checkboxAll = document.getElementById("checkbox-all");
         let checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        let totalAmount = 0
         if (checkboxAll.checked) {
             checkboxes.forEach(function (checkbox) {
                 checkbox.checked = true;
@@ -126,167 +129,330 @@ export default function DisplayCart() {
                 checkbox.checked = false;
             });
         }
-        checkboxes.forEach(function (checkbox){
-            if (checkbox.checked === false){
-                checkboxAll.checked = false
+        if (checkboxAll.checked) {
+            for (let i = 0; i < list.length; i++) {
+                let flag = false
+                totalAmount += list[i].price * list[i].quantity
+                for (let j = 0; j < orders.length; j++) {
+                    if (list[i].id_cartDetail === orders[j].id_cartDetail) {
+                        flag = true
+                    }
+                }
+                if (!flag) {
+                    orders.push(list[i])
+                }
+            }
+            setOrders([...orders])
+        } else {
+            orders.splice(0, orders.length)
+            setOrders([...orders])
+            totalAmount = 0
+        }
+        setTotal(totalAmount)
+        console.log(orders)
+    }
+    const handleOrderByMerchant = (id_merchant) => {
+        let totalAmount = 0
+        let arr = []
+        let checkboxAll = document.getElementById("checkbox-all");
+        let checkboxMerchant = document.getElementById(`checkbox-${id_merchant}`);
+        let checkboxes = document.querySelectorAll(`input[type="checkbox"][id="checkbox-item-${id_merchant}"]`);
+        if (checkboxMerchant.checked) {
+            checkboxes.forEach(function (checkbox) {
+                checkbox.checked = true;
+            });
+        } else {
+            checkboxes.forEach(function (checkbox) {
+                checkbox.checked = false;
+            });
+        }
+        //xử lý list order
+        for (let i = 0; i < list.length; i++) {
+            if (id_merchant === list[i].cart.merchant.id_merchant) {
+                totalAmount += list[i].price * list[i].quantity
+                arr.push(list[i])
+            }
+        }
+        if (checkboxMerchant.checked) {
+            setTotal((prev) => (prev + totalAmount))
+            for (let i = 0; i < arr.length; i++) {
+                orders.push(arr[i])
+                setOrders([...orders])
+            }
+        } else {
+            setTotal(prev => (prev - totalAmount))
+            for (let i = 0; i < orders.length; i++) {
+                for (let j = 0; j < arr.length; j++) {
+                    if (arr[j].id_cartDetail == orders[i].id_cartDetail) {
+                        orders.splice(i, 1)
+                        setOrders([...orders])
+                    }
+                }
+            }
+        }
+        checkboxAll.checked = orders.length === list.length;
+        console.log(orders)
+    }
+    const handleOrderCart = (id_merchant, id_cartDetail) => {
+        let checkboxAll = document.getElementById("checkbox-all");
+        let checkboxMerchant = document.getElementById(`checkbox-${id_merchant}`);
+        let checkboxes = document.querySelectorAll(`input[type="checkbox"][id="checkbox-item-${id_merchant}"]`);
+        let flag = true
+        for (let i = 0; i < checkboxes.length; i++) {
+            if (checkboxes[i].checked === false) {
+                flag = false
+            }
+        }
+        if (!flag) {
+            checkboxAll.checked = false
+        }
+        checkboxMerchant.checked = flag;
+
+        let isExist = false
+        let index = -1
+        let item;
+        for (let i = 0; i < orders.length; i++) {
+            if (orders[i].id_cartDetail == id_cartDetail) {
+                isExist = true
+                index = i
+                item = orders[i]
+            }
+        }
+        if (isExist) {
+            setTotal((prev)=>(prev - item.price * item.quantity))
+            orders.splice(index, 1)
+        } else {
+            for (let i = 0; i < list.length; i++) {
+                if (list[i].id_cartDetail == id_cartDetail) {
+                    orders.push(list[i])
+                    setTotal((prev)=>(prev + list[i].price * list[i].quantity))
+                }
+            }
+        }
+        checkboxAll.checked = orders.length === list.length;
+        setOrders([...orders])
+        console.log(orders)
+    }
+
+    function handleAddBill() {
+        addBill(orders).then(res => {
+            if (res === true) {
+                setMessage("Order success. Waiting for merchant confirm!")
+                btn_modal.current.click()
+            } else {
+                setMessage("An error occurred. Please check again!")
+                btn_modal.current.click()
             }
         })
     }
-    const handleOrderByMerchant = (id_merchant) => {
-        let checkboxAll = document.getElementById(`checkbox-${id_merchant}`);
-        let checkboxes = document.querySelectorAll(`input[type="checkbox"][id="checkbox-item-${id_merchant}"]`);
-        if (checkboxAll.checked) {
-            checkboxes.forEach(function (checkbox) {
-                checkbox.checked = true;
-            });
-        } else {
-            checkboxes.forEach(function (checkbox) {
-                checkbox.checked = false;
-            });
-        }
-    }
-    const handleOrderCart=(id_merchant ,id_cart)=>{
-        let checkboxAll = document.getElementById(`checkbox-${id_merchant}`);
-        let checkboxes = document.querySelectorAll(`input[type="checkbox"][id="checkbox-item-${id_merchant}"]`);
-        let flag = true
-        checkboxes.forEach(function (checkbox) {
-            if (checkbox.checked === false){
-                flag = false
-            }
-        });
-        checkboxAll.checked = flag;
-        console.log(id_cart)
-    }
-
-    // window.document.getElementById("root").addEventListener('click', function (){
-    //     let checkboxAll = document.getElementById("checkbox-all");
-    //     let checkboxes = document.querySelectorAll('input[type="checkbox"]');
-    //     let flag = true
-    //     checkboxes.forEach(checkbox =>{
-    //         if (checkbox.checked === false){
-    //             flag = false
-    //         }
-    //     })
-    //     checkboxAll.checked = false
-    // })
 
 
     return (
         <>
-            {carts !== undefined ? (
-                <div className="container">
-                    <h3>Cart</h3>
-                    <section>
-                        <div className="container">
-                            <div className="title-cart">
-                                <div className="header-item">
+            <div className="container">
+                {carts !== undefined ? (
+                        // {orders.length !== 0 && checkOrder ?():()}
+                    <div>
+                        <h3>Cart</h3>
+                        <section>
+                            <div className="container">
+                                <div className="title-cart">
+                                    <div className="header-item">
+                                        <div className="row">
+                                            <div className="col-1"><input onClick={handleAllOrder}
+                                                                          className="input-checkbox"
+                                                                          id="checkbox-all" type="checkbox"/></div>
+                                            <div className="col-4">Product</div>
+                                            <div className="col-2">Price</div>
+                                            <div className="col-2">Quantity</div>
+                                            <div className="col-2">Amount</div>
+                                            <div className="col-1">Action</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        {carts.map((cart, index) => {
+                            return (
+                                <section key={index}>
+                                    <div className="container">
+                                        <div className="display-cart">
+                                            <div className="header-item">
+                                                <div className="row">
+                                                    <div className="col-1"><input className="input-checkbox"
+                                                                                  onClick={() => handleOrderByMerchant(cart.merchant.id_merchant)}
+                                                                                  id={`checkbox-${cart.merchant.id_merchant}`}
+                                                                                  type="checkbox"/>
+                                                    </div>
+                                                    <div className="col-11">{cart.merchant.name}</div>
+                                                </div>
+                                            </div>
+                                            <div className="item-list">
+                                                {cart.list.map((item, count) => {
+                                                    return (
+                                                        <div className="item-cart" key={count}>
+                                                            <div className="row item">
+                                                                <div className="col-1"><input className="input-checkbox"
+                                                                                              type="checkbox"
+                                                                                              id={`checkbox-item-${cart.merchant.id_merchant}`}
+                                                                                              onClick={() => handleOrderCart(cart.merchant.id_merchant, item.id_cartDetail)}
+                                                                />
+                                                                </div>
+                                                                <div className="col-4 row">
+                                                                    <div className="col-4">
+                                                                        <img className="img-cart"
+                                                                             src={item.product.image}
+                                                                             alt="image"/>
+                                                                    </div>
+                                                                    <div className="col-8 item-name">
+                                                                        {item.product.name}
+                                                                    </div>
+                                                                </div>
+                                                                <div className="col-2"><strong><span
+                                                                    className="number">{item.price.toLocaleString()}</span> VND</strong>
+                                                                </div>
+                                                                <div className="col-2">
+                                                                    <div style={{display: "flex"}}>
+                                                                        <button className="btn px-2"
+                                                                                onClick={() => handleMinus(item.id_cartDetail)}>
+                                                                            <i className="fas fa-minus"></i>
+                                                                        </button>
+                                                                        <input id="form1" min="0" name="quantity"
+                                                                               value={item.quantity}
+                                                                               type="number"
+                                                                               className="form-control form-control-sm"/>
+                                                                        <button className="btn px-2"
+                                                                                onClick={() => handlePlus(item.id_cartDetail)}>
+                                                                            <i className="fas fa-plus"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="col-2"><strong><span
+                                                                    className="number">{(item.price * item.quantity).toLocaleString()}</span> VND</strong>
+                                                                </div>
+                                                                <div className="col-1"
+                                                                     onClick={() => deleteCart(item.id_cartDetail)}><i
+                                                                    className="fa-solid fa-trash fa-lg"
+                                                                    style={{color: "#ff0000"}}></i>
+                                                                </div>
+                                                            </div>
+                                                            <hr/>
+                                                        </div>
+
+                                                    )
+                                                })}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </section>
+                            )
+                        })}
+                        <section>
+                            <div className="container">
+                                <div className="display-cart">
+                                    <h5 className="mb-0"><Link to={"/"}
+                                                               className="text-body"><i
+                                        className="fas fa-long-arrow-alt-left me-2"></i>Back
+                                        Home</Link></h5>
                                     <div className="row">
-                                        <div className="col-1"><input onClick={handleAllOrder} className="input-checkbox"
-                                                                      id="checkbox-all" type="checkbox"/></div>
-                                        <div className="col-4">Product</div>
-                                        <div className="col-2">Price</div>
-                                        <div className="col-2">Quantity</div>
-                                        <div className="col-2">Amount</div>
-                                        <div className="col-1">Action</div>
+                                        <div className="col-6"></div>
+                                        <h4 className="col-4" style={{color: "red"}}>Total amount: <strong><span
+                                            className="number">{total.toLocaleString()}</span></strong> VND</h4>
+                                        <button className="btn btn-outline-danger col-2">Order</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+                ) : (
+                    <h3 style={{textAlign: "center", marginTop: "100px"}}>Your cart is empty, let's go shopping</h3>
+                )}
+
+                {/*order*/}
+                <div className="container">
+                    <h2>Bill</h2>
+                    <section className="row">
+                        <div className="col-6">
+                            <h3 className="title">Delivery address</h3>
+                            <div>
+                                <div className="input mb-3">
+                                    <label htmlFor="name">Username</label>
+                                    <input type="text" id="name" className="form-control"
+                                           value={account.name} aria-label="Username" aria-describedby="basic-addon1"/>
+                                </div>
+                                <div className="input mb-3">
+                                    <label htmlFor="name">Number Phone</label>
+                                    <input type="text" id="name" className="form-control"
+                                           value={account.name} aria-label="Username" aria-describedby="basic-addon1"/>
+                                </div>
+                                <div className="input mb-3 row" style={{width: "unset"}}>
+                                    <div className="input mb-3 col-6">
+                                        <label htmlFor="name">City</label>
+                                        <input type="text" id="name" className="form-control"
+                                               value={account.address.city.name} aria-label="Username"
+                                               aria-describedby="basic-addon1"/>
+                                    </div>
+                                    <div className="input mb-3 col-6">
+                                        <label htmlFor="name">District</label>
+                                        <input type="text" id="name" className="form-control"
+                                               value={account.address.district.name} aria-label="Username"
+                                               aria-describedby="basic-addon1"/>
+                                    </div>
+                                </div>
+                                <div className="input mb-3 row" style={{width: "unset"}}>
+                                    <div className="input mb-3 col-6">
+                                        <label htmlFor="name">Ward</label>
+                                        <input type="text" id="name" className="form-control"
+                                               value={account.address.ward.name} aria-label="Username"
+                                               aria-describedby="basic-addon1"/>
+                                    </div>
+                                    <div className="input mb-3 col-6">
+                                        <label htmlFor="name">Detail</label>
+                                        <input type="text" id="name" className="form-control"
+                                               value={account.address.address_detail} aria-label="Username"
+                                               aria-describedby="basic-addon1"/>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                    </section>
-                    {carts.map((cart, index) => {
-                        return (
-                            <section key={index}>
-                                <div className="container">
-                                    <div className="display-cart">
-                                        <div className="header-item">
-                                            <div className="row">
-                                                <div className="col-1"><input className="input-checkbox"
-                                                                              onClick={() => handleOrderByMerchant(cart.merchant.id_merchant)}
-                                                                              id={`checkbox-${cart.merchant.id_merchant}`}
-                                                                              type="checkbox"/>
-                                                </div>
-                                                <div className="col-11">{cart.merchant.name}</div>
-                                            </div>
-                                        </div>
-                                        <div className="item-list">
-                                            {cart.list.map((item, count) => {
-                                                return (
-                                                    <div className="item-cart" key={count}>
-                                                        <div className="row item">
-                                                            <div className="col-1"><input className="input-checkbox"
-                                                                                          type="checkbox"
-                                                                                          id={`checkbox-item-${cart.merchant.id_merchant}`}
-                                                                                          onClick={()=>handleOrderCart(cart.merchant.id_merchant, item.id_cartDetail)}
-                                                            />
-                                                            </div>
-                                                            <div className="col-4 row">
-                                                                <div className="col-4">
-                                                                    <img className="img-cart"
-                                                                         src={item.product.image}
-                                                                         alt="image"/>
-                                                                </div>
-                                                                <div className="col-8 item-name">
-                                                                    {item.product.name}
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-2"><strong><span
-                                                                className="number">{item.price.toLocaleString()}</span> đ</strong>
-                                                            </div>
-                                                            <div className="col-2">
-                                                                <div style={{display: "flex"}}>
-                                                                    <button className="btn px-2"
-                                                                            onClick={() => handleMinus(item.id_cartDetail)}>
-                                                                        <i className="fas fa-minus"></i>
-                                                                    </button>
-                                                                    <input id="form1" min="0" name="quantity"
-                                                                           value={item.quantity}
-                                                                           type="number"
-                                                                           className="form-control form-control-sm"/>
-                                                                    <button className="btn px-2"
-                                                                            onClick={() => handlePlus(item.id_cartDetail)}>
-                                                                        <i className="fas fa-plus"></i>
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                            <div className="col-2"><strong><span
-                                                                className="number">{(item.price * item.quantity).toLocaleString()}</span> đ</strong>
-                                                            </div>
-                                                            <div className="col-1"
-                                                                 onClick={() => deleteCart(item.id_cartDetail)}><i
-                                                                className="fa-solid fa-trash fa-lg"
-                                                                style={{color: "#ff0000"}}></i>
-                                                            </div>
-                                                        </div>
-                                                        <hr/>
-                                                    </div>
-
-                                                )
-                                            })}
-                                        </div>
-                                    </div>
+                        <div className="col-6">
+                            <h3 className="title">Summary</h3>
+                            <div>
+                                <div className="row">
+                                    <span className="text col-6">Số lượng sản phẩm </span>
+                                    <span className="right number col-6"><strong>{orders.length}</strong></span>
                                 </div>
-                            </section>
-                        )
-                    })}
-
+                                <div className="row">
+                                    <span className="text col-6">Tổng số tiền </span>
+                                    <span className="right number col-6"><strong>{total}</strong></span>
+                                </div>
+                                <div className="row">
+                                    <span className="text col-6">Mã giảm giá </span>
+                                    <span className="right number col-6"><select name="" id="">
+                                        <option value="">1</option>
+                                        <option value="">2</option>
+                                        <option value="">3</option>
+                                    </select></span>
+                                </div>
+                                <div className="row">
+                                    <span className="text col-6">Số tiền giảm </span>
+                                    <span className="right number col-6"><strong>{total}</strong></span>
+                                </div>
+                                <div className="row">
+                                    <span className="text col-6">Tồng tiền thanh toán </span>
+                                    <span className="right number col-6"><strong>{total}</strong></span>
+                                </div>
+                                <div className="row">
+                                    <div className="col-6">Back cart</div>
+                                    <div className="col-6" onClick={handleAddBill}>Thanh toán</div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
                 </div>
-            ) : (
-                <div className="container">
-                    <h3 style={{textAlign : "center", marginTop: "100px"}}>Your cart is empty, let's go shopping</h3>
-                </div>
-            ) }
+                {/*end order*/}
 
-            <section>
-                <div className="container">
-                    <div className="footer-cart">
-                        <h5 className="mb-0"><Link to={"/"}
-                                                   className="text-body"><i
-                            className="fas fa-long-arrow-alt-left me-2"></i>Back
-                            Home</Link></h5>
-                    </div>
-                </div>
-            </section>
-
+            </div>
             {/*button modal*/}
             <button type="button" ref={btn_modal} className="btn btn-primary" data-bs-toggle="modal"
                     data-bs-target="#exampleModal" style={{display: "none"}}>
