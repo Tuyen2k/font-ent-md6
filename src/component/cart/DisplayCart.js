@@ -30,8 +30,7 @@ export default function DisplayCart() {
             let quantity = item.quantity - 1
             updateQuantity(id, quantity).then(res => {
                 if (res === true) {
-                    setMessage("Update success!!!")
-                    btn_modal.current.click()
+                    console.log("Update success!!!")
                     setCheck(!check)
                 } else {
                     setMessage("An error occurred. Please check again")
@@ -42,8 +41,7 @@ export default function DisplayCart() {
             if (window.confirm("The quantity reaches 0, it will be removed from the cart")) {
                 deleteCartDetail(id).then(res => {
                     if (res === true) {
-                        setMessage("Update success!!!")
-                        btn_modal.current.click()
+                        console.log("Update success!!!")
                         setCheck(!check)
                     } else {
                         setMessage("An error occurred. Please check again")
@@ -60,8 +58,7 @@ export default function DisplayCart() {
             let quantity = item.quantity + 1
             updateQuantity(id, quantity).then(res => {
                 if (res === true) {
-                    setMessage("Update success!!!")
-                    btn_modal.current.click()
+                    console.log("Update success!!!")
                     setCheck(!check)
                 } else {
                     setMessage("An error occurred. Please check again")
@@ -70,6 +67,7 @@ export default function DisplayCart() {
             })
         }else {
             setMessage("If you want to order a quantity over 30, please contact the merchant!")
+            btn_modal.current.click()
         }
     }
     const deleteCart = (id) => {

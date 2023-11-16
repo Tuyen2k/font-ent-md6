@@ -73,7 +73,7 @@ function DetailProduct() {
         let quantity = document.getElementById("quantity_p").value
         let cartDetail = {price: price, quantity: quantity, product: product}
         console.log(cartDetail)
-        addToCart(11, cartDetail).then(res => {
+        addToCart(account.id, cartDetail).then(res => {
             if (res === true) {
                 setMessage("Add to cart success!!!")
                 btn_modal.current.click()
