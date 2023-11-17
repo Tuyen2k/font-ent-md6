@@ -825,6 +825,9 @@ div.error{
     content: attr(data-number);
 }
 
+.detail-product {
+    /* Your component-specific styles here */
+}
 
 
 

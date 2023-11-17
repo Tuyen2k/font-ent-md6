@@ -11,7 +11,6 @@ function DetailProduct() {
     const [products, setProducts] = useState([]);
     const [coupons, setCoupons] = useState([]);
     const [everyoneLikes, setEveryoneLikes] = useState([]);
-    const [load, setLoad] = useState(false);
     const [merchant, setMerchant] = useState({})
     const [quantity, setQuantity] = useState(1);
     const account = JSON.parse(localStorage.getItem("account"))
@@ -25,21 +24,17 @@ function DetailProduct() {
             setMerchant(data.merchant)
             getAllProductByIdMerchant(data.merchant.id_merchant).then(r => {
                 let arr = r.reverse();
-                setProducts(arr.slice(0, 6));
+                setProducts(arr.slice(0,5));
             });
             couponByIdMerchant(data.merchant.id_merchant).then(r => {
                 setCoupons(r)
             })
         })
         MostPurchasedProducts().then(r => {
-            const limitedProducts = r.slice(0, 12);
+            const limitedProducts = r.slice(0, 10);
             setEveryoneLikes([...limitedProducts]);
         })
     }, []);
-
-    const displayModal = () => {
-        setLoad(true)
-    }
     const handleQuantityChange = (event) => {
         let newValue = parseInt(event.target.value, 10);
         if (!isNaN(newValue) && newValue >= 1 && newValue <= 20) {
@@ -82,7 +77,6 @@ function DetailProduct() {
     }
 
 
-
     return (
         <>
             <Link to={"/"}>
@@ -92,146 +86,121 @@ function DetailProduct() {
                         d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
                 </svg>
             </Link>
-
             <div className="now-detail-restaurant clearfix">
                 <div className="container">
-                    <div className="row px-xl-5">
-                        <div className="col-lg-5 pb-5">
-                            <div id="product-carousel" className="carousel slide" data-ride="carousel">
-                                <div style={{
-                                    width: '480px',
-                                    height: '500px',
-                                    position: 'relative',
-                                    float: 'left'
-                                }}>
-                                    <div className="carousel-item active">
-                                        <img className="w-100 h-100" src={product.image} alt="Image"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div className="row">
 
-                        <div className="col-lg-7 pb-5">
-                            <h2 className="font-weight-semi-bold">{product.name}</h2>
-                            {/*link dẫn tới merchant, cần có cả id merchant để lấy dữ liệu. */}
 
-                            <Link to={`/detail_merchant/${merchant.id_merchant}`}>{merchant.name} - Shop Online</Link>
-                            <div style={{marginTop: "8px"}} className="d-flex mb-3">
-                                <div className="text-primary mr-2">
-                                    <small style={{color: '#d1d124'}} className="fas fa-star"></small>
-                                    <small style={{color: '#d1d124'}} className="fas fa-star"></small>
-                                    <small style={{color: '#d1d124'}} className="fas fa-star"></small>
-                                    <small style={{color: '#d1d124'}} className="fas fa-star-half-alt"></small>
-                                    <small style={{color: '#d1d124'}} className="far fa-star"></small>
-                                </div>
-                                <small className="pt-1">{product.view}</small>
-                            </div>
-                            <h3 className="font-weight-semi-bold mb-4">
-                                <h3 style={{fontSize: "smaller"}} className="text-muted ml-2">
-                                    <del>{product.price}VND</del>
-                                </h3>
-                            </h3>
-                            <h3 className="font-weight-semi-bold mb-4">
-                                <input id="price_sale" type="number" value={product.priceSale} hidden="hidden"/>
-                                {product.priceSale}VND
-                            </h3>
-                            <div className="d-flex mb-3">
-                                <h5 className="text-dark font-weight-medium mb-0 mr-3">Category : </h5>
-                                {product.categories && product.categories.map(item => (
-                                    <form>
-                                        <div className="custom-control custom-radio custom-control-inline">
-                                            <label style={{marginLeft: '5px'}}
-                                                   htmlFor="size-1"> {item.name}</label>
+
+                        <div className="">
+                            <div className="">
+                                <div style={{paddingRight: '0px', paddingLeft: '65px'}} className="col-md-12">
+
+                                    {/*kích thước detail product*/}
+
+                                    <div className="row p-2 bg-white border rounded" style={{height: "400.777778px"}}>
+                                        <div className="col-md-3 mt-1">
+                                            <img style={{width: '600px', height: '370px'}}
+                                                 src={product.image}  alt={"eroor"}/></div>
+                                        <div style={{paddingLeft: '400px'}} className="col-md-7 mt-1">
+                                               <h3>{product.name}</h3>
+                                            <div className="d-flex flex-row">
+                                                <div className="ratings mr-2">
+                                                    <small style={{color: '#d1d124'}} className="fas fa-star"></small>
+                                                    <small style={{color: '#d1d124'}} className="fas fa-star"></small>
+                                                    <small style={{color: '#d1d124'}} className="fas fa-star"></small>
+                                                    <small style={{color: '#d1d124'}} className="fas fa-star-half-alt"></small>
+                                                    <small style={{color: '#d1d124'}} className="far fa-star"></small>
+                                                </div>
+                                                <span>{product.purchase}</span>
+                                            </div>
+                                            <div className="mt-1 mb-1 spec-1">
+                                                <h5><Link
+                                                 to={`/detail_merchant/${merchant.id_merchant}`}>{merchant.name} - Shop Online</Link></h5>
+                                            </div>
+                                            <div className="mt-1 mb-1 spec-1">
+                                                <span style={{fontSize: '20px'}}>Categories: </span>
+                                                    {product.categories && product.categories.map(item => (
+                                                        <span style={{marginLeft: '3px', fontSize: '18px'}}>{item.name}. </span>
+                                                    ))}
+                                                </div>
+                                            <div className="mt-1 mb-1 spec-1">
+                                                <span style={{fontSize: '20px'}}>Time make : </span>
+                                                <span style={{fontSize: '18px'}}>{product.timeMake}</span>
+                                            </div>
+                                                <div className="d-flex flex-row align-items-center">
+                                                    <del style={{marginRight: '8px', marginTop: '5px', marginBottom: '10px'}}
+                                                        className="mr-1">{product.price} <del>VND</del></del>
+                                                    <span style={{marginBottom: '8px'}} className="strike-text">
+                                                        <i style={{color: 'red', marginLeft: '8px'}} className="fa-solid fa-tag"></i>
+                                                    <span style={{fontSize: '21px', marginLeft: '8px'}}>{product.priceSale} <span style={{fontSize: '15px'}}>VND</span></span>
+                                                    </span>
+                                                </div>
+                                                <h6 className="text-success">Free shipping</h6>
+                                                <div className="d-flex flex-column mt-4">
+                                                        <div className="input-group quantity mr-3" style={{width: '130px'}}>
+                                                            <div className="input-group-btn" id="minus_div">
+                                                                <button onClick={subtraction} style={{
+                                                                    backgroundColor: '#df8686',
+                                                                    padding: '5px',
+                                                                    display: 'inline-block',
+                                                                    borderRadius: '10px',
+                                                                    width: '35px',
+                                                                    border: 'none'
+                                                                }}>
+                                                                    {/*tru*/}
+                                                                    <i style={{color: "white"}} className="fa fa-minus"></i>
+                                                                </button>
+                                                            </div>
+                                                            <input style={{
+                                                                borderRadius: '8px',
+                                                                marginLeft: '10px',
+                                                                color: 'white',
+                                                                backgroundColor: '#df8686',
+                                                            }} type="text" className="form-control bg-secondary text-center"
+                                                                   id="quantity_p"
+                                                                   defaultValue={quantity}
+                                                                   onChange={handleQuantityChange}/>
+                                                            <div style={{marginLeft: '10px'}} className="input-group-btn" id="plus_div">
+                                                                <button onClick={addition} style={{
+                                                                    backgroundColor: '#df8686',
+                                                                    padding: '5px',
+                                                                    display: 'inline-block',
+                                                                    borderRadius: '10px',
+                                                                    width: '35px',
+                                                                    border: 'none'
+                                                                }}>
+                                                                    {/*cong*/}
+                                                                    <i style={{color: "white"}} className="fa fa-plus"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    <button style={{
+                                                        backgroundColor: '#df8686',
+                                                        color: 'white',
+                                                        border: 'none',
+                                                        width: '200px',
+                                                        borderRadius: '5px',
+                                                        height: '35px'
+                                                    }} onClick={handleAddToCart} className="btn btn-outline-primary btn-sm mt-2" type="button">
+                                                        <i className="fa fa-shopping-cart mr-1"></i>Add to card
+                                                    </button>
+                                                </div>
                                         </div>
-                                    </form>
-                                ))}
-                            </div>
-                            <div className="d-flex mb-4">
-                                <h5 className="text-dark font-weight-medium mb-0 mr-3">Purchase : </h5>
-                                <form>
-                                    <div className="custom-control custom-radio custom-control-inline">
-                                        <label htmlFor="color-1">{product.purchase}</label>
+
                                     </div>
-                                </form>
-                            </div>
-                            <div className="d-flex mb-4">
-                                <h5 className="text-dark font-weight-medium mb-0 mr-3">Time make : </h5>
-                                <form>
-                                    <div className="custom-control custom-radio custom-control-inline">
-                                        <label htmlFor="color-1">{product.timeMake}</label>
-                                    </div>
-                                </form>
-                            </div>
-                            <div className="d-flex align-items-center mb-4 pt-2">
-                                <div className="input-group quantity mr-3" style={{width: '130px'}}>
-                                    <div className="input-group-btn" id="minus_div">
-                                        <button onClick={subtraction} style={{
-                                            backgroundColor: '#df8686',
-                                            padding: '10px',
-                                            display: 'inline-block',
-                                            borderRadius: '10px',
-                                            width: '35px',
-                                            border: 'none'
-                                        }}>
-                                            {/*tru*/}
-                                            <i style={{color: "white"}} className="fa fa-minus"></i>
-                                        </button>
-                                    </div>
-                                    <input style={{
-                                        borderRadius: '8px',
-                                        marginLeft: '10px',
-                                        color: 'white',
-                                        backgroundColor: '#df8686',
-                                    }} type="text" className="form-control bg-secondary text-center"
-                                           id="quantity_p"
-                                           defaultValue={quantity}
-                                           onChange={handleQuantityChange}/>
-                                    <div style={{marginLeft: '10px'}} className="input-group-btn" id="plus_div">
-                                        <button onClick={addition} style={{
-                                            backgroundColor: '#df8686',
-                                            padding: '10px',
-                                            display: 'inline-block',
-                                            borderRadius: '10px',
-                                            width: '35px',
-                                            border: 'none'
-                                        }}>
-                                            {/*cong*/}
-                                            <i style={{color: "white"}} className="fa fa-plus"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <div style={{
-                                    marginLeft: '10px',
-                                    backgroundColor: '#df8686',
-                                    padding: '10px',
-                                    display: 'inline-block',
-                                    borderRadius: '10px',
-                                    width: '128px'
-                                }}>
-                                    <a onClick={handleAddToCart} style={{display: "block", color: 'white'}}>
-                                        <i className="fa fa-shopping-cart mr-1"></i> Add to card</a>
-                                </div>
-                            </div>
-                            <div className="d-flex pt-2">
-                                <p className="text-dark font-weight-medium mb-0 mr-2">Share on:</p>
-                                <div className="d-inline-flex">
-                                    <a className="text-dark px-2" href="">
-                                        <i className="fab fa-facebook-f"></i>
-                                    </a>
-                                    <a className="text-dark px-2" href="">
-                                        <i className="fab fa-twitter"></i>
-                                    </a>
-                                    <a className="text-dark px-2" href="">
-                                        <i className="fab fa-linkedin-in"></i>
-                                    </a>
-                                    <a className="text-dark px-2" href="">
-                                        <i className="fab fa-pinterest"></i>
-                                    </a>
+
+
+
+
+
                                 </div>
                             </div>
                         </div>
+
+
+
+
                     </div>
                 </div>
             </div>
