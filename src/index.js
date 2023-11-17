@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import {BrowserRouter, Route, Routes} from "react-router-dom";
+import {BrowserRouter, Navigate, Route, Routes} from "react-router-dom";
 import Header from "./layout/Header";
 import Home from "./component/Home";
 import "slick-carousel/slick/slick.css";
@@ -20,7 +20,11 @@ import CreateCoupon from "./component/CreateCoupon";
 import UpdateCoupon from "./component/UpdateCoupon";
 import DetailProduct from "./component/DetailProduct";
 import DetailMerchant from "./component/DetailMerchant";
-import OrderManagement from "./component/OderManage/OrderManagement";
+import OderManager from "./component/oderManager/OderManager";
+import '@fortawesome/fontawesome-free/css/all.css';
+import AllOrders from "./component/oderManager/AllOrders";
+
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -43,7 +47,8 @@ root.render(
             <Route path={'/list_coupon/:id'} element={<CouponList/>}></Route>
             <Route path={'/create_Coupon/:id'} element={<CreateCoupon/>}></Route>
             <Route path={'/update_Coupon/:id'} element={<UpdateCoupon/>}></Route>
-            <Route path={'/oder_manager/:id'} element={<OrderManagement/>}></Route>
+            <Route path={'/order-manager/:id'} element={<OderManager/>}></Route>
+            <Route path={'/all-order/:id'} element={<AllOrders/>}></Route>
             <Route path={'/detail_merchant/:id'} element={
                 <>
                     <DetailMerchant/>

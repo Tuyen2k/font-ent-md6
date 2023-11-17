@@ -12,3 +12,26 @@ export function addBill(cartDetail){
         )
     })
 }
+export function findAllOrdersByMerchant(id_merchant){
+    return new Promise(require =>{
+        require(
+            axios.get(`http://localhost:8080/api/billDetail/${id_merchant}`).then(res=>{
+                return res.data
+            }).catch(Error =>{
+                return []
+            })
+        )
+    })
+}
+
+// export function searchByNameAndPhone(value){
+//     return new Promise(require =>{
+//         require(
+//             axios.get(`http://localhost:8080/api/billDetail/search/?search=value`).then(res=>{
+//                 return res.data
+//             }).catch(Error =>{
+//                 return []
+//             })
+//         )
+//     })
+// }
