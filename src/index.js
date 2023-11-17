@@ -8,7 +8,6 @@ import Home from "./component/Home";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Footer from "./layout/Footer";
-import PopupAppCart from "./layout/PopupAppCart";
 import CreateProduct from "./component/CreateProduct";
 import UpdateMerchant from "./component/UpdateMerchant";
 import ProductList from "./component/ProductList";
@@ -20,6 +19,7 @@ import CreateCoupon from "./component/CreateCoupon";
 import UpdateCoupon from "./component/UpdateCoupon";
 import DetailProduct from "./component/DetailProduct";
 import DetailMerchant from "./component/DetailMerchant";
+import UserManageOrder from "./component/UserManageOrder";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -29,7 +29,6 @@ root.render(
                 <Header/>
                 <Home/>
                 <Footer/>
-                <PopupAppCart/>
             </>}>
             </Route>
             <Route path="/list" element={<ProductList/>}></Route>
@@ -49,45 +48,10 @@ root.render(
                 </>
             }>
             </Route>
+
+            <Route path={'/user/manage-order'} element={<UserManageOrder/>}/>
+
         </Routes>
     </BrowserRouter>
 )
-// =======
-// import {ToastContainer} from "react-toastify";
-// import Login from "./component/Login";
-// import CouponList from "./component/CouponList";
-// import CreateCoupon from "./component/CreateCoupon";
-// import UpdateCoupon from "./component/UpdateCoupon";
-//
-// const root = ReactDOM.createRoot(document.getElementById('root'));
-// root.render(
-//   <BrowserRouter>
-//       <Routes>
-//           <Route path="/" element={<>
-//               <Header/>
-//               <Home/>
-//               <Footer/>
-//               <PopupAppCart/>
-//           </>}>
-//           </Route>
-//           <Route path="/list" element={<ProductList/>}></Route>
-//           <Route path="/product/create" element={<CreateProduct/>}></Route>
-//           <Route path="/product/update/:id" element={<UpdateProduct/>}></Route>
-//           <Route path={'/merchant/register'} element={<FormRegister/>}></Route>
-//           <Route path={'/merchant/update/:id'} element={<UpdateMerchant/>}></Route>
-//           <Route path={'/detailProduct/:id'} element={<DetailProduct/>}></Route>
-//           <Route path={'/list_coupon/:id'} element={<CouponList/>}></Route>
-//           <Route path={'/create_Coupon/:id'} element={<CreateCoupon/>}></Route>
-//          <Route path={'/update_Coupon/:id'} element={<UpdateCoupon/>}></Route>
-    //       <Route path={'/detail_merchant/:id'} element={
-    //           <>
-    //           <DetailMerchant/>
-    //               <Footer/>
-    //           </>
-    //       }>
-    //       </Route>
-    //   </Routes>
-//   </BrowserRouter>
-// >>>>>>> 70c31dc9bd1de1b7f200a866ed2f0f1934ee0400
-// );
 

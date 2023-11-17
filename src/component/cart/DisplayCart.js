@@ -373,7 +373,14 @@ export default function DisplayCart() {
                     ) : (
                         // cart
                         <div>
-                            <h2>Cart</h2>
+                            <div>
+                                <div style={{display: "flex", paddingTop: "10px"}}>
+                                    <div style={{width: "1150px"}}>
+                                        <h2>Cart</h2>
+                                    </div>
+                                    <Link to={"/user/manage-order"} ><h4 style={{paddingTop: "10px", color : "rgb(220,53,69)"}}>Your order</h4></Link>
+                                </div>
+                            </div>
                             <section>
                                 <div className="container">
                                     <div className="title-cart">
