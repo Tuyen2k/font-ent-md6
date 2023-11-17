@@ -247,7 +247,7 @@ export default function Header() {
                             {/*End City Select*/}
 
                             {/*Menu Item*/}
-                            <div style={{width : "900px"}}>
+                            <div style={{width : "850px"}}>
                                 <a href="" className="btn-nav-link">New Location</a>
                                 <a href="" className="btn-nav-link">Hot Deals</a>
                                 <a href="" className="btn-nav-link">Popular Brands</a>
