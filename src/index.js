@@ -20,6 +20,7 @@ import UpdateCoupon from "./component/UpdateCoupon";
 import DetailProduct from "./component/DetailProduct";
 import DetailMerchant from "./component/DetailMerchant";
 import UserManageOrder from "./component/UserManageOrder";
+import OrderManagement from "./component/OderManage/OrderManagement";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -41,6 +42,7 @@ root.render(
             <Route path={'/list_coupon/:id'} element={<CouponList/>}></Route>
             <Route path={'/create_Coupon/:id'} element={<CreateCoupon/>}></Route>
             <Route path={'/update_Coupon/:id'} element={<UpdateCoupon/>}></Route>
+            <Route path={'/oder_manager/:id'} element={<OrderManagement/>}></Route>
             <Route path={'/detail_merchant/:id'} element={
                 <>
                     <DetailMerchant/>

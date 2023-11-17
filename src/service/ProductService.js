@@ -34,6 +34,17 @@ export function getAllProductByIdMerchant(id){
     })
 }
 
+export function fillByPrice(){
+    return new Promise(resolve => {
+        resolve(
+            axios.get(`http://localhost:8080/api/products/fill_by_price`).then(res =>{
+                return res.data;
+            }).catch(Error =>{
+            })
+        )
+    })
+}
+
 export function MostPurchasedProducts(id){
     return new Promise(resolve => {
         resolve(

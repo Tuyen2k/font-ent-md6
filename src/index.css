@@ -6,8 +6,12 @@ body {
     background-color: #f6f6f6 !important;
 }
 .modal-dialog {
-    max-width: 1000px!important;
-    max-height: 100px!important;
+    max-width: 1000px;
+    max-height: 100px;
+}
+.modal-dialog-register {
+    max-width: 1500px!important;
+    max-height: 100px;
 }
 .login-buttons {
     padding-top: 30px;
@@ -678,8 +682,8 @@ hr {
     width: 150px;
 }
 .image-input{
-    width: 300px;
-    height: 200px;
+    width: 486px;
+    height: 278px;
 }
 .form-check{
     display: inline-flex !important;
@@ -824,6 +828,9 @@ div.error{
     content: attr(data-number);
 }
 
+.detail-product {
+    /* Your component-specific styles here */
+}
 .display-order{
     background-color: white;
 }

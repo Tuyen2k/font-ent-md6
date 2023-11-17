@@ -2,7 +2,7 @@ import {getAllProductByMerchant} from "../service/ProductService";
 import React, {useEffect, useRef, useState} from "react";
 import axios from "axios";
 import {deleteProduct} from "../service/ProductService";
-import {Link, useNavigate} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 
 export default function ProductList(props) {
     const [products, setProducts] = useState([]);
@@ -17,7 +17,7 @@ export default function ProductList(props) {
 
 
     useEffect(() => {
-        getAllProductByMerchant(props.id, searchInput)
+        getAllProductByMerchant(1, searchInput)
             .then((data) => {
                 let arr = data.reverse();
                 setProducts(arr);
@@ -78,11 +78,14 @@ export default function ProductList(props) {
                                            aria-describedby="search-addon" onKeyUp={(e) => searchName(e.target.value)}
                                     />
                                 </div>
-                                <span style={{marginTop: "30px"}} className="btn btn-primary">
-                                            <Link style={{color: "white"}} to={"/product/create"}>Create </Link></span>
-                                <span style={{marginTop: "30px", marginLeft: '20px'}} className="btn btn-info">
+                                <span style={{marginTop: "30px", borderRadius: '8px'}} className="btn btn-info" >
+                                            <Link style={{color: "black"}} to={"/product/create"}>Create </Link></span>
+                                <span style={{marginTop: "30px", marginLeft: '20px', borderRadius: '8px', backgroundColor: '#df8686'}} className="btn btn-light">
                                             <Link style={{color: "black"}}
                                                   to={`/list_coupon/${1}`}>List coupon</Link></span>
+                                <span style={{marginTop: "30px", marginLeft: '20px', borderRadius: '8px', backgroundColor: '#df8686'}} className="btn btn-light">
+                                            <Link style={{color: "black"}}
+                                                  to={`/oder_manager/${1}`}>Oder Manage</Link></span>
                             </div>
                         </div>
                         <div className="col-8">
@@ -120,7 +123,7 @@ export default function ProductList(props) {
                                                             onClick={() => navigate(`/product/update/${product.id_product}`)}>Update
                                                     </button>
 
-                                                    <button type="button" className="mx-2 btn btn-red"
+                                                    <button type="button" className="mx-2 btn btn-primary"
                                                             data-bs-toggle="modal" data-bs-target="#staticBackdrop"
                                                             onClick={() => displayModal(product.id_product)}>Delete
                                                     </button>
@@ -146,7 +149,7 @@ export default function ProductList(props) {
                                                                     <button type="button" className="btn btn-info"
                                                                             data-bs-dismiss="modal">Cancel
                                                                     </button>
-                                                                    <button className="mx-2 btn btn-red"
+                                                                    <button className="mx-2 btn btn-primary"
                                                                             onClick={handleDeleteProduct}
                                                                             type="button">Confirm
                                                                     </button>

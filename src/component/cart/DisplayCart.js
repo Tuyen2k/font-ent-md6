@@ -2,6 +2,7 @@ import React, {useEffect, useRef, useState} from "react";
 import {deleteCartDetail, getListCart, updateQuantity} from "../../service/CartService";
 import {Link} from "react-router-dom";
 import {addBill} from "../../service/BillService";
+import Header from "../../layout/Header";
 
 
 export default function DisplayCart() {
@@ -260,6 +261,7 @@ export default function DisplayCart() {
 
     return (
         <>
+            <Header/>
             <div className="container">
                 {carts !== undefined ? (
                     orders.length !== 0 && isOrder ? (

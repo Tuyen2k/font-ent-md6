@@ -1,10 +1,12 @@
 import BannerSlide from "./BannerSlide";
-import {useEffect, useRef, useState} from "react";
-import {findAll, findOneProduct, searchByCategory} from "../service/ProductService";
+import React, {useEffect, useRef, useState} from "react";
+import {fillByPrice, findAll, findOneProduct, MostPurchasedProducts, searchByCategory} from "../service/ProductService";
 import {getAllCategories} from "../service/CategoryService";
 import {Link} from "react-router-dom";
 import {couponByIdMerchant} from "../service/CouponService";
 import {getAllMerchantCheckDelete} from "../service/MerchantService";
+import {orderNow} from "../service/BillService";
+import {toast, ToastContainer} from "react-toastify";
 
 
 export default function Home() {
@@ -23,12 +25,16 @@ export default function Home() {
     const [coupons, setCoupons] = useState([]);
     const [coupon, setCoupon] = useState(1);
     const [merchants, setMerchants] = useState([]);
+    const [everyoneLikes, setEveryoneLikes] = useState([]);
+    const [productByPriceSale, setProductByPriceSale] = useState([]);
+    const account = JSON.parse(localStorage.getItem("userInfo"))
+
 
     useEffect(() => {
         if (shouldCallFindAll) {
             findAll().then(r => {
                 setNameProduct("New Product")
-                setProducts(r);
+                setProducts(r.slice(0, 10).reverse());
                 setShouldCallFindAll(false);
             });
         }
@@ -37,7 +43,14 @@ export default function Home() {
         })
         getAllMerchantCheckDelete().then(m => {
             let arr = m.reverse();
-            setMerchants(arr)
+            setMerchants(arr.slice(0, 10))
+        })
+        MostPurchasedProducts().then(r => {
+            const limitedProducts = r.slice(0, 10);
+            setEveryoneLikes([...limitedProducts]);
+        })
+        fillByPrice().then(r => {
+            setProductByPriceSale(r)
         })
     }, [products, shouldCallFindAll]);
 
@@ -128,9 +141,39 @@ export default function Home() {
         }
     };
 
+    const seeAllProducts = () => {
+            findAll().then(r => {
+                setNameProduct("New Product")
+                setProducts(r);
+            });
+        }
+
+    const seeAllMerchants = () => {
+        getAllMerchantCheckDelete().then(m => {
+            let arr = m.reverse();
+            setMerchants(arr)
+        })
+    }
+
+    function handleOrderNow(){
+        if (account !== null){
+            orderNow(product, account.id).then(res =>{
+                if (res === true){
+                    toast.success('Order success!',{containerId:'home-notification'});
+                }else {
+                    toast.error('An error occurred. Please check again!',{containerId:'home-notification'});
+                }
+            })
+        }else {
+            toast.error('Please login!',{containerId:'home-notification'});
+        }
+    }
 
     return (
         <>
+            <ToastContainer enableMultiContainer containerId="home-notification" position="top-center"
+                            autoClose={2000} pauseOnHover={false}
+                            style={{width: "400px"}}/>
             {/*Home*/}
             <section className="home-page">
                 <section className="top-banner loship"
@@ -218,7 +261,7 @@ export default function Home() {
                                                                 {item.name}
                                                             </div>
                                                             <div style={{ color: 'black'}} className="name mb-5">
-                                                                Purchase: {item.view}
+                                                                Purchase: {item.purchase}
                                                             </div>
                                                             <div className="promotion">
                                                                 <i className="fa-solid fa-tag"></i>
@@ -263,12 +306,153 @@ export default function Home() {
                                             ))}
 
                                         </div>
-                                        <a className="btn-view-all" href="">
+                                        <button style={{border : 'none',marginLeft: '600px'}} className="btn-view-all" onClick={seeAllProducts}>
                                             See all <i className="fa-solid fa-angle-right fa-bounce fa-lg"></i>
-                                        </a>
+                                        </button>
+
                                     </div>
                                 </section>
                                 {/*end list sp*/}
+
+
+                                {/*everyoneLikes*/}
+                                <section className="section-newsfeed">
+                                    <div className="title with-action">
+                                        <h2>Everyone Likes</h2>
+                                    </div>
+
+                                    <div className="content">
+                                        <div className="list-view">
+                                            {everyoneLikes && everyoneLikes.map(item => (
+                                                <div className="list-item eatery-item-landing">
+                                                    <Link to={`detailProduct/${item.id_product}`}>
+                                                        <div className="img-lazy figure square">
+                                                            <div className="img"
+                                                                 style={{backgroundImage: `url(${item.image})`, color: 'black'}}>
+                                                            </div>
+                                                        </div>
+                                                        <div className="content">
+                                                            <div style={{textAlign: 'center', marginTop: '8px', color: 'black'}} className="name mb-5">
+                                                                {item.name}
+                                                            </div>
+                                                            <div style={{ color: 'black'}} className="name mb-5">
+                                                                Purchase: {item.purchase}
+                                                            </div>
+                                                            <div className="promotion">
+                                                                <i className="fa-solid fa-tag"></i>
+                                                                <span style={{ color: 'black'}}>{item.priceSale} VND</span>
+                                                            </div>
+                                                        </div>
+                                                    </Link>
+                                                    <div className="name mb-5">
+                                                        <button  data-bs-toggle="modal"
+                                                                 data-bs-target="#show_product"
+                                                                 className="container-fluid.modal-body"
+                                                                 onClick={() => displayModal(item.id_product)}
+                                                                 type="button" data-toggle="modal"
+                                                                 data-target="#exampleModalLong" style={{
+                                                            backgroundColor: '#d78c8c',
+                                                            padding: '7px',
+                                                            borderRadius: '10px',
+                                                            width: '180px',
+                                                            border: 'none',
+                                                            position: 'absolute',
+                                                            left: '50%',
+                                                            transform: 'translate(-50%, -50%)',
+                                                            marginTop: '20px'
+                                                        }}>
+                                                            <a style={{display: "block", color: 'white'}}>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="19"
+                                                                     height="19"
+                                                                     fill="currentColor" className="bi bi-cash-coin"
+                                                                     viewBox="0 0 16 16">
+                                                                    <path fillRule="evenodd"
+                                                                          d="M11 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm5-4a5 5 0 1 1-10 0 5 5 0 0 1 10 0z"/>
+                                                                    <path
+                                                                        d="M9.438 11.944c.047.596.518 1.06 1.363 1.116v.44h.375v-.443c.875-.061 1.386-.529 1.386-1.207 0-.618-.39-.936-1.09-1.1l-.296-.07v-1.2c.376.043.614.248.671.532h.658c-.047-.575-.54-1.024-1.329-1.073V8.5h-.375v.45c-.747.073-1.255.522-1.255 1.158 0 .562.378.92 1.007 1.066l.248.061v1.272c-.384-.058-.639-.27-.696-.563h-.668zm1.36-1.354c-.369-.085-.569-.26-.569-.522 0-.294.216-.514.572-.578v1.1h-.003zm.432.746c.449.104.655.272.655.569 0 .339-.257.571-.709.614v-1.195l.054.012z"/>
+                                                                    <path
+                                                                        d="M1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.083c.058-.344.145-.678.258-1H3a2 2 0 0 0-2-2V3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v3.528c.38.34.717.728 1 1.154V1a1 1 0 0 0-1-1H1z"/>
+                                                                    <path
+                                                                        d="M9.998 5.083 10 5a2 2 0 1 0-3.132 1.65 5.982 5.982 0 0 1 3.13-1.567z"/>
+                                                                </svg> Order now</a>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </section>
+                                {/*end list everyoneLikes*/}
+
+                                {/*product by price sale*/}
+                                <section className="section-newsfeed">
+                                    <div className="title with-action">
+                                        <h2>Most discounts</h2>
+                                    </div>
+
+                                    <div className="content">
+                                        <div className="list-view">
+                                            {productByPriceSale && productByPriceSale.map(item => (
+                                                <div className="list-item eatery-item-landing">
+                                                    <Link to={`detailProduct/${item.id_product}`}>
+                                                        <div className="img-lazy figure square">
+                                                            <div className="img"
+                                                                 style={{backgroundImage: `url(${item.image})`, color: 'black'}}>
+                                                            </div>
+                                                        </div>
+                                                        <div className="content">
+                                                            <div style={{textAlign: 'center', marginTop: '8px', color: 'black'}} className="name mb-5">
+                                                                {item.name}
+                                                            </div>
+                                                            <div style={{ color: 'black'}} className="name mb-5">
+                                                                Purchase: {item.purchase}
+                                                            </div>
+                                                            <div className="promotion">
+                                                                <i className="fa-solid fa-tag"></i>
+                                                                <span style={{ color: 'black'}}>{item.priceSale} VND</span>
+                                                            </div>
+                                                        </div>
+                                                    </Link>
+                                                    <div className="name mb-5">
+                                                        <button  data-bs-toggle="modal"
+                                                                 data-bs-target="#show_product"
+                                                                 className="container-fluid.modal-body"
+                                                                 onClick={() => displayModal(item.id_product)}
+                                                                 type="button" data-toggle="modal"
+                                                                 data-target="#exampleModalLong" style={{
+                                                            backgroundColor: '#d78c8c',
+                                                            padding: '7px',
+                                                            borderRadius: '10px',
+                                                            width: '180px',
+                                                            border: 'none',
+                                                            position: 'absolute',
+                                                            left: '50%',
+                                                            transform: 'translate(-50%, -50%)',
+                                                            marginTop: '20px'
+                                                        }}>
+                                                            <a style={{display: "block", color: 'white'}}>
+                                                                <svg xmlns="http://www.w3.org/2000/svg" width="19"
+                                                                     height="19"
+                                                                     fill="currentColor" className="bi bi-cash-coin"
+                                                                     viewBox="0 0 16 16">
+                                                                    <path fillRule="evenodd"
+                                                                          d="M11 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm5-4a5 5 0 1 1-10 0 5 5 0 0 1 10 0z"/>
+                                                                    <path
+                                                                        d="M9.438 11.944c.047.596.518 1.06 1.363 1.116v.44h.375v-.443c.875-.061 1.386-.529 1.386-1.207 0-.618-.39-.936-1.09-1.1l-.296-.07v-1.2c.376.043.614.248.671.532h.658c-.047-.575-.54-1.024-1.329-1.073V8.5h-.375v.45c-.747.073-1.255.522-1.255 1.158 0 .562.378.92 1.007 1.066l.248.061v1.272c-.384-.058-.639-.27-.696-.563h-.668zm1.36-1.354c-.369-.085-.569-.26-.569-.522 0-.294.216-.514.572-.578v1.1h-.003zm.432.746c.449.104.655.272.655.569 0 .339-.257.571-.709.614v-1.195l.054.012z"/>
+                                                                    <path
+                                                                        d="M1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.083c.058-.344.145-.678.258-1H3a2 2 0 0 0-2-2V3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v3.528c.38.34.717.728 1 1.154V1a1 1 0 0 0-1-1H1z"/>
+                                                                    <path
+                                                                        d="M9.998 5.083 10 5a2 2 0 1 0-3.132 1.65 5.982 5.982 0 0 1 3.13-1.567z"/>
+                                                                </svg> Order now</a>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </section>
+                                {/*end list product by price sale/}
+
 
 
                                 {/*list merchant*/}
@@ -306,9 +490,9 @@ export default function Home() {
                                             </Link>
                                                 ))}
                                         </div>
-                                        <a className="btn-view-all" href="">
+                                        <button style={{border : 'none',marginLeft: '600px'}} className="btn-view-all" onClick={seeAllMerchants}>
                                             See all <i className="fa-solid fa-angle-right fa-bounce fa-lg"></i>
-                                        </a>
+                                        </button>
                                     </div>
                                 </section>
                                 {/*end list merchant*/}
@@ -353,7 +537,7 @@ export default function Home() {
                 <div className="modal-dialog modal-dialog-centered modal-lg">
                     <div className="modal-content" style={{minHeight: '75vh', minWidth: '100vh'}}>
                         <div className="modal-header">
-                            <h3 style={{marginLeft: '350px'}} className="modal-title" id="show_productLabel">ODER NOW</h3>
+                            <h3 style={{marginLeft: '350px'}} className="modal-title" id="show_productLabel">ORDER NOW</h3>
                             <button type="button" className="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                         </div>
@@ -494,11 +678,11 @@ export default function Home() {
                                 <h4 style={{ marginRight: '60px', marginBottom: 0, display: 'flex', alignItems: 'center' }}>
                                     Total money: <span style={{ color: 'red' }}>{totalMoney}</span> VND
                                 </h4>
-                                <h6 style={{ marginBottom: 0 }}>thrifty: {} </h6>
+                                {/*<h6 style={{ marginBottom: 0 }}>thrifty: {} </h6>*/}
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button style={{width: '400px', height: '40px', backgroundColor: '#df8686', border: 'none', marginRight: '240px'}} type="button" className="btn btn-secondary" data-bs-dismiss="modal">Pay now</button>
+                            <button onClick={()=>handleOrderNow()} style={{width: '400px', height: '40px', backgroundColor: '#df8686', border: 'none', marginRight: '240px'}} type="button" className="btn btn-secondary" data-bs-dismiss="modal">Pay now</button>
                         </div>
                     </div>
                 </div>

@@ -96,6 +96,18 @@ export function findMerchantById(id_merchant) {
         )
     })
 }
+export function findMerchantByAccount(id_account) {
+    return new Promise((resolve) => {
+        resolve(
+            axios.get("http://localhost:8080/api/merchants/find-merchant/" + id_account)
+                .then(response => {
+                    return response.data;
+                }).catch(() => {
+                return {}
+            })
+        )
+    })
+}
 
 export function findAllActivity() {
     return new Promise((resolve) => {
