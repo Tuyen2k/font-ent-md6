@@ -10,6 +10,7 @@ export default function DisplayCart() {
     const [carts, setCart] = useState(undefined);
     const [list, setList] = useState([]);
     const [orders, setOrders] = useState([]);
+    const [isOrder, setIsOrder] = useState(false);
     const [check, setCheck] = useState(false);
     const btn_modal = useRef()
     const [message, setMessage] = useState("");
@@ -89,11 +90,10 @@ export default function DisplayCart() {
 
 
     useEffect(() => {
-        console.log(account)
+        setCart(undefined)
         getListCart(account.id).then(res => {
             if (res.length !== 0) {
                 setList(res)
-                console.log(res)
                 groupByMerchant(res)
             }
         })
@@ -219,13 +219,13 @@ export default function DisplayCart() {
             }
         }
         if (isExist) {
-            setTotal((prev)=>(prev - item.price * item.quantity))
+            setTotal((prev) => (prev - item.price * item.quantity))
             orders.splice(index, 1)
         } else {
             for (let i = 0; i < list.length; i++) {
                 if (list[i].id_cartDetail == id_cartDetail) {
                     orders.push(list[i])
-                    setTotal((prev)=>(prev + list[i].price * list[i].quantity))
+                    setTotal((prev) => (prev + list[i].price * list[i].quantity))
                 }
             }
         }
@@ -237,6 +237,8 @@ export default function DisplayCart() {
     function handleAddBill() {
         addBill(orders).then(res => {
             if (res === true) {
+                setIsOrder(false)
+                setCheck(!check)
                 setMessage("Order success. Waiting for merchant confirm!")
                 btn_modal.current.click()
             } else {
@@ -246,212 +248,258 @@ export default function DisplayCart() {
         })
     }
 
+    function handleCheckOrder() {
+        if (orders.length !== 0) {
+            setIsOrder(true)
+        } else {
+            setMessage("Please select the product to make payment!")
+            btn_modal.current.click()
+        }
+    }
+
 
     return (
         <>
             <div className="container">
                 {carts !== undefined ? (
-                        // {orders.length !== 0 && checkOrder ?():()}
-                    <div>
-                        <h3>Cart</h3>
-                        <section>
-                            <div className="container">
-                                <div className="title-cart">
-                                    <div className="header-item">
-                                        <div className="row">
-                                            <div className="col-1"><input onClick={handleAllOrder}
-                                                                          className="input-checkbox"
-                                                                          id="checkbox-all" type="checkbox"/></div>
-                                            <div className="col-4">Product</div>
-                                            <div className="col-2">Price</div>
-                                            <div className="col-2">Quantity</div>
-                                            <div className="col-2">Amount</div>
-                                            <div className="col-1">Action</div>
+                    orders.length !== 0 && isOrder ? (
+                        // order
+                        <div className="container">
+                            <h2>Bill</h2>
+                            <section className="row" style={{margin: "10px"}}>
+                                <div className="display-order col-6">
+                                    <h3 className="title">Delivery address</h3>
+                                    <div>
+                                        <div className="input mb-3">
+                                            <label htmlFor="name"><h4>Username</h4></label>
+                                            <input type="text" className="form-control"
+                                                   value={account.name} aria-label="Username"
+                                                   aria-describedby="basic-addon1"/>
+                                        </div>
+                                        <div className="input mb-3">
+                                            <label htmlFor="numberphone"><h4>Number Phone</h4></label>
+                                            <input type="text" id="numberphone" className="form-control"
+                                                   value={account.name} aria-label="Username"
+                                                   aria-describedby="basic-addon1"/>
+                                        </div>
+                                        <div className="input mb-3 row" style={{width: "unset"}}>
+                                            <div className="input mb-3 col-6">
+                                                <label htmlFor="city"><h4>City</h4></label>
+                                                <input type="text" id="city" className="form-control"
+                                                       value={account.address.city.name} aria-label="Username"
+                                                       aria-describedby="basic-addon1"/>
+                                            </div>
+                                            <div className="input mb-3 col-6">
+                                                <label htmlFor="district"><h4>District</h4></label>
+                                                <input type="text" id="district" className="form-control"
+                                                       value={account.address.district.name} aria-label="Username"
+                                                       aria-describedby="basic-addon1"/>
+                                            </div>
+                                        </div>
+                                        <div className="input mb-3 row" style={{width: "unset"}}>
+                                            <div className="input mb-3 col-6">
+                                                <label htmlFor="ward"><h4>Ward</h4></label>
+                                                <input type="text" id="ward" className="form-control"
+                                                       value={account.address.ward.name} aria-label="Username"
+                                                       aria-describedby="basic-addon1"/>
+                                            </div>
+                                            <div className="input mb-3 col-6">
+                                                <label htmlFor="detail"><h4>Detail</h4></label>
+                                                <input type="text" id="detail" className="form-control"
+                                                       value={account.address.address_detail} aria-label="Username"
+                                                       aria-describedby="basic-addon1"/>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        </section>
-                        {carts.map((cart, index) => {
-                            return (
-                                <section key={index}>
-                                    <div className="container">
-                                        <div className="display-cart">
-                                            <div className="header-item">
-                                                <div className="row">
-                                                    <div className="col-1"><input className="input-checkbox"
-                                                                                  onClick={() => handleOrderByMerchant(cart.merchant.id_merchant)}
-                                                                                  id={`checkbox-${cart.merchant.id_merchant}`}
-                                                                                  type="checkbox"/>
+                                <div className="display-order col-6">
+                                    <h3 className="title">Summary</h3>
+                                    <div>
+                                        <div className="row">
+                                            <span className="text col-6"><h4>The number of products </h4></span>
+                                            <span
+                                                className="right number col-6"><h4><strong>{orders.length}</strong></h4></span>
+                                        </div>
+                                        <div className="row">
+                                            <span className="text col-6"><h4>The total amount</h4> </span>
+                                            <span
+                                                className="right number col-6"><h4><strong>{total}</strong></h4></span>
+                                        </div>
+                                        <div className="row">
+                                            <span className="text col-6"><h4>Discount code</h4> </span>
+                                            <h4 className=" col-6"><select name="" id="">
+                                                <option value="">Choice voucher coupon</option>
+                                                <option value="">1</option>
+                                                <option value="">2</option>
+                                                <option value="">3</option>
+                                            </select></h4>
+
+                                        </div>
+                                        <div className="row">
+                                            <span className="text col-6"><h4>Reduced amount</h4> </span>
+                                            <span
+                                                className="right number col-6"><h4><strong>{total}</strong></h4></span>
+                                        </div>
+                                        <div className="row">
+                                            <span className="text col-6"><h4>Total payment amount</h4> </span>
+                                            <span
+                                                className="right number col-6"><h4><strong>{total}</strong></h4></span>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-6"><h4>Payment methods</h4></div>
+                                            <h4 className=" col-6">
+                                                <select aria-label="Default select example">
+                                                    <option>Choice payment method</option>
+                                                    <option value="1">Payment on delivery</option>
+                                                    <option value="2">Payment via e-wallet</option>
+                                                </select>
+                                            </h4>
+                                        </div>
+                                        <hr/>
+                                        <div className="row">
+                                            <div className="col-6" onClick={() => setIsOrder(false)}><h4
+                                                style={{color: "rgb(220,53,69)", paddingTop: "10px"}}>Back cart</h4>
+                                            </div>
+                                            <div className="col-6" onClick={handleAddBill}>
+                                                <button className="btn btn-outline-danger"><h4>Payment</h4></button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </section>
+                        </div>
+                        // end orders
+                    ) : (
+                        // cart
+                        <div>
+                            <h2>Cart</h2>
+                            <section>
+                                <div className="container">
+                                    <div className="title-cart">
+                                        <div className="header-item">
+                                            <div className="row">
+                                                <div className="col-1"><input onClick={handleAllOrder}
+                                                                              className="input-checkbox"
+                                                                              id="checkbox-all" type="checkbox"/></div>
+                                                <div className="col-4">Product</div>
+                                                <div className="col-2">Price</div>
+                                                <div className="col-2">Quantity</div>
+                                                <div className="col-2">Amount</div>
+                                                <div className="col-1">Action</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
+                            {carts.map((cart, index) => {
+                                return (
+                                    <section key={index}>
+                                        <div className="container">
+                                            <div className="display-cart">
+                                                <div className="header-item">
+                                                    <div className="row">
+                                                        <div className="col-1"><input className="input-checkbox"
+                                                                                      onClick={() => handleOrderByMerchant(cart.merchant.id_merchant)}
+                                                                                      id={`checkbox-${cart.merchant.id_merchant}`}
+                                                                                      type="checkbox"/>
+                                                        </div>
+                                                        <div className="col-11">{cart.merchant.name}</div>
                                                     </div>
-                                                    <div className="col-11">{cart.merchant.name}</div>
+                                                </div>
+                                                <div className="item-list">
+                                                    {cart.list.map((item, count) => {
+                                                        return (
+                                                            <div className="item-cart" key={count}>
+                                                                <div className="row item">
+                                                                    <div className="col-1"><input
+                                                                        className="input-checkbox"
+                                                                        type="checkbox"
+                                                                        id={`checkbox-item-${cart.merchant.id_merchant}`}
+                                                                        onClick={() => handleOrderCart(cart.merchant.id_merchant, item.id_cartDetail)}
+                                                                    />
+                                                                    </div>
+                                                                    <div className="col-4 row">
+                                                                        <div className="col-4">
+                                                                            <img className="img-cart"
+                                                                                 src={item.product.image}
+                                                                                 alt="image"/>
+                                                                        </div>
+                                                                        <div className="col-8 item-name">
+                                                                            {item.product.name}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="col-2"><strong><span
+                                                                        className="number">{item.price.toLocaleString()}</span> VND</strong>
+                                                                    </div>
+                                                                    <div className="col-2">
+                                                                        <div style={{display: "flex"}}>
+                                                                            <button className="btn px-2"
+                                                                                    onClick={() => handleMinus(item.id_cartDetail)}>
+                                                                                <i className="fas fa-minus"></i>
+                                                                            </button>
+                                                                            <input id="form1" min="0" name="quantity"
+                                                                                   value={item.quantity}
+                                                                                   type="number"
+                                                                                   className="form-control form-control-sm"/>
+                                                                            <button className="btn px-2"
+                                                                                    onClick={() => handlePlus(item.id_cartDetail)}>
+                                                                                <i className="fas fa-plus"></i>
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="col-2"><strong><span
+                                                                        className="number">{(item.price * item.quantity).toLocaleString()}</span> VND</strong>
+                                                                    </div>
+                                                                    <div className="col-1"
+                                                                         onClick={() => deleteCart(item.id_cartDetail)}>
+                                                                        <i
+                                                                            className="fa-solid fa-trash fa-lg"
+                                                                            style={{color: "#ff0000"}}></i>
+                                                                    </div>
+                                                                </div>
+                                                                <hr/>
+                                                            </div>
+
+                                                        )
+                                                    })}
                                                 </div>
                                             </div>
-                                            <div className="item-list">
-                                                {cart.list.map((item, count) => {
-                                                    return (
-                                                        <div className="item-cart" key={count}>
-                                                            <div className="row item">
-                                                                <div className="col-1"><input className="input-checkbox"
-                                                                                              type="checkbox"
-                                                                                              id={`checkbox-item-${cart.merchant.id_merchant}`}
-                                                                                              onClick={() => handleOrderCart(cart.merchant.id_merchant, item.id_cartDetail)}
-                                                                />
-                                                                </div>
-                                                                <div className="col-4 row">
-                                                                    <div className="col-4">
-                                                                        <img className="img-cart"
-                                                                             src={item.product.image}
-                                                                             alt="image"/>
-                                                                    </div>
-                                                                    <div className="col-8 item-name">
-                                                                        {item.product.name}
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-2"><strong><span
-                                                                    className="number">{item.price.toLocaleString()}</span> VND</strong>
-                                                                </div>
-                                                                <div className="col-2">
-                                                                    <div style={{display: "flex"}}>
-                                                                        <button className="btn px-2"
-                                                                                onClick={() => handleMinus(item.id_cartDetail)}>
-                                                                            <i className="fas fa-minus"></i>
-                                                                        </button>
-                                                                        <input id="form1" min="0" name="quantity"
-                                                                               value={item.quantity}
-                                                                               type="number"
-                                                                               className="form-control form-control-sm"/>
-                                                                        <button className="btn px-2"
-                                                                                onClick={() => handlePlus(item.id_cartDetail)}>
-                                                                            <i className="fas fa-plus"></i>
-                                                                        </button>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-2"><strong><span
-                                                                    className="number">{(item.price * item.quantity).toLocaleString()}</span> VND</strong>
-                                                                </div>
-                                                                <div className="col-1"
-                                                                     onClick={() => deleteCart(item.id_cartDetail)}><i
-                                                                    className="fa-solid fa-trash fa-lg"
-                                                                    style={{color: "#ff0000"}}></i>
-                                                                </div>
-                                                            </div>
-                                                            <hr/>
-                                                        </div>
+                                        </div>
+                                    </section>
+                                )
+                            })}
+                            {/*end cart*/}
 
-                                                    )
-                                                })}
-                                            </div>
+                            {/*total amount*/}
+                            <section>
+                                <div className="container">
+                                    <div className="display-cart">
+                                        <h5 className="mb-0"><Link to={"/"}
+                                                                   className="text-body"><i
+                                            className="fas fa-long-arrow-alt-left me-2"></i>Back
+                                            Home</Link></h5>
+                                        <div className="row">
+                                            <div className="col-6"></div>
+                                            <h4 className="col-4" style={{color: "red"}}>Total amount: <strong><span
+                                                className="number">{total.toLocaleString()}</span></strong> VND</h4>
+                                            <button className="btn btn-outline-danger col-2"
+                                                    onClick={handleCheckOrder}>Order
+                                            </button>
                                         </div>
                                     </div>
-                                </section>
-                            )
-                        })}
-                        <section>
-                            <div className="container">
-                                <div className="display-cart">
-                                    <h5 className="mb-0"><Link to={"/"}
-                                                               className="text-body"><i
-                                        className="fas fa-long-arrow-alt-left me-2"></i>Back
-                                        Home</Link></h5>
-                                    <div className="row">
-                                        <div className="col-6"></div>
-                                        <h4 className="col-4" style={{color: "red"}}>Total amount: <strong><span
-                                            className="number">{total.toLocaleString()}</span></strong> VND</h4>
-                                        <button className="btn btn-outline-danger col-2">Order</button>
-                                    </div>
                                 </div>
-                            </div>
-                        </section>
-                    </div>
+                            </section>
+                        </div>
+                    )
                 ) : (
-                    <h3 style={{textAlign: "center", marginTop: "100px"}}>Your cart is empty, let's go shopping</h3>
+                    <div>
+                        <h3 style={{textAlign: "center", marginTop: "100px"}}>Your cart is empty, let's go shopping</h3>
+                        <Link to={"/"}>
+                            <button className="btn-shopping btn btn-outline-danger"><h4>Go to shopping now</h4></button>
+                        </Link>
+                    </div>
                 )}
-
-                {/*order*/}
-                <div className="container">
-                    <h2>Bill</h2>
-                    <section className="row">
-                        <div className="col-6">
-                            <h3 className="title">Delivery address</h3>
-                            <div>
-                                <div className="input mb-3">
-                                    <label htmlFor="name">Username</label>
-                                    <input type="text" id="name" className="form-control"
-                                           value={account.name} aria-label="Username" aria-describedby="basic-addon1"/>
-                                </div>
-                                <div className="input mb-3">
-                                    <label htmlFor="name">Number Phone</label>
-                                    <input type="text" id="name" className="form-control"
-                                           value={account.name} aria-label="Username" aria-describedby="basic-addon1"/>
-                                </div>
-                                <div className="input mb-3 row" style={{width: "unset"}}>
-                                    <div className="input mb-3 col-6">
-                                        <label htmlFor="name">City</label>
-                                        <input type="text" id="name" className="form-control"
-                                               value={account.address.city.name} aria-label="Username"
-                                               aria-describedby="basic-addon1"/>
-                                    </div>
-                                    <div className="input mb-3 col-6">
-                                        <label htmlFor="name">District</label>
-                                        <input type="text" id="name" className="form-control"
-                                               value={account.address.district.name} aria-label="Username"
-                                               aria-describedby="basic-addon1"/>
-                                    </div>
-                                </div>
-                                <div className="input mb-3 row" style={{width: "unset"}}>
-                                    <div className="input mb-3 col-6">
-                                        <label htmlFor="name">Ward</label>
-                                        <input type="text" id="name" className="form-control"
-                                               value={account.address.ward.name} aria-label="Username"
-                                               aria-describedby="basic-addon1"/>
-                                    </div>
-                                    <div className="input mb-3 col-6">
-                                        <label htmlFor="name">Detail</label>
-                                        <input type="text" id="name" className="form-control"
-                                               value={account.address.address_detail} aria-label="Username"
-                                               aria-describedby="basic-addon1"/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className="col-6">
-                            <h3 className="title">Summary</h3>
-                            <div>
-                                <div className="row">
-                                    <span className="text col-6">Số lượng sản phẩm </span>
-                                    <span className="right number col-6"><strong>{orders.length}</strong></span>
-                                </div>
-                                <div className="row">
-                                    <span className="text col-6">Tổng số tiền </span>
-                                    <span className="right number col-6"><strong>{total}</strong></span>
-                                </div>
-                                <div className="row">
-                                    <span className="text col-6">Mã giảm giá </span>
-                                    <span className="right number col-6"><select name="" id="">
-                                        <option value="">1</option>
-                                        <option value="">2</option>
-                                        <option value="">3</option>
-                                    </select></span>
-                                </div>
-                                <div className="row">
-                                    <span className="text col-6">Số tiền giảm </span>
-                                    <span className="right number col-6"><strong>{total}</strong></span>
-                                </div>
-                                <div className="row">
-                                    <span className="text col-6">Tồng tiền thanh toán </span>
-                                    <span className="right number col-6"><strong>{total}</strong></span>
-                                </div>
-                                <div className="row">
-                                    <div className="col-6">Back cart</div>
-                                    <div className="col-6" onClick={handleAddBill}>Thanh toán</div>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                </div>
-                {/*end order*/}
-
             </div>
             {/*button modal*/}
             <button type="button" ref={btn_modal} className="btn btn-primary" data-bs-toggle="modal"
