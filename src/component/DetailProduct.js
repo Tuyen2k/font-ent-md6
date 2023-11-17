@@ -4,6 +4,7 @@ import React, {useEffect, useRef, useState} from "react";
 import {addToCart} from "../service/CartService";
 import {findOneProduct, getAllProductByIdMerchant, MostPurchasedProducts} from "../service/ProductService";
 import {couponByIdMerchant} from "../service/CouponService";
+import Header from "../layout/Header";
 
 function DetailProduct() {
     let {id} = useParams();
@@ -48,6 +49,7 @@ function DetailProduct() {
         if (currentValue <= 19) {
             let newValue = currentValue + 1;
             quantityInput.value = newValue;
+            setQuantity(newValue);
         } else {
             quantityInput.value = currentValue
         }
@@ -58,27 +60,32 @@ function DetailProduct() {
         if (currentValue >= 2) {
             let newValue = currentValue - 1;
             quantityInput.value = newValue;
+            setQuantity(newValue);
         } else {
             quantityInput.value = currentValue
         }
     }
 
     const handleAddToCart = () => {
-        let price = document.getElementById("price_sale").value
-        let quantity = document.getElementById("quantity_p").value
-        let cartDetail = {price: price, quantity: quantity, product: product}
-        console.log(cartDetail)
-        addToCart(account.id, cartDetail).then(res => {
-            if (res === true) {
-                setMessage("Add to cart success!!!")
-                btn_modal.current.click()
-            }
-        })
+        if (account !== null){
+            let cartDetail = {price: product.priceSale, quantity: quantity, product: product}
+            console.log(cartDetail)
+            addToCart(account.id, cartDetail).then(res => {
+                if (res === true) {
+                    setMessage("Add to cart success!!!")
+                    btn_modal.current.click()
+                }
+            })
+        }else {
+            setMessage("Please login!!!")
+            btn_modal.current.click()
+        }
     }
 
 
     return (
         <>
+            <Header/>
             <Link to={"/"}>
                 <svg style={{color: 'black'}} xmlns="http://www.w3.org/2000/svg" width="40" height="40"
                      fill="currentColor" className="bi bi-x" viewBox="0 0 16 16">
@@ -114,11 +121,11 @@ function DetailProduct() {
                                                 </div>
                                                 <span>{product.purchase}</span>
                                             </div>
-                                            <div className="mt-1 mb-1 spec-1">
+                                            <div className="mt-1 mb-1 spec-1" style={{width: "400px"}}>
                                                 <h5><Link
                                                  to={`/detail_merchant/${merchant.id_merchant}`}>{merchant.name} - Shop Online</Link></h5>
                                             </div>
-                                            <div className="mt-1 mb-1 spec-1">
+                                            <div className="mt-1 mb-1 spec-1" >
                                                 <span style={{fontSize: '20px'}}>Categories: </span>
                                                     {product.categories && product.categories.map(item => (
                                                         <span style={{marginLeft: '3px', fontSize: '18px'}}>{item.name}. </span>
@@ -128,7 +135,7 @@ function DetailProduct() {
                                                 <span style={{fontSize: '20px'}}>Time make : </span>
                                                 <span style={{fontSize: '18px'}}>{product.timeMake}</span>
                                             </div>
-                                                <div className="d-flex flex-row align-items-center">
+                                                <div className="d-flex flex-row align-items-center" style={{width: "400px"}}>
                                                     <del style={{marginRight: '8px', marginTop: '5px', marginBottom: '10px'}}
                                                         className="mr-1">{product.price} <del>VND</del></del>
                                                     <span style={{marginBottom: '8px'}} className="strike-text">
@@ -218,6 +225,7 @@ function DetailProduct() {
                                     {products && products.map(item => (
                                         <button onClick={() => {
                                             setProduct(item)
+                                            setQuantity(1)
                                             setMerchant(item.merchant)
                                         }} className="list-item eatery-item-landing">
                                             <div className="img-lazy figure square">
@@ -305,7 +313,7 @@ function DetailProduct() {
                                     {everyoneLikes && everyoneLikes.map(item => (
                                         <button onClick={() => {
                                             setProduct(item)
-
+                                            setQuantity(1)
                                             setMerchant(item.merchant)
                                         }} className="list-item eatery-item-landing">
                                             <div className="img-lazy figure square">

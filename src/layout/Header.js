@@ -353,7 +353,7 @@ export default function Header() {
                             {/*</div>*/}
                             <div className="user-nav-menu">
                                 {user ? (
-                                    <Link to={"cart/account"}><i className="fa-solid fa-cart-shopping fa-lg"
+                                    <Link to={"/cart/account"}><i className="fa-solid fa-cart-shopping fa-lg"
                                                                  style={{color: "#ff0000"}}></i></Link>
                                 ) : (
                                     <span onClick={notificationLogin}><i className="fa-solid fa-cart-shopping fa-lg"
