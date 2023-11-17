@@ -399,7 +399,7 @@ export default function Header() {
                                                                name="password"/>
                                                         <ErrorMessage className="error" name="password"
                                                                       component="div"/>
-                                                    </div>
+                                                    </div>git
                                                     <div className="mb-3">
                                                         <label className="form-label">Confirm Password</label>
                                                         <Field type="password"
