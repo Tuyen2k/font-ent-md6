@@ -263,6 +263,7 @@ export default function DisplayCart() {
         <>
             <Header/>
             <div className="container">
+
                 {carts !== undefined ? (
                     orders.length !== 0 && isOrder ? (
                         // order
@@ -503,6 +504,13 @@ export default function DisplayCart() {
                     )
                 ) : (
                     <div>
+                        <div>
+                            <div style={{display: "flex", paddingTop: "10px"}}>
+                                <div style={{width: "1150px"}}>
+                                </div>
+                                <Link to={"/user/manage-order"} ><h4 style={{paddingTop: "10px", color : "rgb(220,53,69)"}}>Your order</h4></Link>
+                            </div>
+                        </div>
                         <h3 style={{textAlign: "center", marginTop: "100px"}}>Your cart is empty, let's go shopping</h3>
                         <Link to={"/"}>
                             <button className="btn-shopping btn btn-outline-danger"><h4>Go to shopping now</h4></button>

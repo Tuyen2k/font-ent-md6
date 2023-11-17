@@ -319,6 +319,9 @@ i {
     color: black !important;
     font-size: 30px !important;
 }
+.slick-arrow{
+    background: none !important;
+}
 
 .slick-slide{
     width:394px;

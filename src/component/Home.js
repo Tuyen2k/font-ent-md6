@@ -306,9 +306,9 @@ export default function Home() {
                                             ))}
 
                                         </div>
-                                        <button style={{border : 'none',marginLeft: '600px'}} className="btn-view-all" onClick={seeAllProducts}>
+                                        <a className="btn-view-all" onClick={seeAllProducts}>
                                             See all <i className="fa-solid fa-angle-right fa-bounce fa-lg"></i>
-                                        </button>
+                                        </a>
 
                                     </div>
                                 </section>
@@ -490,9 +490,9 @@ export default function Home() {
                                             </Link>
                                                 ))}
                                         </div>
-                                        <button style={{border : 'none',marginLeft: '600px'}} className="btn-view-all" onClick={seeAllMerchants}>
+                                        <a className="btn-view-all" onClick={seeAllMerchants}>
                                             See all <i className="fa-solid fa-angle-right fa-bounce fa-lg"></i>
-                                        </button>
+                                        </a>
                                     </div>
                                 </section>
                                 {/*end list merchant*/}
