@@ -13,7 +13,7 @@ function DetailProduct() {
     const [everyoneLikes, setEveryoneLikes] = useState([]);
     const [merchant, setMerchant] = useState({})
     const [quantity, setQuantity] = useState(1);
-    const account = JSON.parse(localStorage.getItem("account"))
+    const account = JSON.parse(localStorage.getItem("userInfo"))
     const btn_modal = useRef()
     const [message, setMessage] = useState("");
 
@@ -68,7 +68,7 @@ function DetailProduct() {
         let quantity = document.getElementById("quantity_p").value
         let cartDetail = {price: price, quantity: quantity, product: product}
         console.log(cartDetail)
-        addToCart(11, cartDetail).then(res => {
+        addToCart(account.id, cartDetail).then(res => {
             if (res === true) {
                 setMessage("Add to cart success!!!")
                 btn_modal.current.click()
