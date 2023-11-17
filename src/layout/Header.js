@@ -167,6 +167,11 @@ export default function Header() {
         setPassword("")
         // navigate('/');
     };
+
+    const notificationLogin=()=>{
+        toast.error('Please log in!', {containerId : "page"});
+    }
+
     return (
         <>
             <header>
@@ -208,6 +213,8 @@ export default function Header() {
                     </section>
                     {/*End Topbar*/}
                 </nav>
+                <ToastContainer enableMultiContainer containerId={"page"} position="top-right" autoClose={2000} pauseOnHover={false}
+                                style={{width: "400px"}}/>
                 <nav className="navbar">
                     {/*Navbar*/}
                     <div className="container">
@@ -239,7 +246,7 @@ export default function Header() {
                             <a href="" className="btn-nav-link">Vegan Location</a>
 
                             {/*End Menu Item*/}
-                            <div className="blank"></div>
+                            {/*<div className="blank"></div>*/}
                             {/*Login*/}
                             {user ? (
                                 <div className="nav-item user-panel">
@@ -334,6 +341,32 @@ export default function Header() {
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            {/*<div className="user-nav-menu text-lg-right">*/}
+                            {/*    <div className="nav-item user-panel">*/}
+                            {/*        <div className="user-panel">*/}
+                            {/*            <span className="btn bg-light-gray text-black btn-login">*/}
+                            {/*                <Link style={{color: "black"}} to={"/merchant/register"}>Register Merchant</Link></span>*/}
+                            {/*        </div>*/}
+                            {/*    </div>*/}
+                            {/*</div>*/}
+                            {/*<div className="btn-nav-city-select">*/}
+                            {/*   Merchant*/}
+                            {/*    <i className="fa-solid fa-sort-down"></i>*/}
+                            {/*    <ul className="menu-nav-city-select">*/}
+                            {/*        <li className="city-item"><Link style={{color : "black"}} to={"merchant/register"}>Register Merchant</Link></li>*/}
+                            {/*        <li className="city-item"><Link style={{color : "black"}} to={"merchant/update/24"}>Update Merchant</Link></li>*/}
+                            {/*        <li className="city-item"><Link style={{color : "black"}} to={"list"}>List</Link></li>*/}
+                            {/*    </ul>*/}
+                            {/*</div>*/}
+                            <div className="user-nav-menu">
+                                {user ? (
+                                    <Link to={"/cart/account"}><i className="fa-solid fa-cart-shopping fa-lg"
+                                                                 style={{color: "#ff0000"}}></i></Link>
+                                ) : (
+                                    <span onClick={notificationLogin}><i className="fa-solid fa-cart-shopping fa-lg"
+                                                                 style={{color: "#ff0000"}}></i></span>
+                                )}
                             </div>
                             {/*End login modal*/}
                             {/*Register modal*/}
