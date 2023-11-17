@@ -5,6 +5,8 @@ import {getAllCategories} from "../service/CategoryService";
 import {Link} from "react-router-dom";
 import {couponByIdMerchant} from "../service/CouponService";
 import {getAllMerchantCheckDelete} from "../service/MerchantService";
+import {orderNow} from "../service/BillService";
+import {toast, ToastContainer} from "react-toastify";
 
 
 export default function Home() {
@@ -25,6 +27,7 @@ export default function Home() {
     const [merchants, setMerchants] = useState([]);
     const [everyoneLikes, setEveryoneLikes] = useState([]);
     const [productByPriceSale, setProductByPriceSale] = useState([]);
+    const account = JSON.parse(localStorage.getItem("userInfo"))
 
 
     useEffect(() => {
@@ -152,9 +155,25 @@ export default function Home() {
         })
     }
 
+    function handleOrderNow(){
+        if (account !== null){
+            orderNow(product, account.id).then(res =>{
+                if (res === true){
+                    toast.success('Order success!',{containerId:'home-notification'});
+                }else {
+                    toast.error('An error occurred. Please check again!',{containerId:'home-notification'});
+                }
+            })
+        }else {
+            toast.error('Please login!',{containerId:'home-notification'});
+        }
+    }
 
     return (
         <>
+            <ToastContainer enableMultiContainer containerId="home-notification" position="top-center"
+                            autoClose={2000} pauseOnHover={false}
+                            style={{width: "400px"}}/>
             {/*Home*/}
             <section className="home-page">
                 <section className="top-banner loship"
@@ -518,7 +537,7 @@ export default function Home() {
                 <div className="modal-dialog modal-dialog-centered modal-lg">
                     <div className="modal-content" style={{minHeight: '75vh', minWidth: '100vh'}}>
                         <div className="modal-header">
-                            <h3 style={{marginLeft: '350px'}} className="modal-title" id="show_productLabel">ODER NOW</h3>
+                            <h3 style={{marginLeft: '350px'}} className="modal-title" id="show_productLabel">ORDER NOW</h3>
                             <button type="button" className="btn-close" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                         </div>
@@ -659,11 +678,11 @@ export default function Home() {
                                 <h4 style={{ marginRight: '60px', marginBottom: 0, display: 'flex', alignItems: 'center' }}>
                                     Total money: <span style={{ color: 'red' }}>{totalMoney}</span> VND
                                 </h4>
-                                <h6 style={{ marginBottom: 0 }}>thrifty: {} </h6>
+                                {/*<h6 style={{ marginBottom: 0 }}>thrifty: {} </h6>*/}
                             </div>
                         </div>
                         <div className="modal-footer">
-                            <button style={{width: '400px', height: '40px', backgroundColor: '#df8686', border: 'none', marginRight: '240px'}} type="button" className="btn btn-secondary" data-bs-dismiss="modal">Pay now</button>
+                            <button onClick={()=>handleOrderNow()} style={{width: '400px', height: '40px', backgroundColor: '#df8686', border: 'none', marginRight: '240px'}} type="button" className="btn btn-secondary" data-bs-dismiss="modal">Pay now</button>
                         </div>
                     </div>
                 </div>

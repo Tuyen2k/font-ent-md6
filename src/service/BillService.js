@@ -12,3 +12,18 @@ export function addBill(cartDetail){
         )
     })
 }
+
+export function orderNow(product, id_account){
+    return new Promise(require =>{
+        require(
+            require(
+                axios.post(`http://localhost:8080/api/bill/order-now/${id_account}`,product).then(res=>{
+                    console.log(res)
+                    return true
+                }).catch(Error =>{
+                    return false
+                })
+            )
+        )
+    })
+}
