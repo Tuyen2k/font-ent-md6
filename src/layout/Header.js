@@ -145,18 +145,18 @@ export default function Header() {
         try {
             const response = await loginUser(username, password);
             localStorage.setItem('userInfo', JSON.stringify(response.data));
-            if (response.data.authorities[0].authority === "ROLE_MERCHANT") {
+            if (response.data.authorities[0].authority === "ROLE_MERCHANT"){
                 const merchant = await findMerchantByAccount(response.data.id)
                 localStorage.setItem("merchant", JSON.stringify(merchant))
             }
             setUser(response)
-            toast.success('Logged in successfully!', {containerId: 'login'});
+            toast.success('Logged in successfully!',{containerId:'login'});
             setExist(!isExist)
             setTimeout(() => {
                 window.document.getElementById("modal-login-close").click();
             }, 3000)
         } catch (error) {
-            toast.error('Incorrect user or password, try again!', {containerId: 'login'});
+            toast.error('Incorrect user or password, try again!', {containerId:'login'});
         }
     }
 
@@ -177,6 +177,11 @@ export default function Header() {
         setPassword("")
         // navigate('/');
     };
+
+    const notificationLogin=()=>{
+        toast.error('Please log in!', {containerId : "page"});
+    }
+
     return (
         <>
             <header>
@@ -218,6 +223,8 @@ export default function Header() {
                     </section>
                     {/*End Topbar*/}
                 </nav>
+                <ToastContainer enableMultiContainer containerId={"page"} position="top-right" autoClose={2000} pauseOnHover={false}
+                                style={{width: "400px"}}/>
                 <nav className="navbar">
                     {/*Navbar*/}
                     <div className="container">
@@ -347,6 +354,32 @@ export default function Header() {
                                         </div>
                                     </div>
                                 </div>
+                            </div>
+                            {/*<div className="user-nav-menu text-lg-right">*/}
+                            {/*    <div className="nav-item user-panel">*/}
+                            {/*        <div className="user-panel">*/}
+                            {/*            <span className="btn bg-light-gray text-black btn-login">*/}
+                            {/*                <Link style={{color: "black"}} to={"/merchant/register"}>Register Merchant</Link></span>*/}
+                            {/*        </div>*/}
+                            {/*    </div>*/}
+                            {/*</div>*/}
+                            {/*<div className="btn-nav-city-select">*/}
+                            {/*   Merchant*/}
+                            {/*    <i className="fa-solid fa-sort-down"></i>*/}
+                            {/*    <ul className="menu-nav-city-select">*/}
+                            {/*        <li className="city-item"><Link style={{color : "black"}} to={"merchant/register"}>Register Merchant</Link></li>*/}
+                            {/*        <li className="city-item"><Link style={{color : "black"}} to={"merchant/update/24"}>Update Merchant</Link></li>*/}
+                            {/*        <li className="city-item"><Link style={{color : "black"}} to={"list"}>List</Link></li>*/}
+                            {/*    </ul>*/}
+                            {/*</div>*/}
+                            <div className="user-nav-menu">
+                                {user ? (
+                                    <Link to={"/cart/account"}><i className="fa-solid fa-cart-shopping fa-lg"
+                                                                 style={{color: "#ff0000"}}></i></Link>
+                                ) : (
+                                    <span onClick={notificationLogin}><i className="fa-solid fa-cart-shopping fa-lg"
+                                                                 style={{color: "#ff0000"}}></i></span>
+                                )}
                             </div>
                             {/*End login modal*/}
                             {/*Register modal*/}

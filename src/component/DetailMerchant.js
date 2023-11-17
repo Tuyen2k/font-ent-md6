@@ -310,8 +310,7 @@ function DetailMerchant() {
                                                     <small style={{color: '#d1d124'}} className="fas fa-star"></small>
                                                     <small style={{color: '#d1d124'}} className="fas fa-star"></small>
                                                     <small style={{color: '#d1d124'}} className="fas fa-star"></small>
-                                                    <small style={{color: '#d1d124'}}
-                                                           className="fas fa-star-half-alt"></small>
+                                                    <small style={{color: '#d1d124'}} className="fas fa-star-half-alt"></small>
                                                     <small style={{color: '#d1d124'}} className="far fa-star"></small>
                                                 </div>
                                                 <small className="pt-1">{product.view}</small>
