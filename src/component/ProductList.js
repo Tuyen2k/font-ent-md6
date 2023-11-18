@@ -30,7 +30,7 @@ export default function ProductList(props) {
     let merchant = JSON.parse(localStorage.getItem("merchant"))
 
     useEffect(() => {
-        if (merchant !== null){
+        if (merchant !== null) {
             getAllProductByMerchant(merchant.id_merchant, searchInput)
                 .then((data) => {
                     let arr = data.reverse();
@@ -41,7 +41,7 @@ export default function ProductList(props) {
                 .catch((error) => {
                     console.log(error);
                 });
-        }else {
+        } else {
             console.log("merchant not exist")
         }
     }, [searchInput, isDelete]);
@@ -120,10 +120,12 @@ export default function ProductList(props) {
                 <section className="section-newsfeed">
                     <Pagination totalPage={totalPage} page={page} limit={limit} siblings={1}
                                 onPageChange={handlePageChange} onChangeItem={handleChangeItem}/>
-                    <hr style={{marginTop : "0px"}}/>
+                    <hr style={{marginTop: "0px"}}/>
                     <div className="content row">
-                        <div className="col-3" style={{borderRight: "1px solid black",
-                            display: "flex", alignItems: "center", justifyContent: "center"}}>
+                        <div className="col-3" style={{
+                            borderRight: "1px solid black",
+                            display: "flex", alignItems: "center", justifyContent: "center"
+                        }}>
                             <h3 style={{margin: "0"}}>Manage</h3>
                         </div>
                         <div className="col-9">
@@ -144,19 +146,26 @@ export default function ProductList(props) {
                     <hr/>
 
                     <div className="content row">
-                        <div className="col-3" style={{borderRight: "1px solid black"}}>
-                            <Link
-                                  to={`/list_coupon/${1}`} className="item-manage">
-                                <i className="fa-solid fa-bars-progress fa-2xl" style={{color: "#e57171"}}></i> Coupon management</Link>
+                        <div className="col-3" style={{borderRight: "1px solid black", marginBottom: "50px"}}>
+                            <Link className="item-manage" to={`/list_coupon/${merchant.id_merchant}`}>
+                                <img className="sidebar-icon"
+                                     src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/list.png?alt=media&token=7e1b1332-d9f4-4392-971d-510b9ce3cb0d"
+                                     alt="coupon"/>
+                                Coupon</Link>
 
-                            <Link className="item-manage"
-                                  to={`/oder_manager/${1}`}>
-                                <i className="fa-solid fa-bars-progress fa-2xl" style={{color: "#e57171"}}></i> Order management</Link>
-                            <Link className="item-manage"
-                                  to={`/oder_manager/${1}`}>
-                                <i className="fa-solid fa-bars-progress fa-2xl" style={{color: "#e57171"}}></i> Revenue statistics</Link>
+                            <Link className="item-manage" to={`/oder_manager/${merchant.id_merchant}`}>
+                                <img className="sidebar-icon"
+                                     src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/clipboard.png?alt=media&token=5888ea14-532e-47e3-a6d0-b24d9fda06c6"
+                                     alt="order"/>
+                                Orders </Link>
+
+                            <Link className="item-manage" to={`/oder_manager/${merchant.id_merchant}`}>
+                                <img className="sidebar-icon"
+                                     src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/revenue.png?alt=media&token=8c0c2771-2147-44a2-a465-5115ab8a095d"
+                                     alt="revenue"/>
+                                Revenue </Link>
                         </div>
-                        <div className="col-9">
+                        <div className="col-9" style={{ marginBottom: "50px"}}>
                             {products.length > 0 ? (
                                 products.map((product, index) => (
                                     <div

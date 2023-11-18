@@ -193,7 +193,7 @@ export default function Home() {
                                 <i className="fa-solid fa-magnifying-glass"></i>
                             </span>
                             <input onKeyUp={handleInputName} type="text" className="search-box-input"
-                                   placeholder="find the nearest location"/>
+                                   placeholder="Find the nearest location"/>
                         </div>
                     </div>
                 </section>
