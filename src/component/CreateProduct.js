@@ -7,6 +7,7 @@ import * as yup from "yup";
 import {Link, useNavigate} from "react-router-dom";
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
+import {toast, ToastContainer} from "react-toastify";
 
 
 export default function CreateProduct() {
@@ -35,13 +36,11 @@ export default function CreateProduct() {
 
     const handledCreate = (e) => {
         if (file === undefined) {
-            setMessage("Please choose image for the product!!!")
-            btn_modal.current.click();
+            toast.error("Please choose image for the product!!!", {containerId:'create-product'})
             return
         }
         if (categories === undefined || categories.length === 0) {
-            setMessage("Please select category for the product!!!")
-            btn_modal.current.click();
+            toast.error("Please select category for the product!!!", {containerId:'create-product'})
             return
         }
         setLoad(false)
@@ -50,19 +49,17 @@ export default function CreateProduct() {
             let product = {...e, image: res.name, categories: categories, merchant: a, priceSale: e.price * 0.95}
             saveProduct(product).then(response => {
                 if (response) {
-                    setMessage("Create product success!!!")
-                    btn_modal.current.click();          // onclick btn modal
+                    toast.success("Create product success!!!", {containerId:'create-product'})
+                    setFile(undefined)
                     setLoad(true)
                     setExist(false)
                 } else {
-                    setMessage("Action error occurred. Please check again!!!")
-                    btn_modal.current.click();          // onclick btn modal
+                    toast.error("Action error occurred. Please check again!!!", {containerId:'create-product'})
                     setLoad(true)
                 }
             })
         }).catch(Error => {
-            setMessage("Action error occurred. Please check again!!!")
-            btn_modal.current.click();          // onclick btn modal
+            toast.error("Action error occurred. Please check again!!!", {containerId:'create-product'})
             setLoad(true)
             console.log("up file" + Error)
         })
@@ -102,6 +99,8 @@ export default function CreateProduct() {
     return (
         <>
             <Header/>
+            <ToastContainer enableMultiContainer containerId={"create-product"} position="top-right" autoClose={2000} pauseOnHover={false}
+                                     style={{width: "400px"}}/>
             {load ? (
                     <div className="form-input">
                         <h2 className="title">Add new</h2>
@@ -135,7 +134,7 @@ export default function CreateProduct() {
                                     <div className="col-6">
                                         <div className="input-form-label mb-3" onClick={handledClickInput}>
                                             <label className="form-label">Image <span style={{color: "red"}}>(*)</span></label>
-                                            <input ref={inputFile} name="image" type="file" id="formFile"
+                                            <input ref={inputFile} name="image" type="file" id="form-file-create"
                                                    style={{display: 'none'}} onChange={(e) => handledInputFile(e.target.files[0])}/>
                                             {file === undefined ? (
                                                 <div style={{backgroundColor: "white", position: "relative", height: "264px"}}
@@ -146,7 +145,7 @@ export default function CreateProduct() {
                                                     </div>
                                                 </div>
                                             ) : (
-                                                <div style={{backgroundColor: "white", width: "496px"}}
+                                                <div style={{backgroundColor: "white", position: "relative", height: "264px"}}
                                                      className="form-control">
                                                     <div>
                                                         <img className="image-input" src={URL.createObjectURL(file)}
@@ -199,7 +198,7 @@ export default function CreateProduct() {
                 )
                 : (
                     <div className="d-flex justify-content-center">
-                        <div className="spinner-border" style={{width: "4rem", height: "4rem", marginTop: "40vh"}}
+                        <div className="spinner-border" style={{width: "4rem", height: "4rem", marginTop: "20vh", marginBottom:"20vh"}}
                              role="status">
                             <span className="visually-hidden">Loading...</span>
                         </div>

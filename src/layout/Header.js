@@ -230,8 +230,8 @@ export default function Header() {
                     {/*Navbar*/}
                     <div className="container">
                         {/*Logo*/}
-                        <a href="" className="logo"
-                           style={{backgroundImage: `url("https://firebasestorage.googleapis.com/v0/b/react-firebase-storage-f6ec9.appspot.com/o/file%2Flogo--web.png?alt=media&token=372f9a0c-25f3-4f56-9019-21ba8c8e607a")`}}></a>
+                        <Link to="/" className="logo"
+                           style={{backgroundImage: `url("https://firebasestorage.googleapis.com/v0/b/react-firebase-storage-f6ec9.appspot.com/o/file%2Flogo--web.png?alt=media&token=372f9a0c-25f3-4f56-9019-21ba8c8e607a")`}}></Link>
                         {/*Menu-Nav*/}
                         <div className="user-nav-menu">
 
@@ -270,7 +270,7 @@ export default function Header() {
                                                                                     to={"merchant/register"}>Register
                                                         Merchant</Link></li>
                                                     <li className="city-item"><Link style={{color: "black"}}
-                                                                                    to={"merchant/update/2"}>Update
+                                                                                    to={""}>Update
                                                         Merchant</Link></li>
                                                     <li className="city-item"><Link style={{color: "black"}}
                                                                                     to={"list"}>Detail Merchant</Link></li>

@@ -109,13 +109,6 @@ export default function ProductList(props) {
     return (
         <>
             <Header/>
-            {/*<Link to={"/"}>*/}
-            {/*    <svg style={{color: 'black'}} xmlns="http://www.w3.org/2000/svg" width="40" height="40"*/}
-            {/*         fill="currentColor" className="bi bi-x" viewBox="0 0 16 16">*/}
-            {/*        <path*/}
-            {/*            d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>*/}
-            {/*    </svg>*/}
-            {/*</Link>*/}
             <div className="container">
                 <section className="section-newsfeed">
                     <Pagination totalPage={totalPage} page={page} limit={limit} siblings={1}
@@ -130,10 +123,10 @@ export default function ProductList(props) {
                         </div>
                         <div className="col-9">
                             <div className="row">
-                                <Link className="col-2" style={{marginLeft: "10px"}} to={"/product/create"}>
-                                                <span className="btn btn-outline-danger ">
-                                                <h5 style={{marginBottom: "0px"}}>Create</h5></span></Link>
-                                <div className="col-3"><h4 style={{margin: "5px 0 0"}}>Your product</h4></div>
+                                <Link className="col-2 link-offset-1-hover" style={{marginLeft: "10px", color: "#ff3d3d"}} to={"/product/create"}>
+                                                <span>
+                                                <h5 style={{marginBottom: "0px"}}>Add new</h5></span></Link>
+                                <div className="col-3"><h4>Your product</h4></div>
                                 <div className="col-6">
                                     <input type="search" className="form-control rounded"
                                            placeholder="Search" aria-label="Search"
@@ -164,6 +157,11 @@ export default function ProductList(props) {
                                      src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/revenue.png?alt=media&token=8c0c2771-2147-44a2-a465-5115ab8a095d"
                                      alt="revenue"/>
                                 Revenue </Link>
+                            <Link className="item-manage" to={`/merchant/update/${merchant.id_merchant}`}>
+                                <img className="sidebar-icon"
+                                     src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/settings.png?alt=media&token=d2ec17a6-b723-4fd8-baf9-06b3fa93f90c"
+                                     alt="revenue"/>
+                                Profile </Link>
                         </div>
                         <div className="col-9" style={{ marginBottom: "50px"}}>
                             {products.length > 0 ? (

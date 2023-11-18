@@ -837,7 +837,9 @@ body {
 .div-checkbox {
     margin-top: 60px !important;
 }
-
+.form-control{
+    height: 34px;
+}
 
 .div-button {
     padding-bottom: 20px;
