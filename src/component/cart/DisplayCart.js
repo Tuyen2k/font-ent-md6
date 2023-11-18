@@ -3,6 +3,7 @@ import {deleteCartDetail, getListCart, updateQuantity} from "../../service/CartS
 import {Link} from "react-router-dom";
 import {addBill} from "../../service/BillService";
 import Header from "../../layout/Header";
+import Footer from "../../layout/Footer";
 
 
 export default function DisplayCart() {
@@ -29,6 +30,8 @@ export default function DisplayCart() {
         return item;
     }
     const handleMinus = (id) => {
+        setTotal(0)
+        setOrders([])
         let item = findCartDetail(id)
         if (item.quantity > 1) {
             let quantity = item.quantity - 1
@@ -57,6 +60,8 @@ export default function DisplayCart() {
     }
 
     const handlePlus = (id) => {
+        setTotal(0)
+        setOrders([])
         let item = findCartDetail(id)
         if (item.quantity < 30) {
             let quantity = item.quantity + 1
@@ -503,18 +508,21 @@ export default function DisplayCart() {
                         </div>
                     )
                 ) : (
-                    <div>
+                    <div style={{height : "60vh"}}>
                         <div>
                             <div style={{display: "flex", paddingTop: "10px"}}>
                                 <div style={{width: "1150px"}}>
                                 </div>
-                                <Link to={"/user/manage-order"} ><h4 style={{paddingTop: "10px", color : "rgb(220,53,69)"}}>Your order</h4></Link>
+                                <Link to={"/user/manage-order"} ><h4 style={{paddingTop: "10px", color : "#ff5757"}}>Your order</h4></Link>
                             </div>
                         </div>
-                        <h3 style={{textAlign: "center", marginTop: "100px"}}>Your cart is empty, let's go shopping</h3>
-                        <Link to={"/"}>
-                            <button className="btn-shopping btn btn-outline-danger"><h4>Go to shopping now</h4></button>
-                        </Link>
+                        <div>
+                            <h3 style={{textAlign: "center", marginTop: "20vh"}}>Your cart is empty.
+                                <Link to={"/"} style={{ fontStyle: 'italic', color : "#ff5757"}}> Go to shopping now!!!
+                                </Link>
+                            </h3>
+                        </div>
+
                     </div>
                 )}
             </div>
@@ -543,6 +551,7 @@ export default function DisplayCart() {
                     </div>
                 </div>
             </div>
+            <Footer/>
         </>
     )
 }

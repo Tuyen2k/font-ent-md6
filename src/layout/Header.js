@@ -267,13 +267,10 @@ export default function Header() {
                                                 <i className="fa-solid fa-sort-down"></i>
                                                 <ul className="menu-nav-city-select" style={{width: "150px"}}>
                                                     <li className="city-item"><Link style={{color: "black"}}
-                                                                                    to={"merchant/register"}>Register
+                                                                                    to={"/merchant/register"}>Register
                                                         Merchant</Link></li>
                                                     <li className="city-item"><Link style={{color: "black"}}
-                                                                                    to={""}>Update
-                                                        Merchant</Link></li>
-                                                    <li className="city-item"><Link style={{color: "black"}}
-                                                                                    to={"list"}>Detail Merchant</Link></li>
+                                                                                    to={"/list"}>Detail Merchant</Link></li>
                                                     {user && <li className="city-item" onClick={handleLogout}>Logout</li>}
                                                 </ul>
                                             </div>

@@ -837,7 +837,8 @@ body {
 .div-checkbox {
     margin-top: 60px !important;
 }
-.form-control{
+
+.form-control {
     height: 34px;
 }
 
@@ -939,17 +940,25 @@ div.error {
     position: relative;
 }
 
+.item-name {
+    align-items: center;
+    display: flex;
+    margin: auto !important;
+}
+
 #form1 {
     width: 68px !important;
 }
 
-.input-form-label{
+.input-form-label {
     height: 85px;
     margin-right: 20px;
 }
-.form-label{
+
+.form-label {
     font-size: 20px;
 }
+
 .img-cart {
     height: 80px;
     width: 100px;
@@ -1008,16 +1017,18 @@ div.error {
     background-color: white;
     margin-right: 15px;
 }
-.page-link{
+
+.page-link {
     color: red !important;
 }
 
-.active>.page-link, .page-link.active {
+.active > .page-link, .page-link.active {
     z-index: 3;
     color: var(--bs-pagination-active-color) !important;
     background-color: var(--bs-pagination-active-b) !important;
     border-color: var(--bs-pagination-active-border-colore) !important;
 }
+
 .pagination-container {
     --bs-pagination-padding-x: 0.75rem;
     --bs-pagination-padding-y: 0.375rem;
@@ -1044,27 +1055,28 @@ div.error {
     list-style: none;
 }
 
-.item-manage{
+.item-manage {
     margin: 0 20px 0 20px;
     padding-bottom: 20px;
     padding-top: 10px;
     color: #1C1C1C;
     font-size: 20px;
     display: block;
-    border-bottom: 1px solid rgb(189,122,51);
+    border-bottom: 1px solid rgb(189, 122, 51);
 }
-.item-manage a{
+
+.item-manage a {
     color: #1C1C1C;
 }
 
-.item-manage:hover{
-    background-color: rgb(246,246,246);
-    box-shadow: 2px 2px 4px 2px white ;
+.item-manage:hover {
+    background-color: rgb(246, 246, 246);
+    box-shadow: 2px 2px 4px 2px white;
 }
 
-.sidebar-icon{
+.sidebar-icon {
     color: #ff5757;
-    margin: 0 5px  5px 0;
+    margin: 0 5px 5px 0;
     height: 25px;
     width: 25px;
 }
