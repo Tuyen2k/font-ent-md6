@@ -176,7 +176,7 @@ function FormRegister() {
                                                 textAlign: "center"
                                             }}>Register Merchant</h4>
                                         <hr style={{marginTop: "0"}}/>
-                                        <div style={{width: "500px", margin: 'auto'}}>
+                                        <div style={{width: "600px", margin: 'auto'}}>
                                             <Formik initialValues={merchant} onSubmit={(e) => handleCreateMerchant(e)}
                                                     validationSchema={schema}>
                                                 <Form>

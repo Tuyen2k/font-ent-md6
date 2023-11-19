@@ -35,7 +35,7 @@ function UpdateMerchant() {
     const [city, setCity] = useState([])
     const [district, setDistrict] = useState([])
     const [ward, setWard] = useState([])
-    const [image, setImage] = useState(null)
+    const [image, setImage] = useState(undefined)
     const [message, setMessage] = useState()
     const btn_modal = useRef()
     const [merchant, setMerchant] = useState({
@@ -53,12 +53,17 @@ function UpdateMerchant() {
     const [activity, setActivity] = useState([])
     const [address_detail, setAddress_detail] = useState()
     const account = JSON.parse(localStorage.getItem("userInfo"))
+    const inputFileMerchant = useRef()
+    const [activityUpdate, setActivityUpdate] = useState()
+    const [check, setCheck] = useState(true)
+
 
     useEffect(() => {
-        if (account !== null){
+        if (account !== null) {
             findMerchantById(account.id).then(dataMerchant => {
                 console.log(dataMerchant)
                 setMerchant(dataMerchant)
+                setActivityUpdate(dataMerchant.activity)
                 setAddress_detail(dataMerchant.addressShop.address_detail)
                 findAllActivity().then(dataActivity => {
                     setActivity(dataActivity)
@@ -77,10 +82,10 @@ function UpdateMerchant() {
             }).catch(e => {
                 toast.error("There is no data on this Merchant!!!", {containerId: "update-merchant"})
             })
-        }else {
+        } else {
             toast.error("Please login!!!", {containerId: "update-merchant"})
         }
-    }, []);
+    }, [check]);
 
 
     const handleUpdateMerchant = async (e) => {
@@ -88,18 +93,22 @@ function UpdateMerchant() {
         try {
             let updatedImage = merchant.image;
             let updatedAddress = merchant.addressShop;
-            if (image !== null) {
+            if (image !== undefined) {
                 const uploadedImage = await upImageFirebase(image);
                 updatedImage = uploadedImage.name;
             }
             if (address !== undefined) {
                 updatedAddress = address;
             }
-            const registerMerchant = {...e, addressShop: updatedAddress, image: updatedImage};
+            const registerMerchant = {
+                ...e, addressShop: updatedAddress, account: {id_account: account.id},
+                image: updatedImage, activity: activityUpdate
+            };
             updateMerchant(registerMerchant).then(r => {
                     toast.success("Update success!!!", {containerId: "update-merchant"})
                     setLoad(true)
                     setExist(false)
+                    setCheck(!check)
                 }
             ).catch(e => {
                     toast.error("Update error, try again!!!", {containerId: "update-merchant"})
@@ -111,6 +120,16 @@ function UpdateMerchant() {
         }
     }
 
+    const handleActivity = (id_activity) => {
+        let item = {id_activity: id_activity}
+        if (id_activity === "1") {
+            if (window.confirm("The merchant will be shut down, are you sure?")) {
+                setActivityUpdate({...item})
+            }
+        } else {
+            setActivityUpdate({...item})
+        }
+    }
 
     const handleInputChangeCity = (e) => {
         setAddress_detail(null)
@@ -169,6 +188,10 @@ function UpdateMerchant() {
         setImage(file)
     }
 
+    function handleInputFileMerchant() {
+        inputFileMerchant.current.click();
+    }
+
     const schema = yup.object().shape({
         name: yup.string().required(),
         open_time: yup.string().required(),
@@ -182,12 +205,12 @@ function UpdateMerchant() {
                             pauseOnHover={false}
                             style={{width: "400px"}}/>
             {load ? (
-                    <MDBContainer className="my-4">
+                    <MDBContainer>
                         <MDBCard>
                             <MDBRow className='g-0'>
 
                                 <MDBCol md='5'>
-                                    <MDBCardImage style={{height: '800px'}}
+                                    <MDBCardImage style={{height: '100%'}}
                                                   src='https://firebasestorage.googleapis.com/v0/b/react-firebase-storage-f6ec9.appspot.com/o/file%2FdoAnNgon.jpg?alt=media&token=e3c3377c-463d-481d-bb04-ba2d890e27b9'
                                                   alt="register form" className='rounded-start w-100'/>
                                 </MDBCol>
@@ -195,43 +218,55 @@ function UpdateMerchant() {
                                 <MDBCol md='7'>
                                     <MDBCardBody className='d-flex flex-column'>
 
-                                        <h5 className="fw-normal my-4 pb-3"
+                                        <h4 className="fw-normal my-4"
                                             style={{
                                                 letterSpacing: '1px',
                                                 fontWeight: 'bolder',
                                                 textAlign: "center"
-                                            }}>Update Merchant</h5>
-
-                                        <div style={{width: "500px", margin: 'auto'}}>
+                                            }}>Update Merchant</h4>
+                                        <hr style={{marginTop: "0"}}/>
+                                        <div style={{width: "600px", margin: 'auto'}}>
                                             <Formik initialValues={merchant} onSubmit={(e) => handleUpdateMerchant(e)}
                                                     validationSchema={schema} enableReinitialize={true}>
                                                 <Form>
-                                                    <div className="mb-3">
-                                                        <label className="form-label">Name</label>
-                                                        <Field className="form-control" name="name"/>
-                                                        <ErrorMessage className="error" name="name" component="div"/>
+                                                    <div className="row div-input">
+                                                        <div className="mb-3 col-6" style={{paddingLeft: "0px"}}>
+                                                            <label className="form-label">Name</label>
+                                                            <Field className="form-control" name="name"/>
+                                                            <ErrorMessage className="error" name="name" component="div"/>
+                                                        </div>
+                                                        <div className="mb-3 col-6" style={{paddingRight: "0px"}}>
+                                                            <label className="form-label">Email</label>
+                                                            <div className="form-control">{merchant.email}</div>
+                                                        </div>
                                                     </div>
-                                                    <div className="mb-3">
-                                                        <label className="form-label">Email</label>
-                                                        <div className="form-control">{merchant.email}</div>
-                                                    </div>
-
-                                                    <div className="row" style={{marginLeft: "0px", marginRight: "0px"}}>
+                                                    <div className="row div-input">
                                                         <div className="mb-3 col-6" style={{paddingLeft: "0px"}}>
                                                             <label className="form-label">Phone</label>
                                                             <div className="form-control">{merchant.phone}</div>
                                                         </div>
                                                         <div className="mb-3 col-6" style={{paddingRight: "0px"}}>
                                                             <label className="form-label">Activity</label>
-                                                            <select className="form-select">
-                                                                {activity && activity.map(item => (
-                                                                    <option value={item.id_activity}>{item.name}</option>
-                                                                ))}
+                                                            <select onChange={(e) => handleActivity(e.target.value)}
+                                                                    className="form-select">
+                                                                {activity && activity.map(item => {
+                                                                    if (item.id_activity === activityUpdate.id_activity) {
+                                                                        return (
+                                                                            <option selected
+                                                                                    value={item.id_activity}>{item.name}</option>
+                                                                        )
+                                                                    } else {
+                                                                        return (
+                                                                            <option
+                                                                                value={item.id_activity}>{item.name}</option>
+                                                                        )
+                                                                    }
+                                                                })}
                                                             </select>
                                                         </div>
                                                     </div>
 
-                                                    <div className="row" style={{marginLeft: "0px", marginRight: "0px"}}>
+                                                    <div className="row div-input">
                                                         <div className="mb-3 col-6" style={{paddingLeft: "0px"}}>
                                                             <label className="form-label">Open Time</label>
                                                             <Field type="time" className="form-control" name="open_time"/>
@@ -246,7 +281,7 @@ function UpdateMerchant() {
                                                         </div>
                                                     </div>
 
-                                                    <div className="row" style={{marginLeft: "0px", marginRight: "0px"}}>
+                                                    <div className="row div-input">
                                                         <div className="mb-3 col-6" style={{paddingLeft: "0px"}}>
                                                             <label className="form-label" htmlFor="ward">City</label>
                                                             <select onChange={handleInputChangeCity}
@@ -286,7 +321,7 @@ function UpdateMerchant() {
                                                             </select>
                                                         </div>
                                                     </div>
-                                                    <div className="row" style={{marginLeft: "0px", marginRight: "0px"}}>
+                                                    <div className="row div-input">
                                                         <div className="mb-3 col-6" style={{paddingLeft: "0px"}}>
                                                             <label className="form-label" htmlFor="ward">Ward</label>
                                                             <select onChange={handleInputChangeWard} id="ward"
@@ -318,19 +353,42 @@ function UpdateMerchant() {
                                                         </div>
                                                     </div>
 
-                                                    <div className="mb-3">
-                                                        <label className="form-label">Image</label>
-                                                        <input className="form-control" type="file"
-                                                               onChange={(e) => handleInputChangeImage(e)}/>
-                                                    </div>
-                                                    <div style={{textAlign: 'center'}}>
-                                                        <button style={{width: '300px'}} type={"submit"}
-                                                                className="btn btn-outline-success">Update
-                                                        </button>
-                                                        <Link to={'/'} style={{width: '100px', marginLeft: '20px'}}
-                                                              type="submit"
-                                                              className="btn btn-info">Back
-                                                        </Link>
+                                                    <div className="row">
+                                                        <div className="col-6">
+                                                            <label onClick={handleInputFileMerchant} className="form-label"
+                                                                   style={{width: "300px", height: "150px"}}>Image</label>
+                                                            <div>
+                                                                <Link to={'/list'}
+                                                                      style={{color: "black", marginRight: "30px"}}>Back
+                                                                </Link>
+                                                                <button style={{width: '150px'}} type={"submit"}
+                                                                        className="btn btn-outline-danger">Save
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="col-6" onClick={handleInputFileMerchant}>
+                                                            {image === undefined ? (
+                                                                <div style={{position: "relative"}}
+                                                                     className="file-merchant">
+                                                                    <div>
+                                                                        <img className='img-merchant' alt="image"
+                                                                             src={merchant.image}/>
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <div style={{position: "relative"}}
+                                                                     className="file-merchant">
+                                                                    <div>
+                                                                        <img className="img-merchant"
+                                                                             src={URL.createObjectURL(image)}
+                                                                             alt='image'/>
+                                                                    </div>
+                                                                </div>)}
+                                                            <input ref={inputFileMerchant} className="form-control"
+                                                                   type="file" style={{display: 'none'}}
+                                                                   onChange={(e) => handleInputChangeImage(e)}/>
+                                                        </div>
                                                     </div>
                                                 </Form>
                                             </Formik>
@@ -346,7 +404,8 @@ function UpdateMerchant() {
                 )
                 : (
                     <div className="d-flex justify-content-center">
-                        <div className="spinner-border" style={{width: "4rem", height: "4rem", marginTop: "40vh"}}
+                        <div className="spinner-border"
+                             style={{width: "4rem", height: "4rem", marginTop: "20vh", marginBottom: "20vh"}}
                              role="status">
                             <span className="visually-hidden">Loading...</span>
                         </div>
