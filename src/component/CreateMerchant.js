@@ -14,9 +14,12 @@ import {
     from 'mdb-react-ui-kit';
 import {ErrorMessage, Field, Form, Formik} from "formik";
 import {Link, useNavigate} from "react-router-dom";
-import {findCity, findDistrict, findWard, saveMerchant} from "../service/MerchantService";
+import {findCity, findDistrict, findMerchantByAccount, findWard, saveMerchant} from "../service/MerchantService";
 import {upImageFirebase} from "../firebase/Upfirebase";
 import {mailRegisterSuccess} from "../service/MailService";
+import Header from "../layout/Header";
+import Footer from "../layout/Footer";
+import {toast, ToastContainer} from "react-toastify";
 
 function FormRegister() {
     let navigate = useNavigate();
@@ -25,7 +28,7 @@ function FormRegister() {
     const [city, setCity] = useState([])
     const [district, setDistrict] = useState([])
     const [ward, setWard] = useState([])
-    const [image, setImage] = useState()
+    const [image, setImage] = useState(undefined)
     const [message, setMessage] = useState()
     const btn_modal = useRef()
     const [merchant, setMerchant] = useState({
@@ -40,28 +43,43 @@ function FormRegister() {
         image: ''
     });
     const [address, setAddress] = useState({})
+    const inputFileMerchant = useRef()
+    const account = JSON.parse(localStorage.getItem("userInfo"))
 
-    const handleCreateMerchant = (e) => {
-        setLoad(false)
-        upImageFirebase(image).then(r => {
-            let registerMerchant = {...e, addressShop: address, image: r.name}
-            console.log(registerMerchant)
-            saveMerchant(registerMerchant).then(r => {
-                if (r === true){
-                    setMessage("Register success!")
-                    btn_modal.current.click();
-                    mailRegisterSuccess(e.email)
-                    setLoad(true)
-                    setExist(false)
-                }  else {
-                    setMessage("Register error!")
-                    btn_modal.current.click();
-                }         }
-            )
-        })
+    function handleInputFileMerchant(){
+        inputFileMerchant.current.click();
     }
 
-    const   handleInputChangeCity = (e) => {
+    const handleCreateMerchant = (e) => {
+        if (image === undefined){
+            toast.error("Please choose image for the product!!!", {containerId : "register-merchant"})
+            return
+        }
+        if (account !== null){
+            setLoad(false)
+            upImageFirebase(image).then(r => {
+                let registerMerchant = {...e, addressShop: address, image: r.name, account:account}
+                console.log(registerMerchant)
+                saveMerchant(registerMerchant).then(r => {
+                    if (r === true){
+                        findMerchantByAccount(account.id).then(merchant =>{
+                            localStorage.setItem("merchant", JSON.stringify(merchant))
+                        })
+                        toast.success("Register success!!!", {containerId : "register-merchant"})
+                        mailRegisterSuccess(e.email)
+                        setLoad(true)
+                        setExist(false)
+                    }  else {
+                        toast.error("Register error!!!", {containerId : "register-merchant"})
+                    }
+                })
+            })
+        }else {
+            toast.error("Please login and try again!!!", {containerId : "register-merchant"})
+        }
+    }
+
+    const  handleInputChangeCity = (e) => {
         const fieldValue = e.target.value;
         findDistrict(fieldValue).then(r => {
             setDistrict(r)
@@ -74,8 +92,7 @@ function FormRegister() {
                 };
             });
         }).catch(error => {
-            setMessage("Error display District")
-            btn_modal.current.click();
+            toast.error("Error display District!!!", {containerId : "register-merchant"})
         })
     }
 
@@ -92,8 +109,7 @@ function FormRegister() {
                 };
             });
         }).catch(error => {
-            setMessage("Error display Ward")
-            btn_modal.current.click();
+            toast.error("Error display Ward!!!", {containerId : "register-merchant"})
         })
     }
 
@@ -111,10 +127,6 @@ function FormRegister() {
 
     const handleInputChangeImage = (e) => {
         const file = e.target.files[0]
-        if (!file) {
-            setMessage("Please choose image for the merchant!!!")
-            btn_modal.current.click();
-        }
         setImage(file)
     }
 
@@ -122,8 +134,7 @@ function FormRegister() {
         findCity().then(r => {
             setCity(r)
         }).catch(error => {
-                setMessage("Error display City")
-                btn_modal.current.click();
+            toast.error("Error display City!!!", {containerId : "register-merchant"})
             }
         )
     }, []);
@@ -136,22 +147,20 @@ function FormRegister() {
         email: yup.string().required().matches(/^[A-Za-z0-9._-]+@[A-Za-z]+\.[A-Za-z]{2,}$/, ("with @ and no special characters")),
         open_time: yup.string().required(),
         close_time: yup.string().required(),
-        // image: yup.string().required('Image is required'),
-        // city: yup.string().required('City is required'),
-        // district: yup.string().required('District is required'),
-        // ward: yup.string().required('Ward is required'),
-        // address_detail: yup.string().required('Address Detail is required')
     });
 
     return (
         <>
+            <Header/>
+            <ToastContainer enableMultiContainer containerId={"register-merchant"} position="top-right" autoClose={2000} pauseOnHover={false}
+                            style={{width: "400px"}}/>
             {load ? (
-                    <MDBContainer className="my-4">
+                    <MDBContainer>
                         <MDBCard>
                             <MDBRow className='g-0'>
 
                                 <MDBCol md='5'>
-                                    <MDBCardImage style={{height: '800px'}}
+                                    <MDBCardImage style={{height: '100%'}}
                                                   src='https://firebasestorage.googleapis.com/v0/b/react-firebase-storage-f6ec9.appspot.com/o/file%2FdoAnNgon.jpg?alt=media&token=e3c3377c-463d-481d-bb04-ba2d890e27b9'
                                                   alt="register form" className='rounded-start w-100'/>
                                 </MDBCol>
@@ -159,33 +168,37 @@ function FormRegister() {
                                 <MDBCol md='7'>
                                     <MDBCardBody className='d-flex flex-column'>
 
-                                        <h5 className="fw-normal my-4 pb-3"
+                                        <h4 className="fw-normal my-4"
                                             style={{
                                                 letterSpacing: '1px',
                                                 fontWeight: 'bolder',
                                                 textAlign: "center"
-                                            }}>Register Merchant</h5>
-
+                                            }}>Register Merchant</h4>
+                                        <hr style={{marginTop: "0"}}/>
                                         <div style={{width: "500px", margin: 'auto'}}>
                                             <Formik initialValues={merchant} onSubmit={(e) => handleCreateMerchant(e)}
                                                     validationSchema={schema}>
                                                 <Form>
-                                                    <div className="mb-3">
-                                                        <label className="form-label">Name</label>
-                                                        <Field className="form-control" name="name"/>
-                                                        <ErrorMessage className="error" name="name" component="div"/>
+                                                    <div className="row div-input">
+                                                        <div className="mb-3" style={{paddingLeft: "0px"}}>
+                                                            <label className="form-label" >Name</label>
+                                                            <Field className="form-control" name="name"/>
+                                                            <ErrorMessage className="error" name="name" component="div"/>
+                                                        </div>
                                                     </div>
-                                                    <div className="mb-3">
-                                                        <label className="form-label">Phone</label>
-                                                        <Field className="form-control" name="phone"/>
-                                                        <ErrorMessage className="error" name="phone" component="div"/>
+                                                    <div className="row div-input">
+                                                        <div className="mb-3 col-6" style={{paddingLeft: "0px"}}>
+                                                            <label className="form-label">Phone</label>
+                                                            <Field className="form-control" name="phone"/>
+                                                            <ErrorMessage className="error" name="phone" component="div"/>
+                                                        </div>
+                                                        <div className="mb-3 col-6" style={{paddingRight: "0px"}}>
+                                                            <label className="form-label">Email</label>
+                                                            <Field type="email" className="form-control" name="email"/>
+                                                            <ErrorMessage className="error" name="email" component="div"/>
+                                                        </div>
                                                     </div>
-                                                    <div className="mb-3">
-                                                        <label className="form-label">Email</label>
-                                                        <Field type="email" className="form-control" name="email"/>
-                                                        <ErrorMessage className="error" name="email" component="div"/>
-                                                    </div>
-                                                    <div className="row" style={{marginLeft: "0px", marginRight: "0px"}}>
+                                                    <div className="row div-input">
                                                         <div className="mb-3 col-6" style={{paddingLeft: "0px"}}>
                                                             <label className="form-label">Open Time</label>
                                                             <Field type="time" className="form-control" name="open_time"/>
@@ -199,7 +212,7 @@ function FormRegister() {
                                                                           component="div"/>
                                                         </div>
                                                     </div>
-                                                    <div className="row" style={{marginLeft: "0px", marginRight: "0px"}}>
+                                                    <div className="row div-input" >
                                                         <div className="mb-3 col-6" style={{paddingLeft: "0px"}}>
                                                             <label className="form-label" htmlFor="city">City</label>
                                                             <select id="city" required onChange={handleInputChangeCity}
@@ -221,7 +234,7 @@ function FormRegister() {
                                                             </select>
                                                         </div>
                                                     </div>
-                                                    <div className="row" style={{marginLeft: "0px", marginRight: "0px"}}>
+                                                    <div className="row div-input">
                                                         <div className="mb-3 col-6" style={{paddingLeft: "0px"}}>
                                                             <label className="form-label" htmlFor="ward">Ward</label>
                                                             <select required onChange={handleInputChangeWard} id="ward"
@@ -241,18 +254,38 @@ function FormRegister() {
                                                         </div>
                                                     </div>
 
-                                                    <div className="mb-3">
-                                                        <label className="form-label">Image</label>
-                                                        <input className="form-control" type="file"
-                                                               onChange={(e) => handleInputChangeImage(e)}/>
-                                                    </div>
-                                                    <div style={{textAlign: 'center'}}>
-                                                        <button style={{width: '300px'}} type={"submit"}
-                                                                className="btn btn-outline-success">Register
-                                                        </button>
-                                                            <Link to={'/'} style={{width: '100px', marginLeft: '20px'}} type="submit"
-                                                                  className="btn btn-info">Back
-                                                            </Link>
+                                                    <div className="row">
+                                                        <div className="col-6">
+                                                            <label onClick={handleInputFileMerchant} className="form-label" style={{width: "300px",height: "150px"}}>Image</label>
+                                                            <div>
+                                                                <Link to={'/'} style={{color: "black", marginRight: "30px"}}>Back
+                                                                </Link>
+                                                                <button style={{width: '150px'}} type={"submit"}
+                                                                        className="btn btn-outline-danger">Register
+                                                                </button>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="col-6" onClick={handleInputFileMerchant}>
+                                                            {image === undefined ? (
+                                                                <div style={{position: "relative"}}
+                                                                     className="file-merchant">
+                                                                    <div>
+                                                                        <img className='img-merchant' alt="image"
+                                                                             src={"https://binamehta.com/wp-content/uploads/image-placeholder-300x200.png"}/>
+                                                                    </div>
+                                                                </div>
+                                                            ) : (
+                                                                <div style={{position: "relative"}}
+                                                                     className="file-merchant">
+                                                                    <div>
+                                                                        <img className="img-merchant" src={URL.createObjectURL(image)}
+                                                                             alt='image'/>
+                                                                    </div>
+                                                                </div>)}
+                                                            <input ref={inputFileMerchant} className="form-control" type="file" style={{display: 'none'}}
+                                                                   onChange={(e) => handleInputChangeImage(e)}/>
+                                                        </div>
                                                     </div>
                                                 </Form>
                                             </Formik>
@@ -268,12 +301,16 @@ function FormRegister() {
                 )
                 : (
                     <div className="d-flex justify-content-center">
-                        <div className="spinner-border" style={{width: "4rem", height: "4rem", marginTop: "40vh"}}
+                        <div className="spinner-border" style={{width: "4rem", height: "4rem", marginTop: "20vh", marginBottom:"20vh"}}
                              role="status">
                             <span className="visually-hidden">Loading...</span>
                         </div>
                     </div>
                 )}
+
+            <Footer/>
+
+
             {/*button modal*/}
             <button type="button" ref={btn_modal} className="btn btn-primary" data-bs-toggle="modal"
                     data-bs-target="#exampleModal" style={{display: "none"}}>

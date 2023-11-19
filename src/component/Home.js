@@ -80,15 +80,9 @@ export default function Home() {
     }
 
     const handleInputCategory = (id_category) => {
-        console.log(id_category)
         searchByCategory(id_category).then(r => {
-            if (r.length > 0) {
-                setNameProduct("Searching")
-                setProducts(r)
-            } else {
-                setMessage("There are no results on this category!!!")
-                btn_modal.current.click();
-            }
+            setNameProduct("Searching")
+            setProducts(r)
         })
         search.current.scrollIntoView({behavior: "smooth"});
     }
@@ -283,7 +277,11 @@ export default function Home() {
                                                                 </div>
                                                             </div>
                                                             <div className="content">
-                                                                <div style={{textAlign: 'center', marginTop: '8px', color: 'black'}}
+                                                                <div style={{
+                                                                    textAlign: 'center',
+                                                                    marginTop: '8px',
+                                                                    color: 'black'
+                                                                }}
                                                                      className="name mb-5">
                                                                     {item.name}
                                                                 </div>
@@ -339,9 +337,10 @@ export default function Home() {
                                                 See all <i className="fa-solid fa-angle-right fa-bounce fa-lg"></i>
                                             </a>
                                         </div>
-                                    ):(
+                                    ) : (
                                         <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
-                                            <h4 style={{ opacity: 0.5, fontStyle: 'italic' }}>No matching results, please try again!</h4>
+                                            <h4 style={{opacity: 0.5, fontStyle: 'italic'}}>No matching results, please
+                                                try again!</h4>
                                         </div>
                                     )}
 
