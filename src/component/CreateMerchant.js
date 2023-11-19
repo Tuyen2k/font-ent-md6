@@ -58,7 +58,7 @@ function FormRegister() {
         if (account !== null){
             setLoad(false)
             upImageFirebase(image).then(r => {
-                let registerMerchant = {...e, addressShop: address, image: r.name, account:account}
+                let registerMerchant = {...e, addressShop: address, image: r.name, account: {id_account : account.id}}
                 console.log(registerMerchant)
                 saveMerchant(registerMerchant).then(r => {
                     if (r === true){
@@ -70,7 +70,8 @@ function FormRegister() {
                         setLoad(true)
                         setExist(false)
                     }  else {
-                        toast.error("Register error!!!", {containerId : "register-merchant"})
+                        toast.error("Register error, try again!!!", {containerId : "register-merchant"})
+                        setLoad(true)
                     }
                 })
             })

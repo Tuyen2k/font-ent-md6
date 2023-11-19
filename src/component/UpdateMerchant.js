@@ -24,10 +24,12 @@ import {
 } from "../service/MerchantService";
 import {upImageFirebase} from "../firebase/Upfirebase";
 import axios from "axios";
+import {toast, ToastContainer} from "react-toastify";
+import Header from "../layout/Header";
+import Footer from "../layout/Footer";
 
 function UpdateMerchant() {
     let navigate = useNavigate();
-    let {id} = useParams();
     const [load, setLoad] = useState(true)
     const [isExist, setExist] = useState(true)
     const [city, setCity] = useState([])
@@ -50,33 +52,34 @@ function UpdateMerchant() {
     const [address, setAddress] = useState(undefined)
     const [activity, setActivity] = useState([])
     const [address_detail, setAddress_detail] = useState()
+    const account = JSON.parse(localStorage.getItem("userInfo"))
 
     useEffect(() => {
-        console.log(id)
-        //id này đợi có acc sẽ dùng acc để tìm
-        findMerchantById(id).then(dataMerchant => {
-            console.log(dataMerchant)
-            setMerchant(dataMerchant)
-            setAddress_detail(dataMerchant.addressShop.address_detail)
-            findAllActivity().then(dataActivity => {
-                setActivity(dataActivity)
-            }).catch(() => {
-                setMessage("Error display Activity")
-                btn_modal.current.click();
+        if (account !== null){
+            findMerchantById(account.id).then(dataMerchant => {
+                console.log(dataMerchant)
+                setMerchant(dataMerchant)
+                setAddress_detail(dataMerchant.addressShop.address_detail)
+                findAllActivity().then(dataActivity => {
+                    setActivity(dataActivity)
+                }).catch(() => {
+                    toast.error("Error display Activity!!!", {containerId: "update-merchant"})
+                })
+                findCity().then(r => {
+                    setCity(r)
+                })
+                findDistrict(dataMerchant.addressShop.city.id_city).then(dataDistrict => {
+                    setDistrict(dataDistrict)
+                })
+                findWard(dataMerchant.addressShop.district.id_district).then(dataWard => {
+                    setWard(dataWard)
+                })
+            }).catch(e => {
+                toast.error("There is no data on this Merchant!!!", {containerId: "update-merchant"})
             })
-            findCity().then(r => {
-                setCity(r)
-            })
-            findDistrict(dataMerchant.addressShop.city.id_city).then(dataDistrict => {
-                setDistrict(dataDistrict)
-            })
-            findWard(dataMerchant.addressShop.district.id_district).then(dataWard => {
-                setWard(dataWard)
-            })
-        }).catch(e => {
-            setMessage("There is no data on this merchant")
-            btn_modal.current.click();
-        })
+        }else {
+            toast.error("Please login!!!", {containerId: "update-merchant"})
+        }
     }, []);
 
 
@@ -94,19 +97,16 @@ function UpdateMerchant() {
             }
             const registerMerchant = {...e, addressShop: updatedAddress, image: updatedImage};
             updateMerchant(registerMerchant).then(r => {
-                    setMessage("Update success!")
-                    btn_modal.current.click();
+                    toast.success("Update success!!!", {containerId: "update-merchant"})
                     setLoad(true)
                     setExist(false)
                 }
             ).catch(e => {
-                    setMessage("Update error!")
-                    btn_modal.current.click();
+                    toast.error("Update error, try again!!!", {containerId: "update-merchant"})
                 }
             )
         } catch (Error) {
-            setMessage("Update error!")
-            btn_modal.current.click();
+            toast.error("Update error, try again!!!", {containerId: "update-merchant"})
             setLoad(true);
         }
     }
@@ -127,8 +127,7 @@ function UpdateMerchant() {
             });
             setWard([])
         }).catch(error => {
-            setMessage("Error display District")
-            btn_modal.current.click();
+            toast.error("Error display District!!!", {containerId: "update-merchant"})
         })
     }
 
@@ -145,8 +144,7 @@ function UpdateMerchant() {
                 };
             });
         }).catch(error => {
-            setMessage("Error display Ward")
-            btn_modal.current.click();
+            toast.error("Error display Ward!!!", {containerId: "update-merchant"})
         })
     }
 
@@ -179,6 +177,10 @@ function UpdateMerchant() {
 
     return (
         <>
+            <Header/>
+            <ToastContainer enableMultiContainer containerId={"update-merchant"} position="top-right" autoClose={2000}
+                            pauseOnHover={false}
+                            style={{width: "400px"}}/>
             {load ? (
                     <MDBContainer className="my-4">
                         <MDBCard>
@@ -350,6 +352,7 @@ function UpdateMerchant() {
                         </div>
                     </div>
                 )}
+            <Footer/>
             {/*button modal*/}
             <button type="button" ref={btn_modal} className="btn btn-primary" data-bs-toggle="modal"
                     data-bs-target="#exampleModal" style={{display: "none"}}>
