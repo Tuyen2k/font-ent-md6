@@ -118,14 +118,6 @@ export default function Header() {
         });
     }
 
-    const handleInputChangeImage = (e) => {
-        const file = e.target.files[0]
-        if (!file) {
-            setMessage("Please choose image for the merchant!!!")
-            btn_modal.current.click();
-        }
-        setImage(file)
-    }
     const schema = yup.object().shape({
         name: yup.string().required(),
         password: yup
@@ -146,18 +138,18 @@ export default function Header() {
         try {
             const response = await loginUser(username, password);
             localStorage.setItem('userInfo', JSON.stringify(response.data));
-            if (response.data.authorities[0].authority === "ROLE_MERCHANT"){
+            if (response.data.authorities[0].authority === "ROLE_MERCHANT") {
                 const merchant = await findMerchantByAccount(response.data.id)
                 localStorage.setItem("merchant", JSON.stringify(merchant))
             }
             setUser(response)
-            toast.success('Logged in successfully!',{containerId:'login'});
+            toast.success('Logged in successfully!', {containerId: 'login'});
             setExist(!isExist)
             setTimeout(() => {
-                window.document.getElementById("modal-login-close").click();
-            }, 3000)
+                window.location.href = "/";
+            }, 1700)
         } catch (error) {
-            toast.error('Incorrect user or password, try again!', {containerId:'login'});
+            toast.error('Incorrect user or password, try again!', {containerId: 'login'});
         }
     }
 
@@ -176,11 +168,11 @@ export default function Header() {
         setUser(null);
         setUsername("")
         setPassword("")
-        // navigate('/');
+        window.location.href = "/";
     };
 
-    const notificationLogin=()=>{
-        toast.error('Please log in!', {containerId : "page"});
+    const notificationLogin = () => {
+        toast.error('Please log in!', {containerId: "page"});
     }
 
     return (
@@ -202,21 +194,30 @@ export default function Header() {
                                 </div>
                                 <div className="col-md-6 text-lg-right">
                                     <div className="d-inline-flex align-items-center">
-                                        <a className="text-dark px-2" href="">
-                                            <i className="fab fa-facebook-f"></i>
-                                        </a>
-                                        <a className="text-dark px-2" href="">
-                                            <i className="fab fa-twitter"></i>
-                                        </a>
-                                        <a className="text-dark px-2" href="">
-                                            <i className="fab fa-linkedin-in"></i>
-                                        </a>
-                                        <a className="text-dark px-2" href="">
-                                            <i className="fab fa-instagram"></i>
-                                        </a>
-                                        <a className="text-dark pl-2" href="">
-                                            <i className="fab fa-youtube"></i>
-                                        </a>
+                                        {user ? (
+                                            <div className="dropdown">
+                                                <a><img src={user.image} className="profile-picture"/> {user.name}</a>
+                                                <div className="dropdown-menu">
+                                                    <Link className="user-function" to="/merchant/register">Register Merchant</Link>
+                                                    <Link className="user-function" to="/list">Detail Merchant</Link>
+                                                    {user && <a className="user-function" onClick={handleLogout}>Logout</a>}
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="nav-item user-panel">
+                                                <div className="user-panel">
+                                                    {/*<a href={"/login"} className="btn bg-light-gray text-black btn-login">Login</a>*/}
+                                                    <a className="text-dark btn-login" id="modal-login-open"
+                                                       ref={btn_modal}
+                                                       data-bs-toggle="modal"
+                                                       data-bs-target="#loginModal"
+                                                       style={{marginRight: "10px"}}>Login</a>
+                                                    <a className="text-dark btn-login" ref={btn_modal}
+                                                       data-bs-toggle="modal"
+                                                       data-bs-target="#registerModal">Register</a>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -224,14 +225,15 @@ export default function Header() {
                     </section>
                     {/*End Topbar*/}
                 </nav>
-                <ToastContainer enableMultiContainer containerId={"page"} position="top-right" autoClose={2000} pauseOnHover={false}
+                <ToastContainer enableMultiContainer containerId={"page"} position="top-right" autoClose={2000}
+                                pauseOnHover={false}
                                 style={{width: "400px"}}/>
                 <nav className="navbar">
                     {/*Navbar*/}
                     <div className="container">
                         {/*Logo*/}
-                        <a href="" className="logo"
-                           style={{backgroundImage: `url("https://firebasestorage.googleapis.com/v0/b/react-firebase-storage-f6ec9.appspot.com/o/file%2Flogo--web.png?alt=media&token=372f9a0c-25f3-4f56-9019-21ba8c8e607a")`}}></a>
+                        <Link to="/" className="logo"
+                              style={{backgroundImage: `url("https://firebasestorage.googleapis.com/v0/b/react-firebase-storage-f6ec9.appspot.com/o/file%2Flogo--web.png?alt=media&token=372f9a0c-25f3-4f56-9019-21ba8c8e607a")`}}></Link>
                         {/*Menu-Nav*/}
                         <div className="user-nav-menu">
 
@@ -245,10 +247,11 @@ export default function Header() {
                                     <li className="city-item">Đà Nẵng</li>
                                 </ul>
                             </div>
+
                             {/*End City Select*/}
 
                             {/*Menu Item*/}
-                            <div style={{width : "850px"}}>
+                            <div style={{width: "850px"}}>
                                 <a href="" className="btn-nav-link">New Location</a>
                                 <a href="" className="btn-nav-link">Hot Deals</a>
                                 <a href="" className="btn-nav-link">Popular Brands</a>
@@ -259,51 +262,17 @@ export default function Header() {
                             </div>
                             {/*End Menu Item*/}
                             {/*Login*/}
-                            <div style={{width : "200px"}}>
-                                {user ? (
-                                    <div className="nav-item user-panel">
-                                        <div className="user-panel">
-                                            <div className="btn-nav-city-select"><a>Welcome {user.username} !</a>
-                                                <i className="fa-solid fa-sort-down"></i>
-                                                <ul className="menu-nav-city-select" style={{width: "150px"}}>
-                                                    <li className="city-item"><Link style={{color: "black"}}
-                                                                                    to={"merchant/register"}>Register
-                                                        Merchant</Link></li>
-                                                    <li className="city-item"><Link style={{color: "black"}}
-                                                                                    to={"merchant/update/2"}>Update
-                                                        Merchant</Link></li>
-                                                    <li className="city-item"><Link style={{color: "black"}}
-                                                                                    to={"list"}>Detail Merchant</Link></li>
-                                                    {user && <li className="city-item" onClick={handleLogout}>Logout</li>}
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ) : (
-                                    <div className="nav-item user-panel">
-                                        <div className="user-panel">
-                                            {/*<a href={"/login"} className="btn bg-light-gray text-black btn-login">Login</a>*/}
-                                            <a className="btn bg-light-gray text-black btn-login" id="modal-login-open"
-                                               ref={btn_modal}
-                                               data-bs-toggle="modal"
-                                               data-bs-target="#loginModal" style={{marginRight: "10px"}}>Login</a>
-                                            <a className="btn bg-light-gray text-black btn-login" ref={btn_modal}
-                                               data-bs-toggle="modal"
-                                               data-bs-target="#registerModal">Register</a>
-                                        </div>
-                                    </div>
-
-                                )}
-                            </div>
+                            <div style={{width: "100px"}}></div>
                             {/*End Navbar*/}
                             {/*login modal*/}
                             <div className="modal fade bd-example-modal-lg" id="loginModal" tabIndex="-1"
                                  role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                                 <ToastContainer enableMultiContainer containerId="login" position="top-right"
-                                                autoClose={2000} pauseOnHover={false}
+                                                autoClose={1000} pauseOnHover={false}
                                                 style={{width: "400px"}}/>
 
-                                <div className="modal-dialog modal-dialog-login modal-dialog-centered modal-lg" role="document">
+                                <div className="modal-dialog modal-dialog-login modal-dialog-centered modal-lg"
+                                     role="document">
                                     <div className="modal-content">
                                         <div className="modal-header">
                                             <h5 className="modal-title" id="myLargeModalLabel">Login account</h5>
@@ -314,16 +283,16 @@ export default function Header() {
                                         <div className="modal-body">
                                             <form>
                                                 <div className="row">
-                                                    <div className="col-4">
+                                                    <div className="col-4" style={{marginLeft: "20px"}}>
                                                         <div className="form-group">
-                                                            <label>Username:</label>
+                                                            <label>Username</label>
                                                             <input className="input-login-form" type="text"
                                                                    placeholder="Enter Password"
                                                                    name="user" value={username}
                                                                    onChange={(e) => setUsername(e.target.value)}/>
                                                         </div>
                                                         <div className="form-group">
-                                                            <label>Password:</label>
+                                                            <label>Password</label>
                                                             <input className="input-login-form" type="password"
                                                                    placeholder="Enter Password"
                                                                    name="psw" value={password}
@@ -344,9 +313,10 @@ export default function Header() {
                                                         </div>
                                                     </div>
                                                     <div className="col-7">
-                                                        <img src="https://firebasestorage.googleapis.com/v0/b/react-firebase-storage-f6ec9.appspot.com/o/file%2FdoAnNgon.jpg?alt=media&token=e3c3377c-463d-481d-bb04-ba2d890e27b9"
-                                                             alt="login"
-                                                        style={{width: "500px", marginLeft:"60px"}}/>
+                                                        <img
+                                                            src="https://firebasestorage.googleapis.com/v0/b/react-firebase-storage-f6ec9.appspot.com/o/file%2FdoAnNgon.jpg?alt=media&token=e3c3377c-463d-481d-bb04-ba2d890e27b9"
+                                                            alt="login"
+                                                            style={{width: "500px", marginLeft: "60px"}}/>
                                                     </div>
                                                 </div>
                                             </form>
@@ -357,10 +327,10 @@ export default function Header() {
                             <div className="user-nav-menu">
                                 {user ? (
                                     <Link to={"/cart/account"}><i className="fa-solid fa-cart-shopping fa-lg"
-                                                                 style={{color: "#ff0000"}}></i></Link>
+                                                                  style={{color: "#ff0000"}}></i></Link>
                                 ) : (
                                     <span onClick={notificationLogin}><i className="fa-solid fa-cart-shopping fa-lg"
-                                                                 style={{color: "#ff0000"}}></i></span>
+                                                                         style={{color: "#ff0000"}}></i></span>
                                 )}
                             </div>
                             {/*End login modal*/}
@@ -377,19 +347,20 @@ export default function Header() {
                                         <div className="modal-header">
                                             <a href="" className="logo"
                                                style={{backgroundImage: `url("https://firebasestorage.googleapis.com/v0/b/react-firebase-storage-f6ec9.appspot.com/o/file%2Flogo--web.png?alt=media&token=372f9a0c-25f3-4f56-9019-21ba8c8e607a")`}}></a>
-                                            <h5 className="modal-title" id="myLargeModalLabel" style={{marginLeft:"10px"}}>Register</h5>
+                                            <h5 className="modal-title" id="myLargeModalLabel"
+                                                style={{marginLeft: "10px"}}>Register</h5>
                                             <button type="button" id="modal-register-close" className="btn-close"
                                                     data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
                                         </div>
-                                        <div className="modal-body">
+                                        <div className="modal-body" style={{marginLeft: "20px"}}>
                                             <Formik initialValues={account} onSubmit={(e) => handleCreateAccount(e)}
                                                     validationSchema={schema}>
                                                 <Form>
                                                     <div className="row">
                                                         <div className="col-6">
                                                             <div className="mb-3">
-                                                                <label className="form-label">Enter your account</label>
+                                                                <label className="form-label">Username</label>
                                                                 <Field type="text"
                                                                        className="form-control input-focus input-register-form"
                                                                        name="name"/>
@@ -433,16 +404,16 @@ export default function Header() {
                                                                                 }} alt="placeholder"/>
                                                                         </div>
                                                                     ) : (
-                                                                            <div>
-                                                                                <img className="image-input"
-                                                                                     src={URL.createObjectURL(file)}
-                                                                                     alt='image'
-                                                                                     style={{
-                                                                                         borderRadius: "50%",
-                                                                                         width: "278px",
-                                                                                         height: "278px"
-                                                                                     }}/>
-                                                                            </div>)}
+                                                                        <div>
+                                                                            <img className="image-input"
+                                                                                 src={URL.createObjectURL(file)}
+                                                                                 alt='image'
+                                                                                 style={{
+                                                                                     borderRadius: "50%",
+                                                                                     width: "278px",
+                                                                                     height: "278px"
+                                                                                 }}/>
+                                                                        </div>)}
                                                                 </div>
                                                             </div>
                                                         </div>

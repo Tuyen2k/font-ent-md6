@@ -5,7 +5,31 @@ body {
     font-family: "Poppins", sans-serif !important;
     background-color: #f6f6f6 !important;
 }
+.profile-picture {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-bottom: 3px;
+}
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    width: 180px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
 
+.dropdown-menu a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
 .modal-dialog {
     max-width: 1000px;
     max-height: 100px;
@@ -169,10 +193,6 @@ ul {
     background-color: #ebebeb!important;
 }
 
-.btn-login {
-    font-weight: 700 !important;
-}
-
 .top-banner.loship, .top-banner.search-loship, .top-banner.partner, .top-banner.lomart, .top-banner.search-lomart {
     background-color: #f1f1f1;
 }
@@ -231,7 +251,7 @@ h1 {
     white-space: nowrap;
 }
 .bg-transparent {
-    background-color: #0000!important;
+    background-color: #0000 !important;
 }
 .text-blue {
     color: #0897ee!important;
@@ -247,7 +267,7 @@ input, textarea {
 }
 input, textarea, select {
     background-color: #f6f6f6;
-    border: 1px solid rgba(0,0,0,0);
+    border: 1px solid rgba(0, 0, 0, 0);
     border-radius: 3px;
     display: block;
     font-size: inherit;
@@ -277,7 +297,8 @@ input:not([type="file" i], [type="image" i], [type="checkbox" i], [type="radio" 
     max-width: calc(100% - 16px) !important;
     min-width: 300px;
 }
-.pagination>ul>li a, .district-section .district-list, .home-page .search-global-address-content {
+
+.pagination > ul > li a, .district-section .district-list, .home-page .search-global-address-content {
     background-color: #fff;
     border-radius: 8px;
     box-shadow: 0 2px 4px #00000012;
@@ -687,9 +708,12 @@ hr {
 .input-group-text{
     width: 150px;
 }
-.image-input{
-    width: 300px;
-    height: 200px;
+
+.image-input {
+    width: 98%;
+    height: 250px;
+    position: absolute;
+    left: 6px;
 }
 .form-check{
     display: inline-flex !important;

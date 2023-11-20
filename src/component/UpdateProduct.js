@@ -5,12 +5,16 @@ import {getAllCategories} from "../service/CategoryService";
 import {getProductById, saveProduct} from "../service/ProductService";
 import * as yup from "yup";
 import {upImageFirebase} from "../firebase/Upfirebase";
+import Header from "../layout/Header";
+import Footer from "../layout/Footer";
+import {toast, ToastContainer} from "react-toastify";
 
 
 export default function UpdateProduct() {
     const [product, setProduct] = useState(undefined)
     const [load, setLoad] = useState(true)
     const [isExist, setExist] = useState(true)
+    const [check, setCheck] = useState(true)
     const [categoriesDB, setCategoriesDB] = useState([])
     const [categories, setCategories] = useState([])
     const navigate = useNavigate()
@@ -34,17 +38,18 @@ export default function UpdateProduct() {
                 setCategories(res.categories)
             } else {
                 setExist(false)
-                setMessage("Product not found!!!")
-                btn_modal.current.click()
+                toast.error("Product not found!!!", {containerId:"update-product"})
+                setTimeout(()=>{
+                    navigate("/list")
+                },3000)
             }
         })
-    }, [])
+    }, [check])
 
 
     async function handledUpdate(e) {
         if (categories === undefined || categories.length === 0) {
-            setMessage("Please select category for the product!!!")
-            btn_modal.current.click();
+            toast.error("Please select category for the product!!!", {containerId:"update-product"})
             return
         }
         setLoad(false)
@@ -56,21 +61,19 @@ export default function UpdateProduct() {
                 product = {...product, image: image.name}
             }
             saveProduct(product).then(response => {
-                if (response) {
-                    setMessage("Update product success!!!")
-                    btn_modal.current.click();          // onclick btn modal
+                if (response === true) {
+                    setCheck(!check)
+                    toast.success("Update product success!!!", {containerId:"update-product"})
                     setLoad(true)
                     setExist(false)
                 } else {
-                    setMessage("Action error occurred. Please check again!!!")
-                    btn_modal.current.click();          // onclick btn modal
+                    toast.error("Action error occurred. Please check again!!!", {containerId:"update-product"})
                     setLoad(true)
                 }
             })
         } catch (Error) {
             setFile(undefined)
-            setMessage("Action error occurred. Please check again!!!")
-            btn_modal.current.click();          // onclick btn modal
+            toast.error("Action error occurred. Please check again!!!", {containerId:"update-product"})
             setLoad(true)
             setExist(false)
         }
@@ -105,43 +108,81 @@ export default function UpdateProduct() {
 
     return (
         <>
+            <Header/>
+            <ToastContainer enableMultiContainer containerId={"update-product"} position="top-right" autoClose={2000} pauseOnHover={false}
+                            style={{width: "400px"}}/>
             {load ? (
                     <div className="form-input">
-                        <h1 className="title">Update Product</h1>
+                        <h2 className="title">Update</h2>
+                        <hr/>
                         <Formik onSubmit={(e) => handledUpdate(e)}
                                 initialValues={product}
                                 validationSchema={schema}
                                 enableReinitialize={true}>
-                            <Form>
-                                <div className="input-group mb-3">
-                                    <span className="input-group-text" id="name">Name</span>
-                                    <Field type="text" className="form-control" name="name" placeholder="Enter name product"
-                                           aria-describedby="name"/>
-                                    <ErrorMessage name="name" component="span" className="error"/>
+                            <Form style={{marginLeft: "20px", marginRight: "20px"}}>
+                                <div className="row">
+                                    <div className="col-6">
+                                        <div className="input-form-label mb-3">
+                                            <label className="form-label" id="name">Name <span style={{color: "red"}}>(*)</span></label>
+                                            <Field type="text" className="form-control" name="name" placeholder="Enter name product"
+                                                   aria-describedby="name"/>
+                                            <ErrorMessage name="name" component="span" className="error"/>
+                                        </div>
+                                        <div className="input-form-label mb-3">
+                                            <label className="form-label" id="price">Price <span style={{color: "red"}}>(*)</span></label>
+                                            <Field type="text" className="form-control" name="price"
+                                                   placeholder="Enter price product"
+                                                   aria-describedby="price"/>
+                                            <ErrorMessage name="price" component="span" className="error"/>
+                                        </div>
+                                        <div className="input-form-label mb-3">
+                                            <label className="form-label" id="timeMake">Time Make <span style={{color: "red"}}>(*)</span></label>
+                                            <Field type="text" className="form-control" name="timeMake"
+                                                   placeholder="Enter time make product"
+                                                   aria-describedby="timeMake"/>
+                                            <ErrorMessage name="timeMake" component="span" className="error"/>
+                                        </div>
+                                    </div>
+                                    <div className="col-6">
+                                        <div className="input-form-label mb-3" onClick={handledClickInput}>
+                                            <label className="form-label">Image <span style={{color: "red"}}>(*)</span></label>
+                                            <input ref={inputFile} name="image" type="file" id="form-file-create"
+                                                   style={{display: 'none'}} onChange={(e) => setFile(e.target.files[0])}/>
+                                            {file === undefined ? (
+                                                <div style={{backgroundColor: "white", position: "relative", height: "264px"}}
+                                                     className="form-control">
+                                                    {product !== undefined && product.image !== "" ? (
+                                                        <div>
+                                                            <img className="image-input" src={product.image}
+                                                                 alt='image'/>
+                                                        </div>
+                                                    ) : (
+                                                        <div>
+                                                            <img className='image-input' alt="image"
+                                                                 src={"https://binamehta.com/wp-content/uploads/image-placeholder-300x200.png"}/>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <div style={{backgroundColor: "white", position: "relative", height: "264px"}}
+                                                     className="form-control">
+                                                    <div>
+                                                        <img className="image-input" src={URL.createObjectURL(file)}
+                                                             alt='image'/>
+                                                    </div>
+                                                </div>)}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="input-group mb-3">
-                                    <span className="input-group-text" id="price">Price</span>
-                                    <Field type="text" className="form-control" name="price"
-                                           placeholder="Enter price product"
-                                           aria-describedby="price"/>
-                                    <ErrorMessage name="price" component="span" className="error"/>
-                                </div>
-                                <div className="input-group mb-3">
-                                    <span className="input-group-text" id="timeMake">Time Make</span>
-                                    <Field type="text" className="form-control" name="timeMake"
-                                           placeholder="Enter time make product"
-                                           aria-describedby="timeMake"/>
-                                    <ErrorMessage name="timeMake" component="span" className="error"/>
-                                </div>
-                                <div className="input-group mb-3">
-                                    <span className="input-group-text" style={{height: "37.6px", width:"150px"}} id="description">Description</span>
+                                <div className="input-form-label mb-3">
+                                    <label className="form-label" id="description">Description</label>
                                     <Field as="textarea" className="form-control" style={{paddingLeft : "2px", height: "80px", resize: "none"}} name="description"
                                            placeholder="Enter description product"
                                            aria-describedby="description"/>
                                 </div>
-                                <div style={{display: "flex"}} className="div-checkbox input-group mb-3 row ">
-                                    <span className="input-group-text col-2" style={{height: "37.6px",  width:"150px"}}>Categories</span>
-                                    <div className="form-checkbox col-10">
+                                <div className="div-checkbox mb-3 row ">
+                                    <label className="form-label" >Categories <span style={{color: "red"}}>(*)</span></label>
+                                    <div className="form-checkbox">
                                         {categoriesDB.map((category, index = 0) => {
                                             let flag = false;
                                             for (const item of categories) {
@@ -175,41 +216,17 @@ export default function UpdateProduct() {
                                         })}
                                     </div>
                                 </div>
-                                <div className="mb-3" style={{display: "flex"}} onClick={handledClickInput}>
-                                    <span className="input-group-text" style={{height: "37.6px"}}>Image Product</span>
-                                    <input ref={inputFile} className="form-control" name="image" type="file" id="formFile"
-                                           style={{display: 'none'}} onChange={(e) => setFile(e.target.files[0])}/>
-                                    {file === undefined ? (
-                                        <div style={{backgroundColor: "white", width: "325.6px", marginLeft: "20px"}}
-                                             className="form-control">
-                                            {product !== undefined && product.image !== "" ? (
-                                                <div>
-                                                    <img className="image-input" src={product.image}
-                                                         alt='image'/>
-                                                </div>
-                                            ) : (
-                                                <div className='image-input'
-                                                     style={{backgroundImage: `url("https://binamehta.com/wp-content/uploads/image-placeholder-300x200.png")`}}>
-                                                </div>
-                                            )}
-                                        </div>
-                                    ) : (
-                                        <div style={{backgroundColor: "white", width: "325.6px", marginLeft: "20px"}}
-                                             className="form-control">
-                                            <div>
-                                                <img className="image-input" src={URL.createObjectURL(file)}
-                                                     alt='image'/>
-                                            </div>
-                                        </div>)}
-                                </div>
                                 <hr/>
                                 <div className="div-button">
-                                    <button style={{width: '300px'}} type="submit"
-                                            className="btn btn-outline-success">Update
-                                    </button>
-                                    <Link to={'/'} style={{width: '100px', marginLeft: '20px'}} type="submit"
-                                            className="btn btn-info">Back
-                                    </Link>
+                                    <div className="row" style={{display: "flex"}}>
+                                        <Link className="col-1" to={'/list'} style={{width: '50px', color : "black", paddingTop: "6px"}} type="submit">Back</Link>
+                                        <div className={"col-10"}>
+                                            <button style={{width: '150px', marginLeft: "45%"}} type="submit"
+                                                    className="btn btn-outline-danger ">Update
+                                            </button>
+                                        </div>
+                                        <div className="col-1"></div>
+                                    </div>
                                 </div>
                             </Form>
                         </Formik>
@@ -217,12 +234,14 @@ export default function UpdateProduct() {
                 )
                 : (
                     <div className="d-flex justify-content-center">
-                        <div className="spinner-border" style={{width: "4rem", height: "4rem", marginTop: "40vh"}}
+                        <div className="spinner-border" style={{width: "4rem", height: "4rem", marginTop: "20vh", marginBottom:"20vh"}}
                              role="status">
                             <span className="visually-hidden">Loading...</span>
                         </div>
                     </div>
                 )}
+
+            <Footer/>
 
             {/*button modal*/}
             <button type="button" ref={btn_modal} className="btn btn-primary" data-bs-toggle="modal"
