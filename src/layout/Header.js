@@ -427,7 +427,7 @@ export default function Header() {
                                                                               component="div"/>
                                                             </div>
                                                             <div className="mb-3">
-                                                                <label className="form-label">Email Number</label>
+                                                                <label className="form-label">Email Address</label>
                                                                 <Field type="text"
                                                                        className="form-control input-focus input-register-form"
                                                                        name="email"/>
