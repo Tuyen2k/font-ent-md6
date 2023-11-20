@@ -1,7 +1,13 @@
 import {Link, useParams} from "react-router-dom";
 import Header from "../../layout/Header";
 import React, {useEffect, useState} from "react";
-import {findAllBillByMerchant, findAllOrdersByMerchant, getAllStatus, groupByBill} from "../../service/BillService";
+import {
+    findAllBillByMerchant,
+    findAllOrdersByMerchant,
+    findOrderByProduct, findOrderByStatus, findOrderByUser, findUser,
+    getAllStatus,
+    groupByBill
+} from "../../service/BillService";
 import {getAllProductByIdMerchant} from "../../service/ProductService";
 function OrderStatistics() {
     let {id} = useParams();
@@ -9,22 +15,92 @@ function OrderStatistics() {
     const [status, setStatus] = useState([]);
     const [user, setUser] = useState([]);
     const [product, setProduct] = useState([]);
+    const [check, setCheck] = useState(true);
+    const [message, setMessage] = useState("");
+    const [totalMoNey, setTotalMoNey] = useState(0);
+    const [totalProduct, setTotalProduct] = useState(0);
+    const [totalOrder, setTotalOrder] = useState(0);
+    const [totalUser, setTotalUser] = useState(0);
     useEffect(() => {
+        if (check){
             findAllOrdersByMerchant(id).then(r => {
                 setBillDetail(groupByBill(r))
-                const filteredList = billDetail.filter((item, index, array) => {
-                    const isDuplicate = array.slice(0, index).some(prevItem => {
-                        return prevItem.account.id_account === item.account.id_account;
-                    })});
-                    setUser(filteredList)
-                getAllProductByIdMerchant(id).then(re => {
-                    setProduct(re)
-                })
+                order(r.length)
+                money(r)
+                setMessage("Statistics")
             })
+        }
+        getAllProductByIdMerchant(id).then(re => {
+            setProduct(re)
+            setTotalProduct(re.length)
+        })
         getAllStatus().then(res => {
             setStatus(res)
         })
-    }, []);
+
+        findUser(id).then(r => {
+            setUser(r.reverse())
+            setTotalUser(r.length)
+        })
+    }, [check]);
+
+
+    const selectProduct = (e) => {
+        findOrderByProduct(e.target.value).then(r => {
+            if (r !== undefined){
+                setBillDetail(groupByBill(r))
+                money(r)
+                order(r.length)
+                setMessage("Search By Product")
+                setCheck(false)
+            } else {
+                setCheck(true)
+            }
+        })
+    }
+
+    const selectStatus = (e) => {
+        findOrderByStatus(id, e.target.value).then(r => {
+            if (r !== undefined){
+                setBillDetail(groupByBill(r))
+                money(r)
+                order(r.length)
+                setMessage("Search By Status")
+                setCheck(false)
+            } else {
+                setCheck(true)
+            }
+        })
+    }
+
+    const selectUser = (e) => {
+        findOrderByUser(id, e.target.value).then(r => {
+            if (r !== undefined){
+                setBillDetail(groupByBill(r))
+                money(r)
+                order(r.length)
+                setMessage("Search By User")
+                setCheck(false)
+                console.log(r)
+            } else {
+                setCheck(true)
+            }
+        })
+    }
+
+    const money = (r) => {
+        let count = 0;
+        for (let i = 0; i < r.length; i++) {
+            count += r[i].price
+        }
+        setTotalMoNey(count)
+    }
+
+    const order = (r) => {
+        setTotalOrder(r)
+    }
+
+
     return (
         <>
 
@@ -135,10 +211,11 @@ function OrderStatistics() {
                                     <div className="shadow-lg bg-red-vibrant border-l-8 hover:bg-red-vibrant-dark border-red-vibrant-dark mb-2 p-2 md:w-1/4 mx-2">
                                         <div className="p-4 flex flex-col">
                                             <a href="#" className="no-underline text-white text-2xl">
-                                                $244
+                                                <span className="number">{totalMoNey.toLocaleString()}</span>
+                                                 VND
                                             </a>
                                             <a href="#" className="no-underline text-white text-lg">
-                                                Total Sales
+                                                Total Money
                                             </a>
                                         </div>
                                     </div>
@@ -146,10 +223,10 @@ function OrderStatistics() {
                                     <div className="shadow bg-info border-l-8 hover:bg-info-dark border-info-dark mb-2 p-2 md:w-1/4 mx-2">
                                         <div className="p-4 flex flex-col">
                                             <a href="#" className="no-underline text-white text-2xl">
-                                                $199.4
+                                                {totalOrder} orders
                                             </a>
                                             <a href="#" className="no-underline text-white text-lg">
-                                                Total Cost
+                                                Total Oder
                                             </a>
                                         </div>
                                     </div>
@@ -157,7 +234,7 @@ function OrderStatistics() {
                                     <div className="shadow bg-warning border-l-8 hover:bg-warning-dark border-warning-dark mb-2 p-2 md:w-1/4 mx-2">
                                         <div className="p-4 flex flex-col">
                                             <a href="#" className="no-underline text-white text-2xl">
-                                                900
+                                                {totalUser} Users
                                             </a>
                                             <a href="#" className="no-underline text-white text-lg">
                                                 Total Users
@@ -168,7 +245,7 @@ function OrderStatistics() {
                                     <div className="shadow bg-success border-l-8 hover:bg-success-dark border-success-dark mb-2 p-2 md:w-1/4 mx-2">
                                         <div className="p-4 flex flex-col">
                                             <a href="#" className="no-underline text-white text-2xl">
-                                                500
+                                                {totalProduct} Products
                                             </a>
                                             <a href="#" className="no-underline text-white text-lg">
                                                 Total Products
@@ -186,25 +263,25 @@ function OrderStatistics() {
 
                                     <div className="rounded overflow-hidden shadow bg-white mx-2 w-full">
                                         <div className="flex items-center px-6 py-2 border-b border-light-grey">
-                                            <div className="font-bold text-xl">Statistics</div>
+                                            <div className="font-bold text-xl" style={{width: '250px'}}>{message}</div>
                                             <div style={{marginLeft: '500px', width: '300px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
-                                                <select value="optionProduct" className="form-select">
+                                                <select onChange={selectProduct} value="optionProduct" className="form-select">
                                                     <option>Product</option>
-                                                    <option>Status</option>
                                                     {product && product.map(item => (
                                                         <option value={item.id_product}>{item.name}</option>
                                                     ))}
                                                 </select>
                                             </div>
-                                            <div style={{marginLeft: '50px', width: '300px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
-                                                <select className="form-select">
+                                            <div style={{marginLeft: '30px', width: '300px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
+                                                <select onChange={selectUser} className="form-select">
                                                     <option>User</option>
-                                                    <option>2</option>
-                                                    <option>3</option>
+                                                    {user && user.map(item => (
+                                                        <option value={item.account.id_account}>{item.account.name}</option>
+                                                    ))}
                                                 </select>
                                             </div>
-                                            <div style={{marginLeft: '50px', width: '300px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
-                                                <select value="optionStatus" className="form-select">
+                                            <div style={{marginLeft: '30px', width: '300px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
+                                                <select onChange={selectStatus} value="optionStatus" className="form-select">
                                                     <option>Status</option>
                                                     {status && status.map(item => (
                                                         <option value={item.id_status}>{item.name}</option>
@@ -260,7 +337,7 @@ function OrderStatistics() {
                                                             fontWeight: 'bold',
                                                             color: '#a13d3d',
                                                             textAlign: 'center'
-                                                        }}>{item.total} </td>
+                                                        }}><span className="number">{item.total.toLocaleString()}</span> </td>
                                                         <td style={{textAlign: 'center'}}>
                                                             <span className="number">{item.bill.status.name}</span>
                                                         </td>
