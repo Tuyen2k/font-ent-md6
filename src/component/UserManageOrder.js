@@ -63,10 +63,11 @@ export default function UserManageOrder() {
                             pauseOnHover={false}
                             style={{width: "400px"}}/>
             <div className="container">
-                <h3>Manage Order</h3>
                 <div className="container">
-                    <Pagination totalPage={totalPage} page={page} limit={limit} siblings={1}
-                                onPageChange={handlePageChange} onChangeItem={handleChangeItem}/>
+                    <div style={{marginTop : "15px"}}>
+                        <Pagination totalPage={totalPage} page={page} limit={limit} siblings={1}
+                                    onPageChange={handlePageChange} onChangeItem={handleChangeItem}/>
+                    </div>
                     <div className="content">
                         <table className="table table-hover">
                             <thead>
@@ -75,7 +76,7 @@ export default function UserManageOrder() {
                                 <th>Merchant</th>
                                 <th>Product</th>
                                 <th>Time purchase</th>
-                                <th>Amount</th>
+                                <th>Total amount</th>
                                 <th>Status</th>
                             </tr>
                             </thead>
@@ -93,13 +94,7 @@ export default function UserManageOrder() {
                                             )
                                         })}</td>
                                         <td>{bill.bill.time_purchase}</td>
-                                        <td>{bill.billDetails.map(item =>{
-                                            return(
-                                                <>
-
-                                                </>
-                                            )
-                                        })}</td>
+                                        <td><span className="number">{bill.total.toLocaleString()} VND</span></td>
                                         <td>{bill.bill.status.name}</td>
                                     </tr>
                                 )

@@ -42,15 +42,17 @@ export function getAllBillDetailByAccount(id_account){
 export function groupByBill(list){
     let arr = []
     let count = 0
-    let a = {bill : list[0].bill, billDetails : [list[0]], total : 0}
+    let a = {bill : list[0].bill, billDetails : [list[0]], total : list[0].quantity * list[0].price}
     arr.push(a)
     for (let i = 1; i < list.length; i++) {
         if (list[i].bill.id_bill === arr[count].bill.id_bill){
             arr[count].billDetails.push(list[i])
+            arr[count].total +=list[i].quantity * list[i].price
         }else {
-            arr.push({bill : list[i].bill, billDetails : [list[i]]})
+            arr.push({bill : list[i].bill, billDetails : [list[i]], total : list[i].quantity * list[i].price})
             count ++;
         }
     }
+
     return arr;
 }
