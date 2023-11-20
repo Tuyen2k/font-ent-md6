@@ -1,14 +1,14 @@
 import {Link, useParams} from "react-router-dom";
 import Header from "../../layout/Header";
 import React, {useEffect, useState} from "react";
-import {findAllOrdersByMerchant} from "../../service/BillService";
+import {findAllOrdersByMerchant, groupByBill} from "../../service/BillService";
 function OrderStatistics() {
     let {id} = useParams();
     const [billDetail, setBillDetail] = useState([]);
     useEffect(() => {
             findAllOrdersByMerchant(id).then(r => {
-                setBillDetail(r)
-                console.log(r)
+                setBillDetail(groupByBill(r))
+                console.log(groupByBill(r))
             })
     }, []);
     return (
@@ -202,17 +202,29 @@ function OrderStatistics() {
                                                             </Link><br/>
                                                         </td>
                                                         <td style={{textAlign: 'center'}}>{item.bill.account.phone}</td>
-                                                        <td style={{textAlign: 'center'}}>{item.time_purchase}</td>
-                                                        <td style={{textAlign: 'center'}}>{item.product.name}</td>
+                                                        <td style={{textAlign: 'center'}}>{new Date(item.bill.time_purchase).toLocaleString(
+                                                            'en-UK', {
+                                                                year: 'numeric',
+                                                                month: '2-digit',
+                                                                day: '2-digit',
+                                                                hour: '2-digit',
+                                                                minute: '2-digit',
+                                                            })}</td>
+                                                        <td>{item.billDetails.map(item=>{
+                                                            return(
+                                                                <>
+                                                                    <p>{item.product.name}</p>
+                                                                </>
+                                                            )
+                                                        })}</td>
                                                         <td style={{
                                                             fontWeight: 'bold',
                                                             color: '#a13d3d',
                                                             textAlign: 'center'
-                                                        }}>{item.price} </td>
-                                                        <td style={{textAlign: 'center'}}>{item.bill.status.name}</td>
-                                                        {/*<td>*/}
-                                                        {/*    <span className="text-green-500"><i className="fas fa-arrow-up"></i>5%</span>*/}
-                                                        {/*</td>*/}
+                                                        }}>{item.total} </td>
+                                                        <td style={{textAlign: 'center'}}>
+                                                            <span className="number">{item.bill.status.name}</span>
+                                                        </td>
                                                     </tr>
                                                 ))}
                                                 </tbody>

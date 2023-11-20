@@ -1,7 +1,7 @@
 import {Link, useParams} from "react-router-dom";
 import Header from "../../layout/Header";
 import React, {useEffect, useState} from "react";
-import {findAllOrdersByMerchant, searchByNameAndPhone} from "../../service/BillService";
+import {findAllOrdersByMerchant, groupByBill, searchByNameAndPhone} from "../../service/BillService";
 
 function AllOrders() {
     let {id} = useParams();
@@ -10,7 +10,7 @@ function AllOrders() {
     useEffect(() => {
         if (check){
             findAllOrdersByMerchant(id).then(r => {
-                setBillDetail(r)
+                setBillDetail(groupByBill(r))
                 console.log(r)
                 setCheck(false)
             })
@@ -21,7 +21,7 @@ function AllOrders() {
         let value = document.getElementById("valueSearch").value;
         if (value === ""){
             findAllOrdersByMerchant(id).then(r => {
-                setBillDetail(r)
+                setBillDetail(groupByBill(r))
                 console.log(r)
                 setCheck(false)
             })
@@ -29,7 +29,7 @@ function AllOrders() {
             console.log(value)
             searchByNameAndPhone(id, value).then(r => {
                 if (r !== undefined){
-                    setBillDetail(r)
+                    setBillDetail(groupByBill(r))
                     setCheck(false)
                     console.log(r)
                 } else {
@@ -190,10 +190,10 @@ function AllOrders() {
                                                     <th scope="col">Product Name</th>
                                                     <th scope="col">Total Money (VND)</th>
                                                     <th scope="col">Status</th>
+                                                    <th scope="col">Confirm</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-
 
                                                 {billDetail && billDetail.map && billDetail.map((item, index) => (
                                                     <tr>
@@ -208,17 +208,36 @@ function AllOrders() {
                                                             </Link><br/>
                                                         </td>
                                                         <td style={{textAlign: 'center'}}>{item.bill.account.phone}</td>
-                                                        <td style={{textAlign: 'center'}}>{item.time_purchase}</td>
-                                                        <td style={{textAlign: 'center'}}>{item.product.name}</td>
+                                                        <td style={{textAlign: 'center'}}>{new Date(item.bill.time_purchase).toLocaleString(
+                                                            'en-UK', {
+                                                                year: 'numeric',
+                                                                month: '2-digit',
+                                                                day: '2-digit',
+                                                                hour: '2-digit',
+                                                                minute: '2-digit',
+                                                            })}</td>
+                                                        <td>{item.billDetails.map(item=>{
+                                                            return(
+                                                                <>
+                                                                    <p>{item.product.name}</p>
+                                                                </>
+                                                            )
+                                                        })}</td>
                                                         <td style={{
                                                             fontWeight: 'bold',
                                                             color: '#a13d3d',
                                                             textAlign: 'center'
-                                                        }}>{item.price} </td>
-                                                        <td style={{textAlign: 'center'}}>{item.bill.status.name}</td>
-                                                        {/*<td>*/}
-                                                        {/*    <span className="text-green-500"><i className="fas fa-arrow-up"></i>5%</span>*/}
-                                                        {/*</td>*/}
+                                                        }}>{item.total} </td>
+                                                        <td style={{textAlign: 'center'}}>
+                                                            <span className="number">{item.bill.status.name}</span>
+                                                        </td>
+                                                        <td style={{ textAlign: 'center' }}>
+                                                            {item.bill.status.id_status === 1 ? (
+                                                                <button className="btn btn-danger">Cancel</button>
+                                                            ) : (
+                                                                <></>
+                                                            )}
+                                                        </td>
                                                     </tr>
                                                 ))}
                                                 </tbody>
