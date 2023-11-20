@@ -207,12 +207,12 @@ export default function Header() {
                                             <div className="nav-item user-panel">
                                                 <div className="user-panel">
                                                     {/*<a href={"/login"} className="btn bg-light-gray text-black btn-login">Login</a>*/}
-                                                    <a className="text-dark btn-login" id="modal-login-open"
+                                                    <a className="text-dark" id="modal-login-open"
                                                        ref={btn_modal}
                                                        data-bs-toggle="modal"
                                                        data-bs-target="#loginModal"
                                                        style={{marginRight: "10px"}}>Login</a>
-                                                    <a className="text-dark btn-login" ref={btn_modal}
+                                                    <a className="text-dark" ref={btn_modal}
                                                        data-bs-toggle="modal"
                                                        data-bs-target="#registerModal">Register</a>
                                                 </div>

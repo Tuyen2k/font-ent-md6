@@ -41,6 +41,10 @@ body {
     max-width: 1500px !important;
     max-height: 100px;
 }
+.modal-dialog-login {
+    max-width: 950px !important;
+    max-height: 100px;
+}
 
 .login-buttons {
     padding-top: 30px;
@@ -48,6 +52,7 @@ body {
 
 .input-login-form {
     padding: 5px 12px !important;
+    width: 320px;
 }
 
 .input-register-form {
