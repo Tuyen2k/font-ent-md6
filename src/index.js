@@ -8,7 +8,6 @@ import Home from "./component/Home";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Footer from "./layout/Footer";
-import PopupAppCart from "./layout/PopupAppCart";
 import CreateProduct from "./component/CreateProduct";
 import UpdateMerchant from "./component/UpdateMerchant";
 import ProductList from "./component/ProductList";
@@ -35,7 +34,6 @@ root.render(
                 <Header/>
                 <Home/>
                 <Footer/>
-                <PopupAppCart/>
             </>}>
             </Route>
             <Route path="/list" element={<ProductList/>}></Route>
