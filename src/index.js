@@ -21,6 +21,7 @@ import DetailProduct from "./component/DetailProduct";
 import DetailMerchant from "./component/DetailMerchant";
 import UserManageOrder from "./component/UserManageOrder";
 import OrderManagement from "./component/OderManage/OrderManagement";
+import DemoStatusWebsocket from "./component/DemoStatusWebsocket";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
