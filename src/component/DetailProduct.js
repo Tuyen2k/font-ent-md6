@@ -5,6 +5,9 @@ import {addToCart} from "../service/CartService";
 import {findOneProduct, getAllProductByIdMerchant, MostPurchasedProducts} from "../service/ProductService";
 import {couponByIdMerchant} from "../service/CouponService";
 import Header from "../layout/Header";
+import Footer from "../layout/Footer";
+import {toast, ToastContainer} from "react-toastify";
+import {findAccountByMerchant} from "../service/AccountService";
 
 function DetailProduct() {
     let {id} = useParams();
@@ -68,17 +71,22 @@ function DetailProduct() {
 
     const handleAddToCart = () => {
         if (account !== null){
-            let cartDetail = {price: product.priceSale, quantity: quantity, product: product}
-            console.log(cartDetail)
-            addToCart(account.id, cartDetail).then(res => {
-                if (res === true) {
-                    setMessage("Add to cart success!!!")
-                    btn_modal.current.click()
+            findAccountByMerchant(merchant.id_merchant).then(res=>{
+                if(res !== undefined && res.id_account === account.id){
+                    toast.error('Your action is not authorized, please try again later!', {containerId: 'detail-product'});
+                    return
                 }
+                let cartDetail = {price: product.priceSale, quantity: quantity, product: product}
+                console.log(cartDetail)
+                addToCart(account.id, cartDetail).then(res => {
+                    if (res === true) {
+                        toast.success('Add to cart success!!!', {containerId: 'detail-product'});
+                    }
+                })
             })
+
         }else {
-            setMessage("Please login!!!")
-            btn_modal.current.click()
+            toast.error('Please login!!!', {containerId: 'detail-product'});
         }
     }
 
@@ -86,19 +94,12 @@ function DetailProduct() {
     return (
         <>
             <Header/>
-            <Link to={"/"}>
-                <svg style={{color: 'black'}} xmlns="http://www.w3.org/2000/svg" width="40" height="40"
-                     fill="currentColor" className="bi bi-x" viewBox="0 0 16 16">
-                    <path
-                        d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-                </svg>
-            </Link>
+            <ToastContainer enableMultiContainer containerId="detail-product" position="top-center"
+                            autoClose={2000} pauseOnHover={false}
+                            style={{width: "600px"}}/>
             <div className="now-detail-restaurant clearfix">
                 <div className="container">
-                    <div className="row">
-
-
-
+                    <div className="row" style={{marginTop: "20px"}}>
                         <div className="">
                             <div className="">
                                 <div style={{paddingRight: '0px', paddingLeft: '65px'}} className="col-md-12">
@@ -223,7 +224,7 @@ function DetailProduct() {
                             <div className="content">
                                 <div className="list-view">
                                     {products && products.map(item => (
-                                        <button onClick={() => {
+                                        <div onClick={() => {
                                             setProduct(item)
                                             setQuantity(1)
                                             setMerchant(item.merchant)
@@ -245,7 +246,7 @@ function DetailProduct() {
                                                     <span>{item.priceSale} VND</span>
                                                 </div>
                                             </div>
-                                        </button>
+                                        </div>
                                     ))}
                                 </div>
                                 <a className="btn-view-all" href="">
@@ -270,7 +271,7 @@ function DetailProduct() {
                             <div className="content">
                                 <div className="list-view">
                                     {coupons && coupons.map(item => (
-                                        <button className="list-item eatery-item-landing">
+                                        <div className="list-item eatery-item-landing">
                                             <div className="img-lazy figure square">
                                                 <div className="img"
                                                      style={{backgroundImage: `url(${item.image})`}}>
@@ -286,7 +287,7 @@ function DetailProduct() {
                                                     <h5>Quantity: {item.quantity}</h5>
                                                 </div>
                                             </div>
-                                        </button>
+                                        </div>
                                     ))}
                                 </div>
                                 <a className="btn-view-all" href="">
@@ -311,7 +312,7 @@ function DetailProduct() {
                             <div className="content">
                                 <div className="list-view">
                                     {everyoneLikes && everyoneLikes.map(item => (
-                                        <button onClick={() => {
+                                        <div onClick={() => {
                                             setProduct(item)
                                             setQuantity(1)
                                             setMerchant(item.merchant)
@@ -333,7 +334,7 @@ function DetailProduct() {
                                                     <span>{item.priceSale} VND</span>
                                                 </div>
                                             </div>
-                                        </button>
+                                        </div>
                                     ))}
                                 </div>
                                 <a className="btn-view-all" href="">
@@ -345,6 +346,7 @@ function DetailProduct() {
                 </section>
             </section>
             {/*end list sp*/}
+            <Footer/>
 
             {/*button modal*/}
             <button type="button" ref={btn_modal} className="btn btn-primary" data-bs-toggle="modal"

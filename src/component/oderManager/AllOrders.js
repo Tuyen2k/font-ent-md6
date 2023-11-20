@@ -1,7 +1,13 @@
 import {Link, useParams} from "react-router-dom";
 import Header from "../../layout/Header";
 import React, {useEffect, useState} from "react";
-import {cancelBill, findAllOrdersByMerchant, groupByBill, searchByNameAndPhone} from "../../service/BillService";
+import {
+    cancelBill,
+    findAllOrdersByMerchant,
+    groupByBill,
+    searchByNameAndPhone,
+    updateStatus
+} from "../../service/BillService";
 import {findAccountByMerchant} from "../../service/AccountService";
 import SockJS from "sockjs-client";
 import {over} from "stompjs";
@@ -89,7 +95,7 @@ function AllOrders() {
                     handledSend()
                     setStatus(!status)
                     // The status was successfully updated
-                    console.log('Bill status updated successfully');
+                    console.log('Bill status cancel successfully');
                 } else {
                     // The status update failed
                     console.log('Failed to update bill status');
@@ -98,7 +104,8 @@ function AllOrders() {
     }
 
     function handleConfirm(id_bill) {
-        cancelBill(id_bill)
+        let status = {id_status : 2}
+        updateStatus(id_bill, status)
             .then(success => {
                 if (success) {
                     setStatus(!status)

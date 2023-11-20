@@ -160,6 +160,10 @@ export default function Home() {
 
     function handleOrderNow() {
         if (account !== null) {
+            if(merchant !== null && merchant.account.id_account === account.id){
+                toast.error('Your action is not authorized, please try again later!', {containerId: 'home-notification'});
+                return
+            }
             orderNow(product, account.id).then(res => {
                 if (res === true) {
                     toast.success('Order success!', {containerId: 'home-notification'});

@@ -118,3 +118,14 @@ export function cancelBill(id_bill) {
             return false;
         });
 }
+export function updateStatus(id_bill, status){
+    return new Promise((resolve)=>{
+        resolve(
+            axios.post(`http://localhost:8080/api/bill/update-status/${id_bill}`, status).then(res =>{
+                return true;
+            }).catch(Error =>{
+                return false;
+            })
+        )
+    })
+}
