@@ -1,7 +1,7 @@
 import {Link, useParams} from "react-router-dom";
 import Header from "../../layout/Header";
 import React, {useEffect, useState} from "react";
-import {findAllOrdersByMerchant, groupByBill, searchByNameAndPhone} from "../../service/BillService";
+import {cancelBill, findAllOrdersByMerchant, groupByBill, searchByNameAndPhone} from "../../service/BillService";
 
 function AllOrders() {
     let {id} = useParams();
@@ -37,6 +37,33 @@ function AllOrders() {
                 }
             })
         }
+    }
+
+    function handleCancel(id_bill) {
+        cancelBill(id_bill)
+            .then(success => {
+                if (success) {
+                    setCheck(!check)
+                    // The status was successfully updated
+                    console.log('Bill status updated successfully');
+                } else {
+                    // The status update failed
+                    console.log('Failed to update bill status');
+                }
+            });
+    }
+    function handleConfirm(id_bill) {
+        cancelBill(id_bill)
+            .then(success => {
+                if (success) {
+                    setCheck(!check)
+                    // The status was successfully updated
+                    console.log('Bill status updated successfully');
+                } else {
+                    // The status update failed
+                    console.log('Failed to update bill status');
+                }
+            });
     }
 
     return (
@@ -190,7 +217,7 @@ function AllOrders() {
                                                     <th scope="col">Product Name</th>
                                                     <th scope="col">Total Money (VND)</th>
                                                     <th scope="col">Status</th>
-                                                    <th scope="col">Confirer</th>
+                                                    <th scope="col">Action</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -227,13 +254,17 @@ function AllOrders() {
                                                             fontWeight: 'bold',
                                                             color: '#a13d3d',
                                                             textAlign: 'center'
-                                                        }}>{item.total} </td>
+                                                        }}><span className="number">{item.total.toLocaleString()}</span> </td>
                                                         <td style={{textAlign: 'center'}}>
                                                             <span className="number">{item.bill.status.name}</span>
                                                         </td>
                                                         <td style={{ textAlign: 'center' }}>
                                                             {item.bill.status.id_status === 1 ? (
-                                                                <button className="btn btn-danger">Cancel</button>
+                                                                <>
+                                                                    <button onClick={()=>handleConfirm(item.bill.id_bill)} className="btn btn-outline-danger">Confirm</button>
+                                                                    <button style={{marginLeft: "10px"}}
+                                                                        onClick={()=>handleCancel(item.bill.id_bill)} className="btn btn-outline-danger">Cancel</button>
+                                                                </>
                                                             ) : (
                                                                 <></>
                                                             )}
