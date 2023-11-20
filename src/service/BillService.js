@@ -105,3 +105,16 @@ export function groupByBill(list){
 
     return arr;
 }
+export function cancelBill(id_bill) {
+    return axios.get(`http://localhost:8080/api/bill/cancel/bill/${id_bill}`)
+        .then(response => {
+            if (response.status === 200) {
+                return true;
+            } else {
+                return false;
+            }
+        })
+        .catch(() => {
+            return false;
+        });
+}

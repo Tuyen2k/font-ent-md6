@@ -5,6 +5,7 @@ import {getAllBillDetailByAccount, groupByBill} from "../service/BillService";
 import {toast, ToastContainer} from "react-toastify";
 import {getList} from "../service/PageService";
 import Pagination from "./pagination/Pagination";
+import {cancelBill} from "../service/BillService";
 
 
 export default function UserManageOrder() {
@@ -56,6 +57,18 @@ export default function UserManageOrder() {
         setChangePage(!changePage)
     }
 
+    function handleCancel(id_bill) {
+        cancelBill(id_bill)
+            .then(success => {
+                if (success) {
+                    // The status was successfully updated
+                    console.log('Bill status updated successfully');
+                } else {
+                    // The status update failed
+                    console.log('Failed to update bill status');
+                }
+            });
+    }
     return (
         <>
             <Header/>
@@ -64,7 +77,7 @@ export default function UserManageOrder() {
                             style={{width: "400px"}}/>
             <div className="container">
                 <div className="container">
-                    <div style={{marginTop : "15px"}}>
+                    <div style={{marginTop: "15px"}}>
                         <Pagination totalPage={totalPage} page={page} limit={limit} siblings={1}
                                     onPageChange={handlePageChange} onChangeItem={handleChangeItem}/>
                     </div>
@@ -82,13 +95,13 @@ export default function UserManageOrder() {
                             </tr>
                             </thead>
                             <tbody>
-                            {billDetails.map((bill, index) =>{
-                                return(
+                            {billDetails.map((bill, index) => {
+                                return (
                                     <tr>
                                         <td>{index + 1}</td>
                                         <td>{bill.bill.merchant.name}</td>
-                                        <td>{bill.billDetails.map(item=>{
-                                            return(
+                                        <td>{bill.billDetails.map(item => {
+                                            return (
                                                 <>
                                                     <p>{item.product.name}</p>
                                                 </>
@@ -96,7 +109,15 @@ export default function UserManageOrder() {
                                         })}</td>
                                         <td>{bill.bill.time_purchase}</td>
                                         <td><span className="number">{bill.total.toLocaleString()} VND</span></td>
-                                        <td>{bill.bill.status.name}</td>
+                                        <td>
+                                            <div className="row">
+                                                <div className="col-6">{bill.bill.status.name}</div>
+                                                <div className="col-6">
+                                                    <button onClick={() => handleCancel(bill.bill.id_bill)}
+                                                            disabled={bill.bill.status.name === "cancel"}>Cancel</button>
+                                                </div>
+                                            </div>
+                                        </td>
                                     </tr>
                                 )
                             })}
