@@ -25,6 +25,14 @@ function OrderStatistics() {
             setStatus(res)
         })
     }, []);
+
+
+    const selectProduct = (e) => {
+        const value = e.target.value
+
+    }
+
+
     return (
         <>
 
@@ -188,7 +196,7 @@ function OrderStatistics() {
                                         <div className="flex items-center px-6 py-2 border-b border-light-grey">
                                             <div className="font-bold text-xl">Statistics</div>
                                             <div style={{marginLeft: '500px', width: '300px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
-                                                <select value="optionProduct" className="form-select">
+                                                <select onChange={selectProduct} value="optionProduct" className="form-select">
                                                     <option>Product</option>
                                                     <option>Status</option>
                                                     {product && product.map(item => (
