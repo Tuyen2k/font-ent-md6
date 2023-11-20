@@ -23,6 +23,53 @@ export function findAllOrdersByMerchant(id_merchant){
         )
     })
 }
+export function findOrderByProduct(id_product){
+    return new Promise(require =>{
+        require(
+            axios.get(`http://localhost:8080/api/billDetail/SearchByProduct/${id_product}`).then(res=>{
+                return res.data
+            }).catch(Error =>{
+                return undefined
+            })
+        )
+    })
+}
+
+export function findOrderByStatus(id_merchant, id_status){
+    return new Promise(require =>{
+        require(
+            axios.get(`http://localhost:8080/api/billDetail/search_status/${id_merchant}/${id_status}`).then(res=>{
+                return res.data
+            }).catch(Error =>{
+                return undefined
+            })
+        )
+    })
+}
+
+export function findOrderByUser(id_merchant, id_user){
+    return new Promise(require =>{
+        require(
+            axios.get(`http://localhost:8080/api/billDetail/search_user/${id_merchant}/${id_user}`).then(res=>{
+                return res.data
+            }).catch(Error =>{
+                return undefined
+            })
+        )
+    })
+}
+
+export function findUser(id_merchant){
+    return new Promise(require =>{
+        require(
+            axios.get(`http://localhost:8080/api/bill/user/${id_merchant}`).then(res=>{
+                return res.data
+            }).catch(Error =>{
+                return undefined
+            })
+        )
+    })
+}
 
 export function findAllBillByMerchant(id_merchant){
     return new Promise(require =>{

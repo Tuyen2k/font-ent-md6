@@ -227,7 +227,7 @@ function AllOrders() {
                                                             fontWeight: 'bold',
                                                             color: '#a13d3d',
                                                             textAlign: 'center'
-                                                        }}>{item.total} </td>
+                                                        }}><span className="number">{item.total.toLocaleString()}</span> </td>
                                                         <td style={{textAlign: 'center'}}>
                                                             <span className="number">{item.bill.status.name}</span>
                                                         </td>
