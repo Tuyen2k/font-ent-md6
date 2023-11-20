@@ -34,7 +34,7 @@ export function getAllBillDetailByAccount(id_account){
             axios.get(`http://localhost:8080/api/bill/all/account/${id_account}`).then(res =>{
                 return res.data;
             }).catch(Error=>{
-                return [];
+                return undefined;
             })
         )
     })

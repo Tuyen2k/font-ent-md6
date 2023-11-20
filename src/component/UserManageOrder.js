@@ -5,6 +5,7 @@ import {getAllBillDetailByAccount, groupByBill} from "../service/BillService";
 import {toast, ToastContainer} from "react-toastify";
 import {getList} from "../service/PageService";
 import Pagination from "./pagination/Pagination";
+import {Link} from "react-router-dom";
 
 
 export default function UserManageOrder() {
@@ -16,10 +17,13 @@ export default function UserManageOrder() {
 
     useEffect(() => {
         getAllBillDetailByAccount(account.id).then(res => {
-            let arr = groupByBill(res)
-            setBillDetails(getList(arr, page, limit));
-            setList(arr)
-            // setBillDetails(arr)
+            if(res !== undefined){
+                let arr = groupByBill(res)
+                setBillDetails(getList(arr, page, limit));
+                setList(arr)
+            }else {
+                setBillDetails([])
+            }
         })
     }, [check])
 
@@ -64,47 +68,67 @@ export default function UserManageOrder() {
                             style={{width: "400px"}}/>
             <div className="container">
                 <div className="container">
-                    <div style={{marginTop : "15px"}}>
-                        <Pagination totalPage={totalPage} page={page} limit={limit} siblings={1}
-                                    onPageChange={handlePageChange} onChangeItem={handleChangeItem}/>
-                    </div>
+                    {billDetails === undefined ?(
+                        <>
+                            <div style={{display :"flex", alignItems :"center", justifyContent: "center"}}>
+                                <h3 style={{textAlign: "center", marginTop: "20vh", marginBottom: "20vh"}}>Your bill is empty.
+                                    <Link to={"/"} style={{ fontStyle: 'italic', color : "#ff5757"}}> Go to shopping now!!!
+                                    </Link>
+                                </h3>
+                            </div>
+                        </>
+                    ):(
+                        <div>
+                            <div style={{marginTop : "15px"}}>
+                                <Pagination totalPage={totalPage} page={page} limit={limit} siblings={1}
+                                            onPageChange={handlePageChange} onChangeItem={handleChangeItem}/>
+                            </div>
 
-                    <div className="content">
-                        <table className="table table-hover">
-                            <thead>
-                            <tr>
-                                <th>STT</th>
-                                <th>Merchant</th>
-                                <th>Product</th>
-                                <th>Time purchase</th>
-                                <th>Total amount</th>
-                                <th>Status</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {billDetails.map((bill, index) =>{
-                                return(
+                            <div className="content">
+                                <table className="table table-hover">
+                                    <thead>
                                     <tr>
-                                        <td>{index + 1}</td>
-                                        <td>{bill.bill.merchant.name}</td>
-                                        <td>{bill.billDetails.map(item=>{
-                                            return(
-                                                <>
-                                                    <p>{item.product.name}</p>
-                                                </>
-                                            )
-                                        })}</td>
-                                        <td>{bill.bill.time_purchase}</td>
-                                        <td><span className="number">{bill.total.toLocaleString()} VND</span></td>
-                                        <td>{bill.bill.status.name}</td>
+                                        <th>STT</th>
+                                        <th>Merchant</th>
+                                        <th>Product</th>
+                                        <th>Time purchase</th>
+                                        <th>Total amount</th>
+                                        <th>Status</th>
                                     </tr>
-                                )
-                            })}
-                            </tbody>
-                        </table>
-                    </div>
+                                    </thead>
+                                    <tbody>
+                                    {billDetails.map((bill, index) =>{
+                                        return(
+                                            <tr>
+                                                <td>{index + 1}</td>
+                                                <td>{bill.bill.merchant.name}</td>
+                                                <td>{bill.billDetails.map(item=>{
+                                                    return(
+                                                        <>
+                                                            <p>{item.product.name}</p>
+                                                        </>
+                                                    )
+                                                })}</td>
+                                                <td>{new Date(bill.bill.time_purchase).toLocaleString(
+                                                    'en-UK', {
+                                                        year: 'numeric',
+                                                        month: '2-digit',
+                                                        day: '2-digit',
+                                                        hour: '2-digit',
+                                                        minute: '2-digit',
+                                                    }
+                                                )}</td>
+                                                <td><span className="number">{bill.total.toLocaleString()} VND</span></td>
+                                                <td>{bill.bill.status.name}</td>
+                                            </tr>
+                                        )
+                                    })}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    )}
                 </div>
-
             </div>
             <Footer/>
         </>
