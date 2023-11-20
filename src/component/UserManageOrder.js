@@ -68,6 +68,7 @@ export default function UserManageOrder() {
                         <Pagination totalPage={totalPage} page={page} limit={limit} siblings={1}
                                     onPageChange={handlePageChange} onChangeItem={handleChangeItem}/>
                     </div>
+
                     <div className="content">
                         <table className="table table-hover">
                             <thead>
