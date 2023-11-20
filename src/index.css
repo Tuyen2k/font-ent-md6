@@ -6,6 +6,32 @@ body {
     background-color: #f6f6f6 !important;
 }
 
+.profile-picture {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-bottom: 3px;
+}
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    width: 180px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-menu a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
 .modal-dialog {
     max-width: 1000px;
     max-height: 100px;
@@ -15,6 +41,10 @@ body {
     max-width: 1500px !important;
     max-height: 100px;
 }
+.modal-dialog-login {
+    max-width: 950px !important;
+    max-height: 100px;
+}
 
 .login-buttons {
     padding-top: 30px;
@@ -22,6 +52,7 @@ body {
 
 .input-login-form {
     padding: 5px 12px !important;
+    width: 320px;
 }
 
 .input-register-form {
@@ -1089,6 +1120,5 @@ div.error {
     margin-left: 0 !important;
     margin-right: 0 !important;
 }
-
 
 
