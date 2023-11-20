@@ -303,7 +303,7 @@ export default function Header() {
                                                 autoClose={2000} pauseOnHover={false}
                                                 style={{width: "400px"}}/>
 
-                                <div className="modal-dialog modal-dialog-centered modal-lg" role="document">
+                                <div className="modal-dialog modal-dialog-login modal-dialog-centered modal-lg" role="document">
                                     <div className="modal-content">
                                         <div className="modal-header">
                                             <h5 className="modal-title" id="myLargeModalLabel">Login account</h5>
@@ -314,22 +314,22 @@ export default function Header() {
                                         <div className="modal-body">
                                             <form>
                                                 <div className="row">
-                                                    <div className="col-5">
-                                                        <div className="form-group row">
+                                                    <div className="col-4">
+                                                        <div className="form-group">
                                                             <label>Username:</label>
                                                             <input className="input-login-form" type="text"
                                                                    placeholder="Enter Password"
                                                                    name="user" value={username}
                                                                    onChange={(e) => setUsername(e.target.value)}/>
                                                         </div>
-                                                        <div className="form-group row">
+                                                        <div className="form-group">
                                                             <label>Password:</label>
                                                             <input className="input-login-form" type="password"
                                                                    placeholder="Enter Password"
                                                                    name="psw" value={password}
                                                                    onChange={(e) => setPassword(e.target.value)}/>
                                                         </div>
-                                                        <div className="form-group row login-buttons">
+                                                        <div className="form-group login-buttons">
                                                             <button type="button" className="btn btn-lg btn-primary"
                                                                     disabled={isLoginDisabled}
                                                                     onClick={handleLogin}>Login
@@ -343,12 +343,10 @@ export default function Header() {
                                                                 now</a></p>
                                                         </div>
                                                     </div>
-                                                    <div className="col-7 justify-content-center" style={{
-                                                        backgroundImage: `url('https://firebasestorage.googleapis.com/v0/b/react-firebase-storage-f6ec9.appspot.com/o/file%2FdoAnNgon.jpg?alt=media&token=e3c3377c-463d-481d-bb04-ba2d890e27b9')`,
-                                                        backgroundSize: 'cover',
-                                                        height: '300px'
-                                                    }}>
-
+                                                    <div className="col-7">
+                                                        <img src="https://firebasestorage.googleapis.com/v0/b/react-firebase-storage-f6ec9.appspot.com/o/file%2FdoAnNgon.jpg?alt=media&token=e3c3377c-463d-481d-bb04-ba2d890e27b9"
+                                                             alt="login"
+                                                        style={{width: "500px", marginLeft:"60px"}}/>
                                                     </div>
                                                 </div>
                                             </form>
@@ -356,23 +354,6 @@ export default function Header() {
                                     </div>
                                 </div>
                             </div>
-                            {/*<div className="user-nav-menu text-lg-right">*/}
-                            {/*    <div className="nav-item user-panel">*/}
-                            {/*        <div className="user-panel">*/}
-                            {/*            <span className="btn bg-light-gray text-black btn-login">*/}
-                            {/*                <Link style={{color: "black"}} to={"/merchant/register"}>Register Merchant</Link></span>*/}
-                            {/*        </div>*/}
-                            {/*    </div>*/}
-                            {/*</div>*/}
-                            {/*<div className="btn-nav-city-select">*/}
-                            {/*   Merchant*/}
-                            {/*    <i className="fa-solid fa-sort-down"></i>*/}
-                            {/*    <ul className="menu-nav-city-select">*/}
-                            {/*        <li className="city-item"><Link style={{color : "black"}} to={"merchant/register"}>Register Merchant</Link></li>*/}
-                            {/*        <li className="city-item"><Link style={{color : "black"}} to={"merchant/update/24"}>Update Merchant</Link></li>*/}
-                            {/*        <li className="city-item"><Link style={{color : "black"}} to={"list"}>List</Link></li>*/}
-                            {/*    </ul>*/}
-                            {/*</div>*/}
                             <div className="user-nav-menu">
                                 {user ? (
                                     <Link to={"/cart/account"}><i className="fa-solid fa-cart-shopping fa-lg"
@@ -394,7 +375,9 @@ export default function Header() {
                                      role="document">
                                     <div className="modal-content">
                                         <div className="modal-header">
-                                            <h5 className="modal-title" id="myLargeModalLabel">Register new account</h5>
+                                            <a href="" className="logo"
+                                               style={{backgroundImage: `url("https://firebasestorage.googleapis.com/v0/b/react-firebase-storage-f6ec9.appspot.com/o/file%2Flogo--web.png?alt=media&token=372f9a0c-25f3-4f56-9019-21ba8c8e607a")`}}></a>
+                                            <h5 className="modal-title" id="myLargeModalLabel" style={{marginLeft:"10px"}}>Register</h5>
                                             <button type="button" id="modal-register-close" className="btn-close"
                                                     data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
@@ -405,7 +388,6 @@ export default function Header() {
                                                 <Form>
                                                     <div className="row">
                                                         <div className="col-6">
-                                                            <label className="form-label">Account information</label>
                                                             <div className="mb-3">
                                                                 <label className="form-label">Enter your account</label>
                                                                 <Field type="text"
@@ -421,7 +403,7 @@ export default function Header() {
                                                                        name="password"/>
                                                                 <ErrorMessage className="error" name="password"
                                                                               component="div"/>
-                                                            </div>git
+                                                            </div>
                                                             <div className="mb-3">
                                                                 <label className="form-label">Confirm Password</label>
                                                                 <Field type="password"
@@ -432,50 +414,39 @@ export default function Header() {
                                                             </div>
                                                             <div className="mb-3" style={{display: "flex"}}
                                                                  onClick={handledClickInput}>
-                                                                <div className="col-3">
-                                                                    <label className="form-label">Your profile
-                                                                        picture</label>
+                                                                <div className="col-2">
+                                                                    <label className="form-label">Avatar</label>
                                                                 </div>
-                                                                <div className="col-9">
+                                                                <div className="col-10">
                                                                     <input ref={inputFile} className="form-control"
                                                                            name="image" type="file" id="formFile"
                                                                            style={{display: 'none'}}
                                                                            onChange={(e) => handledInputFile(e.target.files[0])}/>
 
                                                                     {file === undefined ? (
-                                                                        <div style={{
-                                                                            backgroundColor: "#b3afb5",
-                                                                            width: "512px",
-                                                                            height: "293px",
-                                                                            marginLeft: "20px"
-                                                                        }}
-                                                                             className="form-control">
+                                                                        <div>
                                                                             <img
                                                                                 src="https://southernplasticsurgery.com.au/wp-content/uploads/2013/10/user-placeholder.png"
                                                                                 style={{
-                                                                                    marginLeft: "100px",
+                                                                                    borderRadius: "50%",
                                                                                     height: "278px"
                                                                                 }} alt="placeholder"/>
                                                                         </div>
                                                                     ) : (
-                                                                        <div style={{
-                                                                            backgroundColor: "white",
-                                                                            width: "512px",
-                                                                            height: "293px",
-                                                                            marginLeft: "20px"
-                                                                        }}
-                                                                             className="form-control">
                                                                             <div>
                                                                                 <img className="image-input"
                                                                                      src={URL.createObjectURL(file)}
-                                                                                     alt='image'/>
-                                                                            </div>
-                                                                        </div>)}
+                                                                                     alt='image'
+                                                                                     style={{
+                                                                                         borderRadius: "50%",
+                                                                                         width: "278px",
+                                                                                         height: "278px"
+                                                                                     }}/>
+                                                                            </div>)}
                                                                 </div>
                                                             </div>
                                                         </div>
                                                         <div className="col-6">
-                                                            <label className="form-label">Personal information</label>
                                                             <div className="mb-3">
                                                                 <label className="form-label">Your name</label>
                                                                 <Field type="text"

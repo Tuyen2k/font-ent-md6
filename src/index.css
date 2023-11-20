@@ -5,12 +5,17 @@ body {
     font-family: "Poppins", sans-serif !important;
     background-color: #f6f6f6 !important;
 }
+
 .modal-dialog {
     max-width: 1000px;
     max-height: 100px;
 }
 .modal-dialog-register {
-    max-width: 1500px!important;
+    max-width: 1000px!important;
+    max-height: 600px!important;
+}
+.modal-dialog-login {
+    max-width: 950px!important;
     max-height: 100px;
 }
 .login-buttons {
@@ -18,6 +23,7 @@ body {
 }
 .input-login-form {
     padding: 5px 12px!important;
+    width: 300px;
 }
 .input-register-form {
     padding: 5px!important;
@@ -682,8 +688,8 @@ hr {
     width: 150px;
 }
 .image-input{
-    width: 486px;
-    height: 278px;
+    width: 300px;
+    height: 200px;
 }
 .form-check{
     display: inline-flex !important;
