@@ -7,14 +7,56 @@ import {getList} from "../service/PageService";
 import Pagination from "./pagination/Pagination";
 import {Link} from "react-router-dom";
 import {cancelBill} from "../service/BillService";
+import SockJS from "sockjs-client";
+import {over} from "stompjs";
+import {findMerchantById} from "../service/MerchantService";
+import {findAccountByMerchant} from "../service/AccountService";
 
 
+let stompClient = null;
 export default function UserManageOrder() {
     const account = JSON.parse(localStorage.getItem("userInfo"))
     const [billDetails, setBillDetails] = useState(undefined)
     const [list, setList] = useState([]);
     const [check, setCheck] = useState(true)
     const [changePage, setChangePage] = useState(false);
+    let receiver;
+    const connect=()=>{
+        let Sock = new SockJS('http://localhost:8080/ws')
+        stompClient = over(Sock)
+        stompClient.connect({},onConnected, onError);
+    }
+    const onConnected = () => {
+        stompClient.subscribe('/user/'+account.username+account.id +'/private', onPrivateMessage);
+    }
+    const onPrivateMessage = (payload)=>{
+        let payloadData = JSON.parse(payload.body);
+        if (payloadData.sendAcc.id_account !== account.id){
+            setCheck(!check);
+            console.log(payloadData)
+        }
+    }
+    const onError = (err) => {
+        console.log(err);
+    }
+    const  handledSend=()=>{
+        console.log(receiver)
+        if (stompClient) {
+            var chatMessage = {
+                sendAcc: {
+                    id_account: account.id,
+                    name: account.username
+                },
+                receiverAcc:{
+                    id_account:receiver.id_account,
+                    name: receiver.name
+                },
+                message: "true"
+            };
+            console.log(chatMessage);
+            stompClient.send("/app/private-message", {}, JSON.stringify(chatMessage));
+        }
+    }
 
     useEffect(() => {
         getAllBillDetailByAccount(account.id).then(res => {
@@ -22,9 +64,11 @@ export default function UserManageOrder() {
                 let arr = groupByBill(res)
                 setBillDetails(getList(arr, page, limit));
                 setList(arr)
+
             }else {
                 setBillDetails([])
             }
+            connect()
         })
     }, [check])
 
@@ -61,11 +105,15 @@ export default function UserManageOrder() {
         setChangePage(!changePage)
     }
 
-    function handleCancel(id_bill) {
+    function handleCancel(id_bill, id_merchant) {
+        findAccountByMerchant(id_merchant).then(res =>{
+            receiver = res
+        })
         cancelBill(id_bill)
             .then(success => {
                 if (success) {
                     setCheck(!check)
+                    handledSend()
                     // The status was successfully updated
                     console.log('Bill status updated successfully');
                 } else {
@@ -137,7 +185,7 @@ export default function UserManageOrder() {
                                             <div className="row">
                                                 <div className="col-6">{bill.bill.status.name}</div>
                                                 <div className="col-6">
-                                                    <button onClick={() => handleCancel(bill.bill.id_bill)}
+                                                    <button onClick={() => handleCancel(bill.bill.id_bill, bill.bill.merchant.id_merchant)}
                                                             disabled={bill.bill.status.id_status === 6}>Cancel</button>
                                                 </div>
                                             </div>

@@ -2,48 +2,92 @@ import {Link, useParams} from "react-router-dom";
 import Header from "../../layout/Header";
 import React, {useEffect, useState} from "react";
 import {cancelBill, findAllOrdersByMerchant, groupByBill, searchByNameAndPhone} from "../../service/BillService";
+import {findAccountByMerchant} from "../../service/AccountService";
+import SockJS from "sockjs-client";
+import {over} from "stompjs";
+
+
+let stompClient = null;
 
 function AllOrders() {
+    const account = JSON.parse(localStorage.getItem("userInfo"))
     let {id} = useParams();
     const [billDetail, setBillDetail] = useState([]);
-    const [check, setCheck] = useState(true)
+    const [status, setStatus] = useState(true)
     useEffect(() => {
-        if (check){
-            findAllOrdersByMerchant(id).then(r => {
-                setBillDetail(groupByBill(r))
-                console.log(r)
-                setCheck(false)
-            })
+        findAllOrdersByMerchant(id).then(r => {
+            setBillDetail(groupByBill(r))
+            connect()
+        })
+    }, [status]);
+
+    //websocket
+    let receiver;
+    const connect = () => {
+        let Sock = new SockJS('http://localhost:8080/ws')
+        stompClient = over(Sock)
+        stompClient.connect({}, onConnected, onError);
+    }
+    const onConnected = () => {
+        stompClient.subscribe('/user/' + account.username + account.id + '/private', onPrivateMessage);
+    }
+    const onPrivateMessage = (payload) => {
+        let payloadData = JSON.parse(payload.body);
+        if (payloadData.sendAcc.id_account !== account.id) {
+            setStatus(!status);
+            console.log(payloadData)
         }
-    }, [billDetail]);
+    }
+    const onError = (err) => {
+        console.log(err);
+    }
+    const handledSend = () => {
+        console.log(receiver)
+        if (stompClient) {
+            var chatMessage = {
+                sendAcc: {
+                    id_account: account.id,
+                    name: account.username
+                },
+                receiverAcc: {
+                    id_account: receiver.id_account,
+                    name: receiver.name
+                },
+                message: "true"
+            };
+            console.log(chatMessage);
+            stompClient.send("/app/private-message", {}, JSON.stringify(chatMessage));
+        }
+    }
 
     const search = () => {
         let value = document.getElementById("valueSearch").value;
-        if (value === ""){
+        if (value === "") {
             findAllOrdersByMerchant(id).then(r => {
                 setBillDetail(groupByBill(r))
                 console.log(r)
-                setCheck(false)
             })
         } else {
             console.log(value)
             searchByNameAndPhone(id, value).then(r => {
-                if (r !== undefined){
+                if (r !== undefined) {
                     setBillDetail(groupByBill(r))
-                    setCheck(false)
+
                     console.log(r)
                 } else {
-                    setCheck(true)
+
                 }
             })
         }
     }
 
-    function handleCancel(id_bill) {
+    function handleCancel(id_bill, account) {
+        receiver = account
         cancelBill(id_bill)
             .then(success => {
                 if (success) {
-                    setCheck(!check)
+                    handledSend()
+                    setStatus(!status)
                     // The status was successfully updated
                     console.log('Bill status updated successfully');
                 } else {
@@ -52,11 +96,12 @@ function AllOrders() {
                 }
             });
     }
+
     function handleConfirm(id_bill) {
         cancelBill(id_bill)
             .then(success => {
                 if (success) {
-                    setCheck(!check)
+                    setStatus(!status)
                     // The status was successfully updated
                     console.log('Bill status updated successfully');
                 } else {
@@ -104,7 +149,7 @@ function AllOrders() {
                                 </li>
                                 <li className="w-full h-full py-3 px-2 border-b border-light-border">
                                     <Link to={`/order-statistics/${id}`}
-                                        className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
+                                          className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
                                         <i className="fas fa-table float-left mx-2"></i>
                                         Order statistics
                                         <span><i className="fa fa-angle-right float-right"></i></span>
@@ -183,11 +228,12 @@ function AllOrders() {
 
 
                                         <div className="rounded overflow-hidden shadow bg-white mx-2 w-full">
-                                            <div className="px-6 py-2 border-b border-light-grey flex items-center justify-between">
+                                            <div
+                                                className="px-6 py-2 border-b border-light-grey flex items-center justify-between">
                                                 <div className="font-bold text-xl">All list orders</div>
                                                 {/* search */}
                                                 <div className="flex">
-                                                    <div style={{ width: '400px' }} className="font-bold text-xl">
+                                                    <div style={{width: '400px'}} className="font-bold text-xl">
                                                         <input
                                                             type="search"
                                                             className="form-control rounded"
@@ -197,7 +243,8 @@ function AllOrders() {
                                                             id="valueSearch"
                                                         />
                                                     </div>
-                                                    <button onClick={search} style={{height: '37px'}} className="ml-2 px-4 py-2 bg-blue-500 text-bg-dark rounded">
+                                                    <button onClick={search} style={{height: '37px'}}
+                                                            className="ml-2 px-4 py-2 bg-blue-500 text-bg-dark rounded">
                                                         Search
                                                     </button>
                                                 </div>
@@ -243,8 +290,8 @@ function AllOrders() {
                                                                 hour: '2-digit',
                                                                 minute: '2-digit',
                                                             })}</td>
-                                                        <td>{item.billDetails.map(item=>{
-                                                            return(
+                                                        <td>{item.billDetails.map(item => {
+                                                            return (
                                                                 <>
                                                                     <p>{item.product.name}</p>
                                                                 </>
@@ -254,19 +301,27 @@ function AllOrders() {
                                                             fontWeight: 'bold',
                                                             color: '#a13d3d',
                                                             textAlign: 'center'
-                                                        }}><span className="number">{item.total.toLocaleString()}</span> </td>
+                                                        }}><span className="number">{item.total.toLocaleString()}</span>
+                                                        </td>
                                                         <td style={{textAlign: 'center'}}>
                                                             <span className="number">{item.bill.status.name}</span>
                                                         </td>
-                                                        <td style={{ textAlign: 'center' }}>
+                                                        <td style={{textAlign: 'center'}}>
                                                             {item.bill.status.id_status === 1 ? (
                                                                 <>
-                                                                    <button onClick={()=>handleConfirm(item.bill.id_bill)} className="btn btn-outline-danger">Confirm</button>
+                                                                    <button
+                                                                        onClick={() => handleConfirm(item.bill.id_bill)}
+                                                                        className="btn btn-outline-danger">Confirm
+                                                                    </button>
                                                                     <button style={{marginLeft: "10px"}}
-                                                                        onClick={()=>handleCancel(item.bill.id_bill)} className="btn btn-outline-danger">Cancel</button>
+                                                                            onClick={() => handleCancel(item.bill.id_bill, item.bill.account)}
+                                                                            className="btn btn-outline-danger">Cancel
+                                                                    </button>
                                                                 </>
                                                             ) : (
-                                                                <></>
+                                                                <>
+                                                                    <div style={{width : "96px"}}></div>
+                                                                </>
                                                             )}
                                                         </td>
                                                     </tr>

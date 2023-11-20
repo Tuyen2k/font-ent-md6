@@ -29,3 +29,31 @@ export const saveAccount = (account) => {
         )
     })
 }
+
+export function findAccountByMerchant(id_merchant){
+    return new Promise((resolve) => {
+        resolve(
+            axios.get(`http://localhost:8080/api/accounts/account-by-merchant/${id_merchant}`)
+                .then(response => {
+                        return response.data
+                    }
+                ).catch(() => {
+                return undefined
+            })
+        )
+    })
+}
+
+export function findAccountById(id_account){
+    return new Promise((resolve) => {
+        resolve(
+            axios.get(`http://localhost:8080/api/accounts/${id_account}`)
+                .then(response => {
+                        return response.data
+                    }
+                ).catch(() => {
+                return undefined
+            })
+        )
+    })
+}
