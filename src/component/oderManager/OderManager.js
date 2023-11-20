@@ -5,48 +5,6 @@ import React from "react";
 function OderManager() {
     let {id} = useParams();
     var sidebar = document.getElementById('sidebar');
-    function sidebarToggle() {
-        if (sidebar.style.display === "none") {
-            sidebar.style.display = "block";
-        } else {
-            sidebar.style.display = "none";
-        }
-    }
-    var profileDropdown = document.getElementById('ProfileDropDown');
-    function profileToggle() {
-        if (profileDropdown.style.display === "none") {
-            profileDropdown.style.display = "block";
-        } else {
-            profileDropdown.style.display = "none";
-        }
-    }
-    function toggleModal(action, elem_trigger)
-    {
-        elem_trigger.addEventListener('click', function () {
-            if (action == 'add') {
-                let modal_id = this.dataset.modal;
-                document.getElementById(`${modal_id}`).classNameList.add('modal-is-open');
-            } else {
-                // Automaticlly get the opned modal ID
-                let modal_id = elem_trigger.closest('.modal-wrapper').getAttribute('id');
-                document.getElementById(`${modal_id}`).classNameList.remove('modal-is-open');
-            }
-        });
-    }
-
-    if (document.querySelector('.modal-wrapper'))
-    {
-        // Open the modal
-        document.querySelectorAll('.modal-trigger').forEach(btn => {
-            toggleModal('add', btn);
-        });
-
-        // close the modal
-        document.querySelectorAll('.close-modal').forEach(btn => {
-            toggleModal('remove', btn);
-        });
-    }
-
 
     return (
         <>
@@ -82,18 +40,19 @@ function OderManager() {
                                     </Link>
                                 </li>
                                 <li className="w-full h-full py-3 px-2 border-b border-light-border">
+                                    <Link to={`/order-statistics/${id}`}
+                                       className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
+                                        <i className="fas fa-table float-left mx-2"></i>
+                                        Order statistics
+                                        <span><i className="fa fa-angle-right float-right"></i></span>
+                                    </Link>
+                                </li>
+
+                                <li className="w-full h-full py-3 px-2 border-b border-light-border">
                                     <a href=""
                                        className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
                                         <i className="fas fa-grip-horizontal float-left mx-2"></i>
                                         Buttons
-                                        <span><i className="fa fa-angle-right float-right"></i></span>
-                                    </a>
-                                </li>
-                                <li className="w-full h-full py-3 px-2 border-b border-light-border">
-                                    <a href=""
-                                       className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
-                                        <i className="fas fa-table float-left mx-2"></i>
-                                        Tables
                                         <span><i className="fa fa-angle-right float-right"></i></span>
                                     </a>
                                 </li>

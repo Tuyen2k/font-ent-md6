@@ -1,44 +1,16 @@
 import {Link, useParams} from "react-router-dom";
 import Header from "../../layout/Header";
 import React, {useEffect, useState} from "react";
-import {findAllOrdersByMerchant, searchByNameAndPhone} from "../../service/BillService";
-
-function AllOrders() {
+import {findAllOrdersByMerchant} from "../../service/BillService";
+function OrderStatistics() {
     let {id} = useParams();
     const [billDetail, setBillDetail] = useState([]);
-    const [check, setCheck] = useState(true)
     useEffect(() => {
-        if (check){
             findAllOrdersByMerchant(id).then(r => {
                 setBillDetail(r)
                 console.log(r)
-                setCheck(false)
             })
-        }
-    }, [billDetail]);
-
-    const search = () => {
-        let value = document.getElementById("valueSearch").value;
-        if (value === ""){
-            findAllOrdersByMerchant(id).then(r => {
-                setBillDetail(r)
-                console.log(r)
-                setCheck(false)
-            })
-        } else {
-            console.log(value)
-            searchByNameAndPhone(id, value).then(r => {
-                if (r !== undefined){
-                    setBillDetail(r)
-                    setCheck(false)
-                    console.log(r)
-                } else {
-                    setCheck(true)
-                }
-            })
-        }
-    }
-
+    }, []);
     return (
         <>
 
@@ -53,36 +25,34 @@ function AllOrders() {
 
                     <div className="flex flex-1">
                         {/*Sidebar*/}
-                        <aside id="sidebar"
-                               className="bg-side-nav w-1/2 md:w-1/6 lg:w-1/6 border-r border-side-nav hidden md:block lg:block">
+                        <aside id="sidebar" className="bg-side-nav w-1/2 md:w-1/6 lg:w-1/6 border-r border-side-nav hidden md:block lg:block">
 
                             <ul className="list-reset flex flex-col">
-                                <Link to={`/order-manager/${id}`}
-                                      className="w-full h-full py-3 px-2 border-b border-light-border">
-                                    <a href=""
+                                <li className=" w-full h-full py-3 px-2 border-b border-light-border">
+                                    <Link to={`/order-manager/${id}`}
                                        className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
                                         <i className="fas fa-tachometer-alt float-left mx-2"></i>
                                         Dashboard
                                         <span><i className="fas fa-angle-right float-right"></i></span>
-                                    </a>
-                                </Link>
-                                <li style={{backgroundColor: '#efd6d6'}}
-                                    className=" w-full h-full py-3 px-2 border-b border-light-border">
-                                    <a
-                                        className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
+                                    </Link>
+                                </li>
+                                <li className="w-full h-full py-3 px-2 border-b border-light-border">
+                                    <Link to={`/all-order/${id}`}
+                                          className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
                                         <i className="fab fa-wpforms float-left mx-2"></i>
                                         All orders
                                         <span><i className="fa fa-angle-right float-right"></i></span>
-                                    </a>
+                                    </Link>
                                 </li>
-                                <li className="w-full h-full py-3 px-2 border-b border-light-border">
-                                    <Link to={`/order-statistics/${id}`}
-                                        className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
+                                <li style={{backgroundColor: '#efd6d6'}} className="w-full h-full py-3 px-2 border-b border-light-border">
+                                    <a
+                                       className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
                                         <i className="fas fa-table float-left mx-2"></i>
                                         Order statistics
                                         <span><i className="fa fa-angle-right float-right"></i></span>
-                                    </Link>
+                                    </a>
                                 </li>
+
                                 <li className="w-full h-full py-3 px-2 border-b border-light-border">
                                     <a href=""
                                        className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
@@ -100,8 +70,7 @@ function AllOrders() {
                                     </a>
                                 </li>
                                 <li className="w-full h-full py-3 px-2 border-b border-300-border">
-                                    <a href=""
-                                       className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
+                                    <a href="" className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
                                         <i className="fas fa-square-full float-left mx-2"></i>
                                         Modals
                                         <span><i className="fa fa-angle-right float-right"></i></span>
@@ -147,38 +116,64 @@ function AllOrders() {
                         <main className="bg-white-300 flex-1 p-3 overflow-hidden">
 
                             <div className="flex flex-col">
+                                {/* Stats Row Starts Here */}
+                                <div className="flex flex-1 flex-col md:flex-row lg:flex-row mx-2">
+                                    <div className="shadow-lg bg-red-vibrant border-l-8 hover:bg-red-vibrant-dark border-red-vibrant-dark mb-2 p-2 md:w-1/4 mx-2">
+                                        <div className="p-4 flex flex-col">
+                                            <a href="#" className="no-underline text-white text-2xl">
+                                                $244
+                                            </a>
+                                            <a href="#" className="no-underline text-white text-lg">
+                                                Total Sales
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <div className="shadow bg-info border-l-8 hover:bg-info-dark border-info-dark mb-2 p-2 md:w-1/4 mx-2">
+                                        <div className="p-4 flex flex-col">
+                                            <a href="#" className="no-underline text-white text-2xl">
+                                                $199.4
+                                            </a>
+                                            <a href="#" className="no-underline text-white text-lg">
+                                                Total Cost
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <div className="shadow bg-warning border-l-8 hover:bg-warning-dark border-warning-dark mb-2 p-2 md:w-1/4 mx-2">
+                                        <div className="p-4 flex flex-col">
+                                            <a href="#" className="no-underline text-white text-2xl">
+                                                900
+                                            </a>
+                                            <a href="#" className="no-underline text-white text-lg">
+                                                Total Users
+                                            </a>
+                                        </div>
+                                    </div>
+
+                                    <div className="shadow bg-success border-l-8 hover:bg-success-dark border-success-dark mb-2 p-2 md:w-1/4 mx-2">
+                                        <div className="p-4 flex flex-col">
+                                            <a href="#" className="no-underline text-white text-2xl">
+                                                500
+                                            </a>
+                                            <a href="#" className="no-underline text-white text-lg">
+                                                Total Products
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* /Stats Row Ends Here */}
 
                                 {/* Card Sextion Starts Here */}
                                 <div className="flex flex-1 flex-col md:flex-row lg:flex-row mx-2">
 
                                     {/* card */}
+
                                     <div className="rounded overflow-hidden shadow bg-white mx-2 w-full">
-
-
-                                        <div className="rounded overflow-hidden shadow bg-white mx-2 w-full">
-                                            <div className="px-6 py-2 border-b border-light-grey flex items-center justify-between">
-                                                <div className="font-bold text-xl">All list orders</div>
-                                                {/* search */}
-                                                <div className="flex">
-                                                    <div style={{ width: '400px' }} className="font-bold text-xl">
-                                                        <input
-                                                            type="search"
-                                                            className="form-control rounded"
-                                                            placeholder="Search"
-                                                            aria-label="Search"
-                                                            aria-describedby="search-addon"
-                                                            id="valueSearch"
-                                                        />
-                                                    </div>
-                                                    <button onClick={search} style={{height: '37px'}} className="ml-2 px-4 py-2 bg-blue-500 text-bg-dark rounded">
-                                                        Search
-                                                    </button>
-                                                </div>
-                                                {/* end search */}
-                                            </div>
+                                        <div className="px-6 py-2 border-b border-light-grey">
+                                            <div className="font-bold text-xl">Statistics</div>
                                         </div>
-
-
                                         <div className="table-responsive">
                                             <table className="table text-grey-darkest">
                                                 <thead className="bg-grey-dark text-white text-normal">
@@ -193,7 +188,6 @@ function AllOrders() {
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-
 
                                                 {billDetail && billDetail.map && billDetail.map((item, index) => (
                                                     <tr>
@@ -240,33 +234,29 @@ function AllOrders() {
                                             <div className="w-full">
 
                                                 <div className="shadow w-full bg-grey-light">
-                                                    <div
-                                                        className="bg-blue-500 text-xs leading-none py-1 text-center text-white"
-                                                        style={{width: "45%"}}>45%
+                                                    <div className="bg-blue-500 text-xs leading-none py-1 text-center text-white"
+                                                         style={{width: "45%"}}>45%
                                                     </div>
                                                 </div>
 
 
                                                 <div className="shadow w-full bg-grey-light mt-2">
-                                                    <div
-                                                        className="bg-teal-500 text-xs leading-none py-1 text-center text-white"
-                                                        style={{width: "55%"}}>55%
+                                                    <div className="bg-teal-500 text-xs leading-none py-1 text-center text-white"
+                                                         style={{width: "55%"}}>55%
                                                     </div>
                                                 </div>
 
 
                                                 <div className="shadow w-full bg-grey-light mt-2">
-                                                    <div
-                                                        className="bg-orange-500 text-xs leading-none py-1 text-center text-white"
-                                                        style={{width: "65%"}}>65%
+                                                    <div className="bg-orange-500 text-xs leading-none py-1 text-center text-white"
+                                                         style={{width: "65%"}}>65%
                                                     </div>
                                                 </div>
 
 
                                                 <div className="shadow w-full bg-grey-300 mt-2">
-                                                    <div
-                                                        className="bg-red-800 text-xs leading-none py-1 text-center text-white"
-                                                        style={{width: "75%"}}>75%
+                                                    <div className="bg-red-800 text-xs leading-none py-1 text-center text-white"
+                                                         style={{width: "75%"}}>75%
                                                     </div>
                                                 </div>
                                             </div>
@@ -274,8 +264,7 @@ function AllOrders() {
                                     </div>
                                 </div>
                                 {/*Profile Tabs*/}
-                                <div
-                                    className="flex flex-1 flex-col md:flex-row lg:flex-row mx-2 p-1 mt-2 mx-auto lg:mx-2 md:mx-2 justify-between">
+                                <div className="flex flex-1 flex-col md:flex-row lg:flex-row mx-2 p-1 mt-2 mx-auto lg:mx-2 md:mx-2 justify-between">
                                     {/*Top user 1*/}
                                     <div className="rounded rounded-t-lg overflow-hidden shadow max-w-xs my-3">
                                         <img src="https://i.imgur.com/w1Bdydo.jpg" alt="" className="w-full"/>
@@ -285,8 +274,7 @@ function AllOrders() {
                                         </div>
                                         <div className="text-center px-3 pb-6 pt-2">
                                             <h3 className="text-black text-sm bold font-sans">Olivia Dunham</h3>
-                                            <p className="mt-2 font-sans font-light text-grey-700">Hello, i'm from
-                                                another the other
+                                            <p className="mt-2 font-sans font-light text-grey-700">Hello, i'm from another the other
                                                 side!</p>
                                         </div>
                                         <div className="flex justify-center pb-3 text-grey-dark">
@@ -309,8 +297,7 @@ function AllOrders() {
                                         </div>
                                         <div className="text-center px-3 pb-6 pt-2">
                                             <h3 className="text-black text-sm bold font-sans">Olivia Dunham</h3>
-                                            <p className="mt-2 font-sans font-light text-grey-dark">Hello, i'm from
-                                                another the other
+                                            <p className="mt-2 font-sans font-light text-grey-dark">Hello, i'm from another the other
                                                 side!</p>
                                         </div>
                                         <div className="flex justify-center pb-3 text-grey-dark">
@@ -333,8 +320,7 @@ function AllOrders() {
                                         </div>
                                         <div className="text-center px-3 pb-6 pt-2">
                                             <h3 className="text-black text-sm bold font-sans">Olivia Dunham</h3>
-                                            <p className="mt-2 font-sans font-light text-grey-dark">Hello, i'm from
-                                                another the other
+                                            <p className="mt-2 font-sans font-light text-grey-dark">Hello, i'm from another the other
                                                 side!</p>
                                         </div>
                                         <div className="flex justify-center pb-3 text-grey-dark">
@@ -357,8 +343,7 @@ function AllOrders() {
                     {/*Footer*/}
                     <footer className="bg-grey-darkest text-white p-2">
                         <div className="flex flex-1 mx-auto">&copy; My Design</div>
-                        <div className="flex flex-1 mx-auto">Distributed by: <a href="https://themewagon.com/"
-                                                                                target=" _blank">Themewagon</a></div>
+                        <div className="flex flex-1 mx-auto">Distributed by:  <a href="https://themewagon.com/" target=" _blank">Themewagon</a></div>
                     </footer>
                     {/*/footer*/}
 
@@ -371,4 +356,4 @@ function AllOrders() {
 
 }
 
-export default AllOrders;
+export default OrderStatistics;

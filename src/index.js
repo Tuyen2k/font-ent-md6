@@ -23,6 +23,7 @@ import DetailMerchant from "./component/DetailMerchant";
 import OderManager from "./component/oderManager/OderManager";
 import '@fortawesome/fontawesome-free/css/all.css';
 import AllOrders from "./component/oderManager/AllOrders";
+import OrderStatistics from "./component/oderManager/OrderStatistics";
 
 
 
@@ -49,6 +50,7 @@ root.render(
             <Route path={'/update_Coupon/:id'} element={<UpdateCoupon/>}></Route>
             <Route path={'/order-manager/:id'} element={<OderManager/>}></Route>
             <Route path={'/all-order/:id'} element={<AllOrders/>}></Route>
+            <Route path={'/order-statistics/:id'} element={<OrderStatistics/>}></Route>
             <Route path={'/detail_merchant/:id'} element={
                 <>
                     <DetailMerchant/>
