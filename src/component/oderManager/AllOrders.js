@@ -190,7 +190,7 @@ function AllOrders() {
                                                     <th scope="col">Product Name</th>
                                                     <th scope="col">Total Money (VND)</th>
                                                     <th scope="col">Status</th>
-                                                    <th scope="col">Confirm</th>
+                                                    <th scope="col">Confirer</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
