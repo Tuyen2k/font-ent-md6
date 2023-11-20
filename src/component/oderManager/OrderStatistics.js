@@ -1,15 +1,29 @@
 import {Link, useParams} from "react-router-dom";
 import Header from "../../layout/Header";
 import React, {useEffect, useState} from "react";
-import {findAllOrdersByMerchant, groupByBill} from "../../service/BillService";
+import {findAllBillByMerchant, findAllOrdersByMerchant, getAllStatus, groupByBill} from "../../service/BillService";
+import {getAllProductByIdMerchant} from "../../service/ProductService";
 function OrderStatistics() {
     let {id} = useParams();
     const [billDetail, setBillDetail] = useState([]);
+    const [status, setStatus] = useState([]);
+    const [user, setUser] = useState([]);
+    const [product, setProduct] = useState([]);
     useEffect(() => {
             findAllOrdersByMerchant(id).then(r => {
                 setBillDetail(groupByBill(r))
-                console.log(groupByBill(r))
+                const filteredList = billDetail.filter((item, index, array) => {
+                    const isDuplicate = array.slice(0, index).some(prevItem => {
+                        return prevItem.account.id_account === item.account.id_account;
+                    })});
+                    setUser(filteredList)
+                getAllProductByIdMerchant(id).then(re => {
+                    setProduct(re)
+                })
             })
+        getAllStatus().then(res => {
+            setStatus(res)
+        })
     }, []);
     return (
         <>
@@ -171,8 +185,33 @@ function OrderStatistics() {
                                     {/* card */}
 
                                     <div className="rounded overflow-hidden shadow bg-white mx-2 w-full">
-                                        <div className="px-6 py-2 border-b border-light-grey">
+                                        <div className="flex items-center px-6 py-2 border-b border-light-grey">
                                             <div className="font-bold text-xl">Statistics</div>
+                                            <div style={{marginLeft: '500px', width: '300px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
+                                                <select value="optionProduct" className="form-select">
+                                                    <option>Product</option>
+                                                    <option>Status</option>
+                                                    {product && product.map(item => (
+                                                        <option value={item.id_product}>{item.name}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                            <div style={{marginLeft: '50px', width: '300px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
+                                                <select className="form-select">
+                                                    <option>User</option>
+                                                    <option>2</option>
+                                                    <option>3</option>
+                                                </select>
+                                            </div>
+                                            <div style={{marginLeft: '50px', width: '300px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
+                                                <select value="optionStatus" className="form-select">
+                                                    <option>Status</option>
+                                                    {status && status.map(item => (
+                                                        <option value={item.id_status}>{item.name}</option>
+                                                    ))}
+                                                </select>
+                                            </div>
+
                                         </div>
                                         <div className="table-responsive">
                                             <table className="table text-grey-darkest">

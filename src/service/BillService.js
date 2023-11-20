@@ -24,6 +24,18 @@ export function findAllOrdersByMerchant(id_merchant){
     })
 }
 
+export function findAllBillByMerchant(id_merchant){
+    return new Promise(require =>{
+        require(
+            axios.get(`http://localhost:8080/api/bill/user/${id_merchant}`).then(res=>{
+                return res.data
+            }).catch(Error =>{
+                return []
+            })
+        )
+    })
+}
+
 export function searchByNameAndPhone(id_merchant,value){
     return new Promise(require =>{
         require(
@@ -62,6 +74,20 @@ export function getAllBillDetailByAccount(id_account){
         )
     })
 }
+
+
+export function getAllStatus(){
+    return new Promise(resolve => {
+        resolve(
+            axios.get(`http://localhost:8080/api/billDetail/status`).then(res =>{
+                return res.data;
+            }).catch(Error=>{
+                return [];
+            })
+        )
+    })
+}
+
 export function groupByBill(list){
     let arr = []
     let count = 0
