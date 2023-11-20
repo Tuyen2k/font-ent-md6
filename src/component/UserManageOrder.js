@@ -11,7 +11,7 @@ import {cancelBill} from "../service/BillService";
 
 export default function UserManageOrder() {
     const account = JSON.parse(localStorage.getItem("userInfo"))
-    const [billDetails, setBillDetails] = useState([])
+    const [billDetails, setBillDetails] = useState(undefined)
     const [list, setList] = useState([]);
     const [check, setCheck] = useState(true)
     const [changePage, setChangePage] = useState(false);
@@ -65,6 +65,7 @@ export default function UserManageOrder() {
         cancelBill(id_bill)
             .then(success => {
                 if (success) {
+                    setCheck(!check)
                     // The status was successfully updated
                     console.log('Bill status updated successfully');
                 } else {
@@ -137,7 +138,7 @@ export default function UserManageOrder() {
                                                 <div className="col-6">{bill.bill.status.name}</div>
                                                 <div className="col-6">
                                                     <button onClick={() => handleCancel(bill.bill.id_bill)}
-                                                            disabled={bill.bill.status.name === "cancel"}>Cancel</button>
+                                                            disabled={bill.bill.status.id_status === 6}>Cancel</button>
                                                 </div>
                                             </div>
                                         </td>
