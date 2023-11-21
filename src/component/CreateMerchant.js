@@ -157,7 +157,7 @@ function FormRegister() {
                             style={{width: "400px"}}/>
             {load ? (
                     <MDBContainer>
-                        <MDBCard>
+                        <MDBCard style={{marginTop : "20px", marginBottom : "20px"}}>
                             <MDBRow className='g-0'>
 
                                 <MDBCol md='5'>
@@ -259,7 +259,8 @@ function FormRegister() {
                                                         <div className="col-6">
                                                             <label onClick={handleInputFileMerchant} className="form-label" style={{width: "300px",height: "150px"}}>Image</label>
                                                             <div>
-                                                                <Link to={'/'} style={{color: "black", marginRight: "30px"}}>Back
+                                                                <Link to={'/'} style={{color: "black", marginRight: "30px"}}>
+                                                                    <img style={{height: "20px", width: "20px"}} src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/back.png?alt=media&token=2c33e5a3-f355-4f82-b095-32b64ec48bd1" alt=""/> Back
                                                                 </Link>
                                                                 <button style={{width: '150px'}} type={"submit"}
                                                                         className="btn btn-outline-danger">Register

@@ -109,7 +109,7 @@ export default function ProductList(props) {
         <>
             <Header/>
             <div className="container">
-                <section className="section-newsfeed">
+                <section className="section-newsfeed" style={{marginTop : "20px", marginBottom : "20px"}}>
                     <Pagination totalPage={totalPage} page={page} limit={limit} siblings={1}
                                 onPageChange={handlePageChange} onChangeItem={handleChangeItem}/>
                     <hr style={{marginTop: "0px"}}/>
