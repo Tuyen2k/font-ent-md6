@@ -201,7 +201,7 @@ export default function UserManageOrder() {
                                                         className="btn btn-sm btn-primary"
                                                         onClick={() => {
                                                             if (window.confirm("Are you sure you want   to cancel?")) {
-                                                                handleCancel(bill.bill.id_bill);
+                                                                handleCancel(bill.bill.id_bill, bill.bill.merchant.id_merchant);
                                                             }
                                                         }}
                                                         disabled={bill.bill.status.id_status !== 1}
