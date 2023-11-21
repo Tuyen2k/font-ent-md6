@@ -196,8 +196,9 @@ export default function Header() {
                                     <div className="d-inline-flex align-items-center">
                                         {user ? (
                                             <div className="dropdown">
-                                                <a><img src={user.image} className="profile-picture"/> {user.name}</a>
+                                                <a><img src={user.image} className="profile-picture"/> {user.username}</a>
                                                 <div className="dropdown-menu">
+                                                    <Link className="user-function" to="/">Profile</Link>
                                                     {localStorage.getItem("merchant") === null ? (
                                                         <Link className="user-function" to="/merchant/register">Register Merchant</Link>
                                                     ) : (
@@ -283,10 +284,10 @@ export default function Header() {
                                                     data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
                                         </div>
-                                        <div className="modal-body">
+                                        <div className="modal-body" style={{marginBottom:"20px"}}>
                                             <form>
                                                 <div className="row">
-                                                    <div className="col-4" style={{marginLeft: "20px"}}>
+                                                    <div className="col-4" style={{paddingRight : "0px", marginLeft: "10px"}}>
                                                         <div className="form-group">
                                                             <label>Username</label>
                                                             <input className="input-login-form" type="text"
@@ -315,11 +316,11 @@ export default function Header() {
                                                                 now</a></p>
                                                         </div>
                                                     </div>
-                                                    <div className="col-7">
+                                                    <div className="col-7" style={{position:"relative", marginLeft: "20px"}}>
                                                         <img
                                                             src="https://firebasestorage.googleapis.com/v0/b/react-firebase-storage-f6ec9.appspot.com/o/file%2FdoAnNgon.jpg?alt=media&token=e3c3377c-463d-481d-bb04-ba2d890e27b9"
                                                             alt="login"
-                                                            style={{width: "500px", marginLeft: "60px"}}/>
+                                                            style={{width: "480px", marginTop: "13px", position:"absolute"}}/>
                                                     </div>
                                                 </div>
                                             </form>
