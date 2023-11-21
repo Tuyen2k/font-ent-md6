@@ -59,7 +59,7 @@ export default function Header() {
         let registerAccount = {...e, addressDelivery: address, image: imageTemp, role: {"id_role": 2}}
         saveAccount(registerAccount).then(r => {
                 if (r === true) {
-                    toast.success('Register successfully!', {containerId: 'register'});
+                    toast.success('Register successfully! Check your email to activate the account!', {containerId: 'register'});
                     setTimeout(() => {
                         window.document.getElementById("modal-register-close").click();
                         window.document.getElementById("modal-login-open").click();
@@ -146,7 +146,7 @@ export default function Header() {
             toast.success('Logged in successfully!', {containerId: 'login'});
             setExist(!isExist)
             setTimeout(() => {
-                window.location.href = "/";
+                window.location.reload()
             }, 1700)
         } catch (error) {
             toast.error('Incorrect user or password, try again!', {containerId: 'login'});
@@ -198,8 +198,11 @@ export default function Header() {
                                             <div className="dropdown">
                                                 <a><img src={user.image} className="profile-picture"/> {user.name}</a>
                                                 <div className="dropdown-menu">
-                                                    <Link className="user-function" to="/merchant/register">Register Merchant</Link>
-                                                    <Link className="user-function" to="/list">Detail Merchant</Link>
+                                                    {localStorage.getItem("merchant") === null ? (
+                                                        <Link className="user-function" to="/merchant/register">Register Merchant</Link>
+                                                    ) : (
+                                                        <Link className="user-function" to="/list">Detail Merchant</Link>
+                                                    )}
                                                     {user && <a className="user-function" onClick={handleLogout}>Logout</a>}
                                                 </div>
                                             </div>
