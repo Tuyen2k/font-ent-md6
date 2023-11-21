@@ -5,13 +5,13 @@ body {
     font-family: "Poppins", sans-serif !important;
     background-color: #f6f6f6 !important;
 }
-
 .profile-picture {
     width: 20px;
     height: 20px;
     border-radius: 50%;
     margin-bottom: 3px;
 }
+
 .dropdown-menu {
     display: none;
     position: absolute;
