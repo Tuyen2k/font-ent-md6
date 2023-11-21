@@ -11,6 +11,17 @@ export function findByTimeRange(id_merchant, startTime, endTime){
         )
     })
 }
+export function findByQuarter(id_merchant, valueQuarter){
+    return new Promise(require =>{
+        require(
+            axios.get(`http://localhost:8080/api/billDetail/merchant/${id_merchant}/quarter/${valueQuarter}`).then(res=>{
+                return res.data
+            }).catch(Error =>{
+                return undefined
+            })
+        )
+    })
+}
 
 export function findByYearAndWeekAndMerchant(id_merchant, year, week){
     return new Promise(require =>{

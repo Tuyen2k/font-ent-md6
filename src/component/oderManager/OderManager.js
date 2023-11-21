@@ -7,8 +7,13 @@ import {
     groupByBill
 } from "../../service/BillService";
 import {getAllProductByIdMerchant} from "../../service/ProductService";
-import {findByMonthAndMerchant, findByTimeRange, findByYearAndWeekAndMerchant} from "../../service/BillDetailService";
-function OrderManager() {
+import {
+    findByMonthAndMerchant,
+    findByQuarter,
+    findByTimeRange,
+    findByYearAndWeekAndMerchant
+} from "../../service/BillDetailService";
+function OrderManager(effect, deps) {
     let {id} = useParams();
     const [billDetail, setBillDetail] = useState([]);
     const [user, setUser] = useState([]);
@@ -20,6 +25,7 @@ function OrderManager() {
     const [totalOrder, setTotalOrder] = useState(0);
     const [totalUser, setTotalUser] = useState(0);
     const [year, setYear] = useState(0);
+    const [quarter, setQuarter] = useState(0);
     const [month, setMonth] = useState(undefined);
     const [week, setWeek] = useState(0);
     const [startTime, setStartTime] = useState(undefined);
@@ -28,7 +34,6 @@ function OrderManager() {
         if (check){
             findAllOrdersByMerchant(id).then(r => {
                 setBillDetail(groupByBill(r))
-                console.log(groupByBill(r))
                 order(r.length)
                 money(r)
                 setYear(new Date().getFullYear())
@@ -64,7 +69,7 @@ function OrderManager() {
                         setMessage("Result search")
                     } else {
                         setBillDetail([])
-                        setMessage("no order display")
+                        setMessage("No order display")
                     }
                 }
             })
@@ -87,39 +92,69 @@ function OrderManager() {
                        setMessage("Result search")
                    } else {
                        setBillDetail([])
-                       setMessage("no order display")
+                       setMessage("No order display")
                    }
                }
            })
        }
     }
+    const fetchDataByQuarter = async (valueQuarter) => {
+        try {
+            const result = await findByQuarter(id, valueQuarter);
+            if (result === undefined) {
+                setCheck(true);
+            } else {
+                if (result.length > 0) {
+                    setBillDetail(groupByBill(result));
+                    console.log(groupByBill(result))
+                    order(result.length);
+                    money(result);
+                    setCheck(false);
+                    setMessage("Result search");
+                } else {
+                    setBillDetail([]);
+                    setMessage("No order display");
+                }
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const selectQuarter = async (e) => {
+        const value = e.target.value;
+        setQuarter(value);
+        await fetchDataByQuarter(value);
+    };
+
 
     const selectMonth = (e) => {
-        const value = e.target.value;
-        setWeek(getWeeksInMonth(value, year))
-        setMonth(value)
+            const value = e.target.value;
+            setWeek(getWeeksInMonth(value, year))
+            setMonth(value)
+        console.log(value)
         findByMonthAndMerchant(id, year, value).then(r => {
-            if (r !== undefined){
-                if (r.length > 0){
-                    setBillDetail(groupByBill(r))
-                    order(r.length)
-                    money(r)
-                    setMessage("Result search")
-                    setCheck(false)
+                if (r !== undefined) {
+                    if (r.length > 0) {
+                        setBillDetail(groupByBill(r))
+                        order(r.length)
+                        money(r)
+                        setMessage("Result search")
+                        setCheck(false)
+                    } else {
+                        setBillDetail([])
+                        setMessage("No order display")
+                    }
                 } else {
-                    setBillDetail([])
-                    setMessage("no order display")
+                    setCheck(true)
                 }
-            } else {
-                setCheck(true)
-            }
-        })
-
+            })
     }
 
+
     const selectWeek = (e) => {
+        const value = e.target.value;
        if (month === undefined){
-           const value = e.target.value;
            findByYearAndWeekAndMerchant(id, year, value).then(r => {
                if (r !== undefined){
                    if (r.length > 0){
@@ -130,7 +165,25 @@ function OrderManager() {
                        setCheck(false)
                    } else {
                        setBillDetail([])
-                       setMessage("no order display")
+                       setMessage("No order display")
+                   }
+               } else {
+                   setCheck(true)
+               }
+           })
+       } else {
+           const valueWeek = getWeeksFromStartOfYear(year, month,value)
+           findByYearAndWeekAndMerchant(id, year, valueWeek).then(res => {
+               if (res !== undefined){
+                   if (res.length > 0){
+                       setBillDetail(groupByBill(res))
+                       order(res.length)
+                       money(res)
+                       setMessage("Result search")
+                       setCheck(false)
+                   } else {
+                       setBillDetail([])
+                       setMessage("No order display")
                    }
                } else {
                    setCheck(true)
@@ -168,10 +221,11 @@ function OrderManager() {
 
     const getWeeksFromStartOfYear = (year, month, userInputWeek) => {
         const firstDayOfYear = new Date(year, 0, 1);
-        const daysToNearestWednesday = (4 - firstDayOfYear.getDay() + 7) % 7;
-        const nearestWednesday = new Date(firstDayOfYear);
-        nearestWednesday.setDate(firstDayOfYear.getDate() + daysToNearestWednesday);
-        return (month - 1) * 4 + userInputWeek;
+        const dateOfUserInputWeek = new Date(year, month - 1, userInputWeek * 7);
+        const daysFromStartOfYear = Math.floor((dateOfUserInputWeek - firstDayOfYear) / (24 * 60 * 60 * 1000));
+        return Math.ceil(daysFromStartOfYear / 7);
+
+
     }
 
     const money = (r) => {
@@ -187,7 +241,6 @@ function OrderManager() {
     }
     return (
         <>
-
             {/*Container */}
             <div className="mx-auto bg-grey-400">
                 {/*hi*/}
@@ -350,7 +403,7 @@ function OrderManager() {
                                             <div className="font-bold text-xl" style={{width: '250px'}}>{message}</div>
 
                                             <div style={{marginLeft: '30px', width: '200px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
-                                                <select value="optionProduct" className="form-select">
+                                                <select onChange={selectQuarter} value="optionProduct" className="form-select">
                                                     <option>Quarter </option>
                                                     <option value="1">1</option>
                                                     <option value="2">2</option>
