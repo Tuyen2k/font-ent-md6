@@ -36,7 +36,8 @@ export default function Home() {
         if (shouldCallFindAll) {
             findAll().then(r => {
                 setNameProduct("New Product")
-                setProducts(r.slice(0, 10).reverse());
+                let arr = r.reverse()
+                setProducts(arr.slice(0, 10));
                 setShouldCallFindAll(false);
             });
         }
@@ -160,7 +161,7 @@ export default function Home() {
 
     function handleOrderNow() {
         if (account !== null) {
-            if(merchant !== null && merchant.account.id_account === account.id){
+            if (merchant !== null && merchant.account.id_account === account.id) {
                 toast.error('Your action is not authorized, please try again later!', {containerId: 'home-notification'});
                 return
             }
@@ -329,8 +330,7 @@ export default function Home() {
                                                                             d="M1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.083c.058-.344.145-.678.258-1H3a2 2 0 0 0-2-2V3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v3.528c.38.34.717.728 1 1.154V1a1 1 0 0 0-1-1H1z"/>
                                                                         <path
                                                                             d="M9.998 5.083 10 5a2 2 0 1 0-3.132 1.65 5.982 5.982 0 0 1 3.13-1.567z"/>
-                                                                    </svg>
-                                                                    Order now</a>
+                                                                    </svg> Order now</a>
                                                             </button>
                                                         </div>
                                                     </div>
@@ -419,8 +419,7 @@ export default function Home() {
                                                                         d="M1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.083c.058-.344.145-.678.258-1H3a2 2 0 0 0-2-2V3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v3.528c.38.34.717.728 1 1.154V1a1 1 0 0 0-1-1H1z"/>
                                                                     <path
                                                                         d="M9.998 5.083 10 5a2 2 0 1 0-3.132 1.65 5.982 5.982 0 0 1 3.13-1.567z"/>
-                                                                </svg>
-                                                                Order now</a>
+                                                                </svg> Order now</a>
                                                         </button>
                                                     </div>
                                                 </div>
@@ -497,8 +496,7 @@ export default function Home() {
                                                                         d="M1 0a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h4.083c.058-.344.145-.678.258-1H3a2 2 0 0 0-2-2V3a2 2 0 0 0 2-2h10a2 2 0 0 0 2 2v3.528c.38.34.717.728 1 1.154V1a1 1 0 0 0-1-1H1z"/>
                                                                     <path
                                                                         d="M9.998 5.083 10 5a2 2 0 1 0-3.132 1.65 5.982 5.982 0 0 1 3.13-1.567z"/>
-                                                                </svg>
-                                                                Order now</a>
+                                                                </svg> Order now</a>
                                                         </button>
                                                     </div>
                                                 </div>
@@ -617,26 +615,27 @@ export default function Home() {
                         <div className="modal-body" style={{height: '520px'}}>
                             <div style={{marginTop: '30px'}} className="now-detail-restaurant clearfix">
                                 <div className="container">
-                                    <div className="row px-xl-5">
-                                        <div className="col-lg-5 pb-5">
+                                    <div className="row">
+                                        <div className="col-5">
                                             <div id="product-carousel" className="carousel slide" data-ride="carousel">
                                                 <div style={{
-                                                    width: '480px',
-                                                    height: '500px',
+                                                    // width: '480px',
+                                                    // height: '500px',
                                                     position: 'relative',
                                                     float: 'left'
                                                 }}>
-                                                    <div className="carousel-item active">
+                                                    {/*<div className="carousel-item active">*/}
                                                         <img style={{width: '300px', height: '250px'}}
                                                              src={product.image} alt="Image"/>
-                                                    </div>
+                                                    {/*</div>*/}
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="col-lg-7 pb-5">
                                             <h3 className="font-weight-semi-bold">{product.name}</h3>
                                             {/*link dẫn tới merchant, cần có cả id merchant để lấy dữ liệu. */}
-                                            <Link>{merchant.name} - Shop Online</Link>
+                                            <Link to={`/detail_merchant/${merchant.id_merchant}`}>{merchant.name} - Shop
+                                                Online</Link>
                                             <div style={{marginTop: '8px'}} className="d-flex mb-3">
                                                 <div className="text-primary mr-2">
                                                     <small style={{color: '#d1d124'}} className="fas fa-star"></small>
@@ -648,27 +647,37 @@ export default function Home() {
                                                 </div>
                                                 <small className="pt-1">{product.view}</small>
                                             </div>
-                                            <h3 className="font-weight-semi-bold mb-4">
-                                                <h3 style={{fontSize: "smaller"}} className="text-muted ml-2">
-                                                    <del>{product.price}VND</del>
-                                                </h3>
-                                            </h3>
-                                            <h3 className="font-weight-semi-bold mb-4">
-                                                <input id="price_sale" type="number" value={product.priceSale}
-                                                       hidden="hidden"/>
-                                                {product.priceSale}VND
-                                            </h3>
+                                            <div className="row">
+                                                    <span className="number col-4" style={{marginTop:"3px"}}>
+                                                        <h5 className="font-weight-semi-bold text-muted">
+                                                            <del><em>{product.price} VND</em></del>
+                                                    </h5></span>
+                                                <h4 className="font-weight-semi-bold col-6" style={{marginLeft :"0px"}}>
+                                                    <input id="price_sale" type="number" value={product.priceSale}
+                                                           hidden="hidden"/>{product.priceSale} VND</h4>
+                                                <div className="col-2"></div>
+                                            </div>
                                             <div className="d-flex mb-3">
                                                 <h5 className="text-dark font-weight-medium mb-0 mr-3">Category : </h5>
-                                                {product.categories && product.categories.map(item => (
-                                                    <form>
-                                                        <div
-                                                            className="custom-control custom-radio custom-control-inline">
-                                                            <label style={{marginLeft: '5px'}}
-                                                                   htmlFor="size-1"> {item.name}</label>
-                                                        </div>
-                                                    </form>
-                                                ))}
+                                                {product.categories && product.categories.map((item, index) => {
+                                                    if (index < product.categories.length -1){
+                                                        return(
+                                                            <div onClick={() => handleInputCategory(item.id_category)}
+                                                                className="custom-control custom-radio custom-control-inline">
+                                                                <label style={{marginLeft: '5px'}}
+                                                                       htmlFor="size-1">{item.name},</label>
+                                                            </div>
+                                                        )
+                                                    }else {
+                                                        return (
+                                                            <div onClick={() => handleInputCategory(item.id_category)}
+                                                                className="custom-control custom-radio custom-control-inline">
+                                                                <label style={{marginLeft: '5px'}}
+                                                                       htmlFor="size-1">{item.name}</label>
+                                                            </div>
+                                                        )
+                                                    }
+                                                })}
                                             </div>
                                             <div className="d-flex mb-4">
                                                 <h5 className="text-dark font-weight-medium mb-0 mr-3">Purchase : </h5>

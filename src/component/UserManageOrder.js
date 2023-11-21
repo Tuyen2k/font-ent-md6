@@ -136,7 +136,7 @@ export default function UserManageOrder() {
     return (
         <>
             <Header/>
-            <ToastContainer enableMultiContainer containerId={"account-bill"} position="top-right" autoClose={2000}
+            <ToastContainer enableMultiContainer containerId={"account-bill"} position="top-right" autoClose={1500}
                             pauseOnHover={false}
                             style={{width: "400px"}}/>
             <div className="container">
@@ -193,8 +193,7 @@ export default function UserManageOrder() {
                                                     }
                                                 )}</td>
                                                 <td><span className="number">{bill.total.toLocaleString()} VND</span></td>
-                                                <td><div className="col-6">{bill.bill.status.name}</div>
-                                        </td>
+                                                <td>{bill.bill.status.name}</td>
                                         <td>
                                             <div className="row">
                                                 <div className="col-6">
@@ -210,8 +209,6 @@ export default function UserManageOrder() {
                                                     </button>
                                                 </div>
                                                 <div className="col-6">
-                                                    <button onClick={() => handleCancel(bill.bill.id_bill, bill.bill.merchant.id_merchant)}
-                                                            disabled={bill.bill.status.id_status !== 1}>Cancel</button>
                                                     <button className="btn btn-sm btn-primary" onClick={() => {
                                                         handleModal(bill)
                                                     }}>View Details

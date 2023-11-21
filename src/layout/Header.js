@@ -231,7 +231,7 @@ export default function Header() {
                 </nav>
                 <ToastContainer enableMultiContainer containerId={"page"} position="top-right" autoClose={2000}
                                 pauseOnHover={false}
-                                style={{width: "400px"}}/>
+                                style={{width: "800px"}}/>
                 <nav className="navbar">
                     {/*Navbar*/}
                     <div className="container">
