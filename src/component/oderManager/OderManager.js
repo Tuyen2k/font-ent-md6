@@ -1,21 +1,253 @@
 import {Link, useParams} from "react-router-dom";
 import Header from "../../layout/Header";
-import React from "react";
-
-function OderManager() {
+import React, {useEffect, useState} from "react";
+import {
+    findAllOrdersByMerchant,
+   findUser,
+    groupByBill
+} from "../../service/BillService";
+import {getAllProductByIdMerchant} from "../../service/ProductService";
+import {
+    findByMonthAndMerchant,
+    findByQuarter,
+    findByTimeRange,
+    findByYearAndWeekAndMerchant
+} from "../../service/BillDetailService";
+function OrderManager(effect, deps) {
     let {id} = useParams();
-    var sidebar = document.getElementById('sidebar');
+    const [billDetail, setBillDetail] = useState([]);
+    const [user, setUser] = useState([]);
+    const [product, setProduct] = useState([]);
+    const [check, setCheck] = useState(true);
+    const [message, setMessage] = useState("");
+    const [totalMoNey, setTotalMoNey] = useState(0);
+    const [totalProduct, setTotalProduct] = useState(0);
+    const [totalOrder, setTotalOrder] = useState(0);
+    const [totalUser, setTotalUser] = useState(0);
+    const [year, setYear] = useState(0);
+    const [quarter, setQuarter] = useState(0);
+    const [month, setMonth] = useState(undefined);
+    const [week, setWeek] = useState(0);
+    const [startTime, setStartTime] = useState(undefined);
+    const [endTime, setEndTime] = useState(undefined);
+    useEffect(() => {
+        if (check){
+            findAllOrdersByMerchant(id).then(r => {
+                setBillDetail(groupByBill(r))
+                order(r.length)
+                money(r)
+                setYear(new Date().getFullYear())
+                setMessage("Statistics")
+            })
+        }
+        setWeek(totalWeek(year));
+        getAllProductByIdMerchant(id).then(re => {
+            setProduct(re)
+            setTotalProduct(re.length)
 
+        })
+        findUser(id).then(r => {
+            setUser(r.reverse())
+            setTotalUser(r.length)
+        })
+    }, [check], week);
+
+
+    const startDate = (e) => {
+        const value = e.target.value
+        setStartTime(value)
+        if (endTime !== undefined && value !== undefined){
+            findByTimeRange(id, startTime, value).then(r => {
+                if (r === undefined){
+                    setCheck(true)
+                } else {
+                    if (r.length > 0){
+                        setBillDetail(groupByBill(r))
+                        order(r.length)
+                        money(r)
+                        setCheck(false)
+                        setMessage("Result search")
+                    } else {
+                        setBillDetail([])
+                        setMessage("No order display")
+                    }
+                }
+            })
+        }
+    }
+
+    const endDate = (e) => {
+        const value = e.target.value
+        setEndTime(value)
+       if (startTime !== undefined && value !== undefined){
+           findByTimeRange(id, startTime, value).then(r => {
+               if (r === undefined){
+                   setCheck(true)
+               } else {
+                   if (r.length > 0){
+                       order(r.length)
+                       money(r)
+                       setBillDetail(groupByBill(r))
+                       setCheck(false)
+                       setMessage("Result search")
+                   } else {
+                       setBillDetail([])
+                       setMessage("No order display")
+                   }
+               }
+           })
+       }
+    }
+    const fetchDataByQuarter = async (valueQuarter) => {
+        try {
+            const result = await findByQuarter(id, valueQuarter);
+            if (result === undefined) {
+                setCheck(true);
+            } else {
+                if (result.length > 0) {
+                    setBillDetail(groupByBill(result));
+                    console.log(groupByBill(result))
+                    order(result.length);
+                    money(result);
+                    setCheck(false);
+                    setMessage("Result search");
+                } else {
+                    setBillDetail([]);
+                    setMessage("No order display");
+                }
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const selectQuarter = async (e) => {
+        const value = e.target.value;
+        setQuarter(value);
+        await fetchDataByQuarter(value);
+    };
+
+
+    const selectMonth = (e) => {
+            const value = e.target.value;
+            setWeek(getWeeksInMonth(value, year))
+            setMonth(value)
+        console.log(value)
+        findByMonthAndMerchant(id, year, value).then(r => {
+                if (r !== undefined) {
+                    if (r.length > 0) {
+                        setBillDetail(groupByBill(r))
+                        order(r.length)
+                        money(r)
+                        setMessage("Result search")
+                        setCheck(false)
+                    } else {
+                        setBillDetail([])
+                        setMessage("No order display")
+                    }
+                } else {
+                    setCheck(true)
+                }
+            })
+    }
+
+
+    const selectWeek = (e) => {
+        const value = e.target.value;
+       if (month === undefined){
+           findByYearAndWeekAndMerchant(id, year, value).then(r => {
+               if (r !== undefined){
+                   if (r.length > 0){
+                       setBillDetail(groupByBill(r))
+                       order(r.length)
+                       money(r)
+                       setMessage("Result search")
+                       setCheck(false)
+                   } else {
+                       setBillDetail([])
+                       setMessage("No order display")
+                   }
+               } else {
+                   setCheck(true)
+               }
+           })
+       } else {
+           const valueWeek = getWeeksFromStartOfYear(year, month,value)
+           findByYearAndWeekAndMerchant(id, year, valueWeek).then(res => {
+               if (res !== undefined){
+                   if (res.length > 0){
+                       setBillDetail(groupByBill(res))
+                       order(res.length)
+                       money(res)
+                       setMessage("Result search")
+                       setCheck(false)
+                   } else {
+                       setBillDetail([])
+                       setMessage("No order display")
+                   }
+               } else {
+                   setCheck(true)
+               }
+           })
+       }
+    }
+
+
+    const months = Array.from({ length: 12 }, (_, index) => (
+        <option key={index + 1} value={index + 1}>{index + 1}</option>
+    ));
+    const dates = Array.from({ length: week }, (_, index) => (
+        <option key={index + 1} value={index + 1}>{index + 1}</option>
+    ));
+
+    const totalWeek = (year) =>{
+        const firstDayOfYear = new Date(year, 0, 1);
+        const daysToNearestWednesday = (4 - firstDayOfYear.getDay() + 7) % 7;
+        const nearestWednesday = new Date(firstDayOfYear);
+        nearestWednesday.setDate(firstDayOfYear.getDate() + daysToNearestWednesday);
+        const daysInYear = (new Date(year + 1, 0, 1) - nearestWednesday) / (24 * 60 * 60 * 1000);
+        return Math.ceil(daysInYear / 7);
+
+    }
+
+    const getWeeksInMonth = (year, month)=> {
+        const firstDayOfMonth = new Date(year, month - 1, 1);
+        const daysToNearestWednesday = (4 - firstDayOfMonth.getDay() + 7) % 7;
+        const nearestWednesday = new Date(firstDayOfMonth);
+        nearestWednesday.setDate(firstDayOfMonth.getDate() + daysToNearestWednesday);
+        const daysInMonth = new Date(year, month, 0).getDate();
+        return Math.ceil((daysInMonth - nearestWednesday.getDate() + 1) / 7);
+    }
+
+    const getWeeksFromStartOfYear = (year, month, userInputWeek) => {
+        const firstDayOfYear = new Date(year, 0, 1);
+        const dateOfUserInputWeek = new Date(year, month - 1, userInputWeek * 7);
+        const daysFromStartOfYear = Math.floor((dateOfUserInputWeek - firstDayOfYear) / (24 * 60 * 60 * 1000));
+        return Math.ceil(daysFromStartOfYear / 7);
+
+
+    }
+
+    const money = (r) => {
+        let count = 0;
+        for (let i = 0; i < r.length; i++) {
+            count += r[i].price
+        }
+        setTotalMoNey(count)
+    }
+
+    const order = (r) => {
+        setTotalOrder(r)
+    }
     return (
         <>
-
             {/*Container */}
             <div className="mx-auto bg-grey-400">
                 {/*hi*/}
                 {/*Screen*/}
                 <div className="min-h-screen flex flex-col">
                     {/*Header Section Starts Here*/}
-                 <Header/>
+                    <Header/>
                     {/*/Header*/}
 
                     <div className="flex flex-1">
@@ -24,8 +256,8 @@ function OderManager() {
 
                             <ul className="list-reset flex flex-col">
                                 <li style={{backgroundColor: '#efd6d6'}} className=" w-full h-full py-3 px-2 border-b border-light-border">
-                                    <a href=""
-                                       className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
+                                    <a
+                                          className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
                                         <i className="fas fa-tachometer-alt float-left mx-2"></i>
                                         Dashboard
                                         <span><i className="fas fa-angle-right float-right"></i></span>
@@ -33,15 +265,15 @@ function OderManager() {
                                 </li>
                                 <li className="w-full h-full py-3 px-2 border-b border-light-border">
                                     <Link to={`/all-order/${id}`}
-                                       className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
+                                          className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
                                         <i className="fab fa-wpforms float-left mx-2"></i>
                                         All orders
                                         <span><i className="fa fa-angle-right float-right"></i></span>
                                     </Link>
                                 </li>
                                 <li className="w-full h-full py-3 px-2 border-b border-light-border">
-                                    <Link to={`/order-statistics/${id}`}
-                                       className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
+                                    <Link  to={`/order-statistics/${id}`}
+                                        className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
                                         <i className="fas fa-table float-left mx-2"></i>
                                         Order statistics
                                         <span><i className="fa fa-angle-right float-right"></i></span>
@@ -116,10 +348,11 @@ function OderManager() {
                                     <div className="shadow-lg bg-red-vibrant border-l-8 hover:bg-red-vibrant-dark border-red-vibrant-dark mb-2 p-2 md:w-1/4 mx-2">
                                         <div className="p-4 flex flex-col">
                                             <a href="#" className="no-underline text-white text-2xl">
-                                                $244
+                                                <span className="number">{totalMoNey.toLocaleString()}</span>
+                                                VND
                                             </a>
                                             <a href="#" className="no-underline text-white text-lg">
-                                                Total Sales
+                                                Total Money
                                             </a>
                                         </div>
                                     </div>
@@ -127,10 +360,10 @@ function OderManager() {
                                     <div className="shadow bg-info border-l-8 hover:bg-info-dark border-info-dark mb-2 p-2 md:w-1/4 mx-2">
                                         <div className="p-4 flex flex-col">
                                             <a href="#" className="no-underline text-white text-2xl">
-                                                $199.4
+                                                {totalOrder} orders
                                             </a>
                                             <a href="#" className="no-underline text-white text-lg">
-                                                Total Cost
+                                                Total Oder
                                             </a>
                                         </div>
                                     </div>
@@ -138,7 +371,7 @@ function OderManager() {
                                     <div className="shadow bg-warning border-l-8 hover:bg-warning-dark border-warning-dark mb-2 p-2 md:w-1/4 mx-2">
                                         <div className="p-4 flex flex-col">
                                             <a href="#" className="no-underline text-white text-2xl">
-                                                900
+                                                {totalUser} Users
                                             </a>
                                             <a href="#" className="no-underline text-white text-lg">
                                                 Total Users
@@ -149,7 +382,7 @@ function OderManager() {
                                     <div className="shadow bg-success border-l-8 hover:bg-success-dark border-success-dark mb-2 p-2 md:w-1/4 mx-2">
                                         <div className="p-4 flex flex-col">
                                             <a href="#" className="no-underline text-white text-2xl">
-                                                500
+                                                {totalProduct} Products
                                             </a>
                                             <a href="#" className="no-underline text-white text-lg">
                                                 Total Products
@@ -166,76 +399,101 @@ function OderManager() {
                                     {/* card */}
 
                                     <div className="rounded overflow-hidden shadow bg-white mx-2 w-full">
-                                        <div className="px-6 py-2 border-b border-light-grey">
-                                            <div className="font-bold text-xl">Trending Categories</div>
+                                        <div className="flex items-center px-6 py-2 border-b border-light-grey">
+                                            <div className="font-bold text-xl" style={{width: '250px'}}>{message}</div>
+
+                                            <div style={{marginLeft: '30px', width: '200px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
+                                                <select onChange={selectQuarter} value="optionProduct" className="form-select">
+                                                    <option>Quarter </option>
+                                                    <option value="1">1</option>
+                                                    <option value="2">2</option>
+                                                    <option value="3">3</option>
+                                                    <option value="4">4</option>
+                                                </select>
+                                            </div>
+                                            <div style={{marginLeft: '20px', width: '200px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
+                                                <select onChange={selectMonth} className="form-select">
+                                                    <option>Month</option>
+                                                    {months}
+                                                </select>
+                                            </div>
+                                            <div style={{marginLeft: '20px', width: '200px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
+                                                <select onChange={selectWeek} value="optionStatus" className="form-select">
+                                                    <option>Week</option>
+                                                    {dates}
+                                                </select>
+                                            </div>
+
+                                            <div style={{marginLeft: '50px', width: '93px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
+                                                <div style={{ width: '200px' }}>
+                                                    <input onChange={startDate} type="date" className="form-input" />
+                                                </div>
+                                            </div>
+                                            <div style={{ width: '220px',marginLeft: '35px' }}>
+                                                <input onChange={endDate} type="date" className="form-input" />
+                                            </div>
+
+                                            <div style={{marginLeft: '30px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
+                                               <button onClick={()=> {setCheck(true);
+                                                   setStartTime(undefined);
+                                                   setEndTime(undefined)}} className="btn btn-dark">Clear</button>
+                                            </div>
+
+
                                         </div>
                                         <div className="table-responsive">
                                             <table className="table text-grey-darkest">
                                                 <thead className="bg-grey-dark text-white text-normal">
-                                                <tr>
-                                                    <th scope="col">#</th>
-                                                    <th scope="col">Item</th>
-                                                    <th scope="col">Last</th>
-                                                    <th scope="col">Current</th>
-                                                    <th scope="col">Change</th>
+                                                <tr style={{textAlign: 'center'}}>
+                                                    <th scope="col"></th>
+                                                    <th scope="col">User Name</th>
+                                                    <th scope="col">User Phone</th>
+                                                    <th scope="col">Date of purchase</th>
+                                                    <th scope="col">Product Name</th>
+                                                    <th scope="col">Total Money (VND)</th>
+                                                    <th scope="col">Status</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
-                                                <tr>
-                                                    <th scope="row">1</th>
-                                                    <td>
-                                                        <button className="bg-blue-500 hover:bg-blue-800 text-white font-light py-1 px-2 rounded-full">
-                                                            Twitter
-                                                        </button>
-                                                    </td>
-                                                    <td>4500</td>
-                                                    <td>4600</td>
-                                                    <td>
-                                                        <span className="text-green-500"><i className="fas fa-arrow-up"></i>5%</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row">2</th>
-                                                    <td>
-                                                        <button className="bg-primary hover:bg-primary-dark text-white font-light py-1 px-2 rounded-full">
-                                                            Facebook
-                                                        </button>
-                                                    </td>
-                                                    <td>10000</td>
-                                                    <td>3000</td>
-                                                    <td>
-                                                        <span className="text-red-500"><i className="fas fa-arrow-down"></i>65%</span>
-                                                    </td>
-                                                </tr>
 
-                                                <tr>
-                                                    <th scope="row">3</th>
-                                                    <td>
-                                                        <button className="bg-success hover:bg-success-dark text-white font-light py-1 px-2 rounded-full">
-                                                            Amazon
-                                                        </button>
-                                                    </td>
-                                                    <td>10000</td>
-                                                    <td>3000</td>
-                                                    <td>
-                                                        <span className="text-red-500"><i className="fas fa-arrow-down"></i>65%</span>
-                                                    </td>
-                                                </tr>
-
-                                                <tr>
-                                                    <th scope="row">4</th>
-                                                    <td>
-                                                        <button className="bg-blue-500 hover:bg-blue-800 text-white font-light py-1 px-2 rounded-full">
-                                                            Microsoft
-                                                        </button>
-                                                    </td>
-                                                    <td>10000</td>
-                                                    <td>3000</td>
-                                                    <td>
-                                                        <span className="text-green-500"><i className="fas fa-arrow-up"></i>65%</span>
-                                                    </td>
-                                                </tr>
-
+                                                {billDetail && billDetail.map && billDetail.map((item, index) => (
+                                                    <tr>
+                                                        <th scope="row">{index + 1}</th>
+                                                        <td style={{textAlign: 'center'}}>
+                                                            <Link style={{
+                                                                color: 'black',
+                                                                fontSize: '19px',
+                                                                textAlign: 'center'
+                                                            }}>
+                                                                {item.bill.account.name}<br/>
+                                                            </Link><br/>
+                                                        </td>
+                                                        <td style={{textAlign: 'center'}}>{item.bill.account.phone}</td>
+                                                        <td style={{textAlign: 'center'}}>{new Date(item.billDetails[0].time_purchase).toLocaleString(
+                                                            'en-UK', {
+                                                                year: 'numeric',
+                                                                month: '2-digit',
+                                                                day: '2-digit',
+                                                                hour: '2-digit',
+                                                                minute: '2-digit',
+                                                            })}</td>
+                                                        <td>{item.billDetails.map(item=>{
+                                                            return(
+                                                                <>
+                                                                    <p>{item.product.name}</p>
+                                                                </>
+                                                            )
+                                                        })}</td>
+                                                        <td style={{
+                                                            fontWeight: 'bold',
+                                                            color: '#a13d3d',
+                                                            textAlign: 'center'
+                                                        }}><span className="number">{item.total.toLocaleString()}</span> </td>
+                                                        <td style={{textAlign: 'center'}}>
+                                                            <span className="number">{item.bill.status.name}</span>
+                                                        </td>
+                                                    </tr>
+                                                ))}
                                                 </tbody>
                                             </table>
                                         </div>
@@ -377,4 +635,4 @@ function OderManager() {
 
 }
 
-export default OderManager;
+export default OrderManager;
