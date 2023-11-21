@@ -34,7 +34,6 @@ export default function ProductList(props) {
             getAllProductByMerchant(merchant.id_merchant, searchInput)
                 .then((data) => {
                     let arr = data.reverse();
-                    console.log(page, limit)
                     setProducts(getList(arr, page, limit));
                     setList(arr)
                 })
@@ -119,15 +118,17 @@ export default function ProductList(props) {
                             borderRight: "1px solid black",
                             display: "flex", alignItems: "center", justifyContent: "center"
                         }}>
-                            <h3 style={{margin: "0"}}>Manage</h3>
+                            <h3 style={{margin: "0", fontSize: "24px"}}>Manage</h3>
                         </div>
                         <div className="col-9">
-                            <div className="row">
-                                <Link className="col-2 link-offset-1-hover" style={{marginLeft: "10px", color: "#ff3d3d"}} to={"/product/create"}>
-                                                <span>
-                                                <h5 style={{marginBottom: "0px"}}>Add new</h5></span></Link>
-                                <div className="col-3"><h4>Your product</h4></div>
-                                <div className="col-6">
+                            <div className="row" style={{marginLeft: "5px"}}>
+                                <Link className="col-2 link-offset-1-hover"
+                                      style={{color: "#ff3d3d", marginTop: "13px"}} to={"/product/create"}>
+                                   <span> <h5 style={{marginBottom: "0px"}}> <img style={{height : "20px", width:"20px", marginBottom: "5px"}}
+                                        src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/add.png?alt=media&token=ff56ec11-8fa4-48c4-9a6b-4adbff8468db"
+                                        alt=""/> Add new</h5></span></Link>
+                                <div className="col-6" style={{marginTop: "10px"}}><h4>Your product</h4></div>
+                                <div className="col-4" style={{marginTop: "10px"}}>
                                     <input type="search" className="form-control rounded"
                                            placeholder="Search" aria-label="Search"
                                            aria-describedby="search-addon" onKeyUp={(e) => searchName(e.target.value)}
@@ -163,7 +164,7 @@ export default function ProductList(props) {
                                      alt="revenue"/>
                                 Profile </Link>
                         </div>
-                        <div className="col-9" style={{ marginBottom: "50px"}}>
+                        <div className="col-9" style={{marginBottom: "50px"}}>
                             {products.length > 0 ? (
                                 products.map((product, index) => (
                                     <div
@@ -183,11 +184,16 @@ export default function ProductList(props) {
                                             </div>
                                             <div className="col-8">
                                                 <div className="content">
-                                                    <div className="name mb-5">{product.name}</div>
-                                                    <div className="name mb-5">{product.address}</div>
-                                                    <div className="promotion">
-                                                        <i className="fa-solid fa-tag"></i>
-                                                        <span>{product.price}</span>
+                                                    <div className="name mb-5"
+                                                         style={{fontSize: "18px"}}>{product.name}</div>
+                                                    <div className="description mb-5">{product.description}</div>
+                                                    <div className="promotion" style={{marginTop: "10px"}}>
+                                                        <del><em><span
+                                                            className="number">{product.price.toLocaleString()} VND</span></em>
+                                                        </del>
+                                                        <i style={{marginLeft: "15px"}} className="fa-solid fa-tag"></i>
+                                                        <span
+                                                            className="number"><strong>{product.priceSale.toLocaleString()} VND</strong></span>
                                                     </div>
                                                 </div>
                                             </div>

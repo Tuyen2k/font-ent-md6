@@ -11,6 +11,8 @@ import {
 import {findAccountByMerchant} from "../../service/AccountService";
 import SockJS from "sockjs-client";
 import {over} from "stompjs";
+import Pagination from "../pagination/Pagination";
+import {getList} from "../../service/PageService";
 
 
 let stompClient = null;
@@ -20,12 +22,15 @@ function AllOrders() {
     let {id} = useParams();
     const [billDetail, setBillDetail] = useState([]);
     const [status, setStatus] = useState(true)
+    const [changePage, setChangePage] = useState(false);
     useEffect(() => {
         findAllOrdersByMerchant(id).then(r => {
-            setBillDetail(groupByBill(r))
+            let arr = groupByBill(r)
+            setBillDetail(getList(arr, page, limit))
+            setList(arr)
             connect()
         })
-    }, [status]);
+    }, [status, changePage]);
 
     //websocket
     let receiver;
@@ -120,6 +125,42 @@ function AllOrders() {
                     console.log('Failed to update bill status');
                 }
             });
+    }
+
+    const [list, setList] = useState([]);
+    const [page, setPage] = useState(1)
+    const [limit, setLimit] = useState(5)
+    const totalPage = Math.ceil(list.length / limit)
+    if (totalPage !== 0 && page > totalPage) {
+        setPage(totalPage)
+    }
+
+    const handleChangeItem = (value) => {
+        setLimit(value)
+        setChangePage(!changePage)
+    }
+
+    // useEffect(() => {
+    //     let arr = groupByBill(list)
+    //     setBillDetail(getList(arr, page, limit));
+    // }, [changePage])
+    const handlePageChange = (value) => {
+        if (value === "&laquo;" || value === " ...") {
+            setPage(1)
+        } else if (value === "&lsaquo;") {
+            if (page !== 1) {
+                setPage(page - 1)
+            }
+        } else if (value === "&raquo;" || value === "... ") {
+            setPage(totalPage)
+        } else if (value === "&rsaquo;") {
+            if (page !== totalPage) {
+                setPage(page + 1)
+            }
+        } else {
+            setPage(value)
+        }
+        setChangePage(!changePage)
     }
 
     return (
@@ -228,6 +269,9 @@ function AllOrders() {
 
                         {/*Main*/}
                         <main className="bg-white-300 flex-1 p-3 overflow-hidden">
+
+                            <Pagination totalPage={totalPage} page={page} limit={limit} siblings={1}
+                                        onPageChange={handlePageChange} onChangeItem={handleChangeItem}/>
 
                             <div className="flex flex-col">
 
