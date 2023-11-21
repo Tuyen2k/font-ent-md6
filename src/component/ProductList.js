@@ -146,7 +146,7 @@ export default function ProductList(props) {
                                      alt="coupon"/>
                                 Coupon</Link>
 
-                            <Link className="item-manage" to={`/order-manager/${merchant.id_merchant}`}>
+                            <Link className="item-manage" to={`/all-order/${merchant.id_merchant}`}>
                                 <img className="sidebar-icon"
                                      src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/clipboard.png?alt=media&token=5888ea14-532e-47e3-a6d0-b24d9fda06c6"
                                      alt="order"/>

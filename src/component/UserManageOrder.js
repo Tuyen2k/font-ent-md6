@@ -186,7 +186,7 @@ export default function UserManageOrder() {
                                                 <div className="col-6">{bill.bill.status.name}</div>
                                                 <div className="col-6">
                                                     <button onClick={() => handleCancel(bill.bill.id_bill, bill.bill.merchant.id_merchant)}
-                                                            disabled={bill.bill.status.id_status === 6}>Cancel</button>
+                                                            disabled={bill.bill.status.id_status !== 1}>Cancel</button>
                                                 </div>
                                             </div>
                                         </td>

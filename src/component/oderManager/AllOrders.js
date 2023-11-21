@@ -88,26 +88,30 @@ function AllOrders() {
     }
 
     function handleCancel(id_bill, account) {
+        if (window.confirm("Are you sure you want to cancel this order?")){
+            receiver = account
+            cancelBill(id_bill)
+                .then(success => {
+                    if (success) {
+                        handledSend()
+                        setStatus(!status)
+                        // The status was successfully updated
+                        console.log('Bill status cancel successfully');
+                    } else {
+                        // The status update failed
+                        console.log('Failed to update bill status');
+                    }
+                });
+        }
+    }
+
+    function handleConfirm(id_bill, account) {
         receiver = account
-        cancelBill(id_bill)
+        let statusUpdate = {id_status : 2}
+        updateStatus(id_bill, statusUpdate)
             .then(success => {
                 if (success) {
                     handledSend()
-                    setStatus(!status)
-                    // The status was successfully updated
-                    console.log('Bill status cancel successfully');
-                } else {
-                    // The status update failed
-                    console.log('Failed to update bill status');
-                }
-            });
-    }
-
-    function handleConfirm(id_bill) {
-        let status = {id_status : 2}
-        updateStatus(id_bill, status)
-            .then(success => {
-                if (success) {
                     setStatus(!status)
                     // The status was successfully updated
                     console.log('Bill status updated successfully');
@@ -317,7 +321,7 @@ function AllOrders() {
                                                             {item.bill.status.id_status === 1 ? (
                                                                 <>
                                                                     <button
-                                                                        onClick={() => handleConfirm(item.bill.id_bill)}
+                                                                        onClick={() => handleConfirm(item.bill.id_bill, item.bill.account)}
                                                                         className="btn btn-outline-danger">Confirm
                                                                     </button>
                                                                     <button style={{marginLeft: "10px"}}
