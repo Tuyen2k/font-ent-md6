@@ -7,7 +7,6 @@ import {
     groupByBill
 } from "../../service/BillService";
 import {getAllProductByIdMerchant} from "../../service/ProductService";
-import {parse} from "uuid";
 import {findByMonthAndMerchant, findByTimeRange, findByYearAndWeekAndMerchant} from "../../service/BillDetailService";
 function OrderManager() {
     let {id} = useParams();
@@ -382,7 +381,9 @@ function OrderManager() {
                                             </div>
 
                                             <div style={{marginLeft: '30px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
-                                               <button onClick={()=> {setCheck(true)}} className="btn btn-dark">Clear</button>
+                                               <button onClick={()=> {setCheck(true);
+                                                   setStartTime(undefined);
+                                                   setEndTime(undefined)}} className="btn btn-dark">Clear</button>
                                             </div>
 
 
