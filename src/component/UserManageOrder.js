@@ -209,9 +209,8 @@ export default function UserManageOrder() {
                                                     </button>
                                                 </div>
                                                 <div className="col-6">
-                                                    <button className="btn btn-sm btn-primary" onClick={() => {
-                                                        handleModal(bill)
-                                                    }}>View Details
+                                                    <button className="btn btn-sm btn-primary" style={{width :"96px"}}
+                                                            onClick={() => {handleModal(bill)}}>View Details
                                                     </button>
 
                                                 </div>
@@ -261,8 +260,8 @@ export default function UserManageOrder() {
                                             <tr>
                                                 <th>Product</th>
                                                 <th>Price</th>
-                                                <th>Total Amount</th>
-                                                <th>Status</th>
+                                                <th>Quantity</th>
+                                                <th>Amount</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -270,11 +269,17 @@ export default function UserManageOrder() {
                                                 return (
                                                     <tr>
                                                         <td>{billDetail.product.name}</td>
-                                                        <td>{billDetail.price}</td>
+                                                        <td>{billDetail.price.toLocaleString()} VND</td>
                                                         <td>{billDetail.quantity}</td>
+                                                        <td>{(billDetail.quantity * billDetail.price).toLocaleString()} VND</td>
                                                     </tr>
                                                 )
                                             })}
+                                            <tr>
+                                                <td><strong>Total amount</strong></td>
+                                                <td colSpan={2}></td>
+                                                <td><strong>{item.total.toLocaleString()} VND</strong></td>
+                                            </tr>
 
                                             </tbody>
                                         </table>

@@ -287,7 +287,7 @@ export default function DisplayCart() {
                                         <div className="input mb-3">
                                             <label htmlFor="numberphone"><h4>Number Phone</h4></label>
                                             <input type="text" id="numberphone" className="form-control"
-                                                   value={account.name} aria-label="Username"
+                                                   value={account.phone} aria-label="Username"
                                                    aria-describedby="basic-addon1"/>
                                         </div>
                                         <div className="input mb-3 row" style={{width: "unset"}}>

@@ -11,6 +11,7 @@ import {toast, ToastContainer} from "react-toastify";
 
 export default function Home() {
     const [products, setProducts] = useState([]);
+    const [list, setList] = useState([]);
     const [categories, setCategories] = useState([]);
     const [shouldCallFindAll, setShouldCallFindAll] = useState(true);
     const btn_modal = useRef()
@@ -37,6 +38,7 @@ export default function Home() {
             findAll().then(r => {
                 setNameProduct("New Product")
                 let arr = r.reverse()
+                setList(arr)
                 setProducts(arr.slice(0, 10));
                 setShouldCallFindAll(false);
             });
@@ -68,9 +70,9 @@ export default function Home() {
                     setShouldCallFindAll(true)
                 }
                 {
-                    const filteredProducts = products.filter(product => {
+                    const filteredProducts = list.filter(product => {
                         const productName = product.name.toLowerCase();
-                        return productName.includes(value);
+                        return productName.includes(value.toLowerCase());
                     });
                     setNameProduct("Searching")
                     setProducts(filteredProducts);
@@ -296,7 +298,7 @@ export default function Home() {
                                                                 <div className="promotion">
                                                                     <i className="fa-solid fa-tag"></i>
                                                                     <span
-                                                                        style={{color: 'black'}}>{item.priceSale} VND</span>
+                                                                        style={{color: 'black'}}>{item.priceSale.toLocaleString()} VND</span>
                                                                 </div>
                                                             </div>
                                                         </Link>
@@ -385,7 +387,7 @@ export default function Home() {
                                                             <div className="promotion">
                                                                 <i className="fa-solid fa-tag"></i>
                                                                 <span
-                                                                    style={{color: 'black'}}>{item.priceSale} VND</span>
+                                                                    style={{color: 'black'}}>{item.priceSale.toLocaleString()} VND</span>
                                                             </div>
                                                         </div>
                                                     </Link>
@@ -462,7 +464,7 @@ export default function Home() {
                                                             <div className="promotion">
                                                                 <i className="fa-solid fa-tag"></i>
                                                                 <span
-                                                                    style={{color: 'black'}}>{item.priceSale} VND</span>
+                                                                    style={{color: 'black'}}>{item.priceSale.toLocaleString()} VND</span>
                                                             </div>
                                                         </div>
                                                     </Link>

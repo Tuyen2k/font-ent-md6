@@ -33,8 +33,9 @@ function OrderManager(effect, deps) {
     useEffect(() => {
         if (check){
             findAllOrdersByMerchant(id).then(r => {
-                setBillDetail(groupByBill(r))
-                order(r.length)
+                let arr = groupByBill(r)
+                setBillDetail(arr)
+                order(arr.length)
                 money(r)
                 setYear(new Date().getFullYear())
                 setMessage("Statistics")
@@ -62,8 +63,9 @@ function OrderManager(effect, deps) {
                     setCheck(true)
                 } else {
                     if (r.length > 0){
-                        setBillDetail(groupByBill(r))
-                        order(r.length)
+                        let arr = groupByBill(r)
+                        setBillDetail(arr)
+                        order(arr.length)
                         money(r)
                         setCheck(false)
                         setMessage("Result search")
@@ -360,10 +362,10 @@ function OrderManager(effect, deps) {
                                     <div className="shadow bg-info border-l-8 hover:bg-info-dark border-info-dark mb-2 p-2 md:w-1/4 mx-2">
                                         <div className="p-4 flex flex-col">
                                             <a href="#" className="no-underline text-white text-2xl">
-                                                {totalOrder} orders
+                                                {totalOrder} Orders
                                             </a>
                                             <a href="#" className="no-underline text-white text-lg">
-                                                Total Oder
+                                                Total Orders
                                             </a>
                                         </div>
                                     </div>
@@ -371,10 +373,10 @@ function OrderManager(effect, deps) {
                                     <div className="shadow bg-warning border-l-8 hover:bg-warning-dark border-warning-dark mb-2 p-2 md:w-1/4 mx-2">
                                         <div className="p-4 flex flex-col">
                                             <a href="#" className="no-underline text-white text-2xl">
-                                                {totalUser} Users
+                                                {totalUser} Customers
                                             </a>
                                             <a href="#" className="no-underline text-white text-lg">
-                                                Total Users
+                                                Total Customers
                                             </a>
                                         </div>
                                     </div>
@@ -403,7 +405,7 @@ function OrderManager(effect, deps) {
                                             <div className="font-bold text-xl" style={{width: '250px'}}>{message}</div>
 
                                             <div style={{marginLeft: '30px', width: '200px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
-                                                <select onChange={selectQuarter} value="optionProduct" className="form-select">
+                                                <select onChange={selectQuarter} className="form-select">
                                                     <option>Quarter </option>
                                                     <option value="1">1</option>
                                                     <option value="2">2</option>
@@ -418,7 +420,7 @@ function OrderManager(effect, deps) {
                                                 </select>
                                             </div>
                                             <div style={{marginLeft: '20px', width: '200px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
-                                                <select onChange={selectWeek} value="optionStatus" className="form-select">
+                                                <select onChange={selectWeek} className="form-select">
                                                     <option>Week</option>
                                                     {dates}
                                                 </select>
@@ -446,8 +448,8 @@ function OrderManager(effect, deps) {
                                                 <thead className="bg-grey-dark text-white text-normal">
                                                 <tr style={{textAlign: 'center'}}>
                                                     <th scope="col"></th>
-                                                    <th scope="col">User Name</th>
-                                                    <th scope="col">User Phone</th>
+                                                    <th scope="col">Customer Name</th>
+                                                    <th scope="col">Customer Phone</th>
                                                     <th scope="col">Date of purchase</th>
                                                     <th scope="col">Product Name</th>
                                                     <th scope="col">Total Money (VND)</th>
