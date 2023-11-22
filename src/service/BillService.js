@@ -95,11 +95,11 @@ export function searchByNameAndPhone(id_merchant,value){
     })
 }
 
-export function orderNow(product, id_account){
+export function orderNow(product, id_account, quantity){
     return new Promise(require =>{
         require(
             require(
-                axios.post(`http://localhost:8080/api/bill/order-now/${id_account}`,product).then(res=>{
+                axios.post(`http://localhost:8080/api/bill/order-now/${id_account}/quantity/${quantity}`,product).then(res=>{
                     console.log(res)
                     return true
                 }).catch(Error =>{
