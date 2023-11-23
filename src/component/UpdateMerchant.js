@@ -30,6 +30,7 @@ import Footer from "../layout/Footer";
 
 function UpdateMerchant() {
     let navigate = useNavigate();
+    let {id} = useParams()
     const [load, setLoad] = useState(true)
     const [isExist, setExist] = useState(true)
     const [city, setCity] = useState([])
@@ -60,7 +61,7 @@ function UpdateMerchant() {
 
     useEffect(() => {
         if (account !== null) {
-            findMerchantById(account.id).then(dataMerchant => {
+            findMerchantById(id).then(dataMerchant => {
                 console.log(dataMerchant)
                 setMerchant(dataMerchant)
                 setActivityUpdate(dataMerchant.activity)
