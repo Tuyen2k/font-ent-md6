@@ -203,7 +203,7 @@ export default function ProductList(props) {
                                                          onClick={() => navigate(`/product/update/${product.id_product}`)}
                                                          src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/fcfff593-8038-474f-b1ea-8e7373c9d326.png?alt=media&token=f7b2c870-9cdb-4781-b4f8-49eefdc01f0f"
                                                          alt="update"/>
-                                                    <img className="icon-detail-merchant"
+                                                    <img className="icon-detail-merchant" data-bs-toggle="modal" data-bs-target="#staticBackdrop"
                                                          onClick={() => displayModal(product.id_product)}
                                                          src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/delete.png?alt=media&token=e1d0f8fd-2f66-44af-b738-0e6aab66ec1f"
                                                          alt="delete"/>
