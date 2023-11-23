@@ -152,7 +152,7 @@ function DetailProduct() {
                                                         <div className="input-group quantity mr-3" style={{width: '130px'}}>
                                                             <div className="input-group-btn" id="minus_div">
                                                                 <button onClick={subtraction} style={{
-                                                                    backgroundColor: '#df8686',
+                                                                    backgroundColor: '#ff5757',
                                                                     padding: '5px',
                                                                     display: 'inline-block',
                                                                     borderRadius: '10px',
@@ -167,14 +167,14 @@ function DetailProduct() {
                                                                 borderRadius: '8px',
                                                                 marginLeft: '10px',
                                                                 color: 'white',
-                                                                backgroundColor: '#df8686',
+                                                                backgroundColor: '#ff5757',
                                                             }} type="text" className="form-control bg-secondary text-center"
                                                                    id="quantity_p"
                                                                    defaultValue={1}
                                                                    onChange={handleQuantityChange}/>
                                                             <div style={{marginLeft: '10px'}} className="input-group-btn" id="plus_div">
                                                                 <button onClick={addition} style={{
-                                                                    backgroundColor: '#df8686',
+                                                                    backgroundColor: '#ff5757',
                                                                     padding: '5px',
                                                                     display: 'inline-block',
                                                                     borderRadius: '10px',
@@ -187,7 +187,7 @@ function DetailProduct() {
                                                             </div>
                                                         </div>
                                                     <button style={{
-                                                        backgroundColor: '#df8686',
+                                                        backgroundColor: '#ff5757',
                                                         color: 'white',
                                                         border: 'none',
                                                         width: '200px',
@@ -247,7 +247,7 @@ function DetailProduct() {
                                                 </div>
                                                 <div className="promotion">
                                                     <i className="fa-solid fa-tag"></i>
-                                                    <span>{item.priceSale} VND</span>
+                                                    <span>{item.priceSale.toLocaleString()} VND</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -285,7 +285,7 @@ function DetailProduct() {
                                                 <div className="name mb-5">
                                                     {item.name}
                                                 </div>
-                                                <p>Discount: {item.discountAmount ? item.discountAmount + "VND" : item.percentageDiscount + "%"}
+                                                <p>Discount: {item.discountAmount ? item.discountAmount.toLocaleString() + " VND" : item.percentageDiscount + "%"}
                                                 </p>
                                                 <div className="promotion">
                                                     <h5>Quantity: {item.quantity}</h5>
@@ -336,7 +336,7 @@ function DetailProduct() {
                                                 </div>
                                                 <div className="promotion">
                                                     <i className="fa-solid fa-tag"></i>
-                                                    <span>{item.priceSale} VND</span>
+                                                    <span>{item.priceSale.toLocaleString()} VND</span>
                                                 </div>
                                             </div>
                                         </div>
