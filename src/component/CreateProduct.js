@@ -102,8 +102,8 @@ export default function CreateProduct() {
             <ToastContainer enableMultiContainer containerId={"create-product"} position="top-right" autoClose={2000} pauseOnHover={false}
                                      style={{width: "400px"}}/>
             {load ? (
-                    <div className="form-input">
-                        <h2 className="title">Add new</h2>
+                    <div className="form-input" style={{marginTop : "20px", marginBottom : "20px"}}>
+                        <h3 className="title">Add new</h3>
                         <hr/>
                         <Formik onSubmit={(e) => handledCreate(e)}
                                 initialValues={product} validationSchema={schema}>
@@ -183,9 +183,10 @@ export default function CreateProduct() {
                                 <hr/>
                                 <div className="div-button">
                                     <div className="row" style={{display: "flex"}}>
-                                        <Link className="col-1" to={'/list'} style={{width: '50px', color : "black", paddingTop: "6px"}} type="submit">Back</Link>
-                                        <div className={"col-10"}>
-                                            <button style={{width: '150px', marginLeft: "45%"}} type="submit"
+                                        <Link className="col-1" to={'/list'} style={{color : "black", padding: "6px 0 0 0"}} type="submit">
+                                            <img style={{height: "20px", width: "20px"}} src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/back.png?alt=media&token=2c33e5a3-f355-4f82-b095-32b64ec48bd1" alt=""/> Back</Link>
+                                        <div className={"col-10"} style={{display: "flex", alignItems:"center", justifyContent:"center"}}>
+                                            <button style={{width: '150px'}} type="submit"
                                                     className="btn btn-outline-danger ">Create
                                             </button>
                                         </div>

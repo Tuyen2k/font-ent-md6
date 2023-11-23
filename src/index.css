@@ -592,6 +592,21 @@ i {
     font-size: 16px;
 }
 
+.section-newsfeed > .content .eatery-item-landing .content .description, .section-newsfeed > .content .eatery-item .content .description, .section-newsfeed > .content .eatery-dish-item .content .description {
+    -webkit-box-orient: vertical;
+    display: block;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    height: 42px;
+    position: relative;
+}
+
+.home-page .section-newsfeed > .content .btn-view-all, .section-newsfeed > .content .eatery-item-landing .content .promotion, .section-newsfeed > .content .eatery-item .content .promotion, .section-newsfeed > .content .eatery-dish-item .content .promotion, .section-newsfeed > .content .eatery-item-landing .content .metadata, .section-newsfeed > .content .eatery-item .content .metadata, .section-newsfeed > .content .eatery-dish-item .content .metadata, .section-newsfeed > .content .eatery-item-landing .content .chain-name, .section-newsfeed > .content .eatery-item .content .chain-name, .section-newsfeed > .content .eatery-dish-item .content .chain-name, .section-newsfeed > .content .eatery-item-landing .content .description, .section-newsfeed > .content .eatery-item .content .description, .section-newsfeed > .content .eatery-dish-item .content .description, .section-newsfeed .title a {
+    font-size: 16px;
+}
+
 .section-newsfeed > .content .eatery-item-landing .content .mb-5 {
     margin-bottom: 5px !important;
 }
@@ -982,7 +997,7 @@ div.error {
 }
 
 .form-label {
-    font-size: 20px;
+    font-size: 18px;
 }
 
 .img-cart {
@@ -1024,9 +1039,9 @@ div.error {
 }
 
 .icon-detail-merchant {
-    width: 42px;
-    height: 42px;
-    margin: 5px;
+    width: 30px;
+    height: 30px;
+    margin: 25px 5px 5px 5px;
     border-radius: 5px;
 }
 
@@ -1086,7 +1101,7 @@ div.error {
     padding-bottom: 20px;
     padding-top: 10px;
     color: #1C1C1C;
-    font-size: 20px;
+    font-size: 18px;
     display: block;
     border-bottom: 1px solid rgb(189, 122, 51);
 }

@@ -168,10 +168,10 @@ function OrderStatistics() {
                                     <div className="shadow bg-info border-l-8 hover:bg-info-dark border-info-dark mb-2 p-2 md:w-1/4 mx-2">
                                         <div className="p-4 flex flex-col">
                                             <a href="#" className="no-underline text-white text-2xl">
-                                                {totalOrder} orders
+                                                {totalOrder} Orders
                                             </a>
                                             <a href="#" className="no-underline text-white text-lg">
-                                                Total Oder
+                                                Total Orders
                                             </a>
                                         </div>
                                     </div>
@@ -179,10 +179,10 @@ function OrderStatistics() {
                                     <div className="shadow bg-warning border-l-8 hover:bg-warning-dark border-warning-dark mb-2 p-2 md:w-1/4 mx-2">
                                         <div className="p-4 flex flex-col">
                                             <a href="#" className="no-underline text-white text-2xl">
-                                                {totalUser} Users
+                                                {totalUser} Customers
                                             </a>
                                             <a href="#" className="no-underline text-white text-lg">
-                                                Total Users
+                                                Total Customers
                                             </a>
                                         </div>
                                     </div>
@@ -210,7 +210,7 @@ function OrderStatistics() {
                                         <div className="flex items-center px-6 py-2 border-b border-light-grey">
                                             <div className="font-bold text-xl" style={{width: '250px'}}>{message}</div>
                                             <div style={{marginLeft: '500px', width: '300px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
-                                                <select onChange={selectProduct} value="optionProduct" className="form-select">
+                                                <select onChange={selectProduct}  className="form-select">
                                                     <option>Product</option>
                                                     {product && product.map(item => (
                                                         <option value={item.id_product}>{item.name}</option>
@@ -219,18 +219,23 @@ function OrderStatistics() {
                                             </div>
                                             <div style={{marginLeft: '30px', width: '300px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
                                                 <select onChange={selectUser} className="form-select">
-                                                    <option>User</option>
+                                                    <option>Customer</option>
                                                     {user && user.map(item => (
                                                         <option value={item.account.id_account}>{item.account.name}</option>
                                                     ))}
                                                 </select>
                                             </div>
                                             <div style={{marginLeft: '30px', width: '300px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
-                                                <select onChange={selectStatus} value="optionStatus" className="form-select">
+                                                <select onChange={selectStatus} className="form-select">
                                                     <option>Status</option>
-                                                    {status && status.map(item => (
-                                                        <option value={item.id_status}>{item.name}</option>
-                                                    ))}
+                                                    {status && status.map(item => {
+                                                        if(item.id_status !== 7) {
+                                                            return(
+                                                                    <option value={item.id_status}>{item.name}</option>
+                                                                )
+                                                        }})
+                                                    }
+
                                                 </select>
                                             </div>
 

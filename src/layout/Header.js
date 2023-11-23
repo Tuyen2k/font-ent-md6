@@ -63,9 +63,9 @@ export default function Header() {
                     setTimeout(() => {
                         window.document.getElementById("modal-register-close").click();
                         window.document.getElementById("modal-login-open").click();
-                    }, 3000)
+                    }, 3800)
                 } else {
-                    toast.error('Something went wrong! Try again!', {containerId: 'register'});
+                    toast.error('User name, email or phone number already been used, try again!', {containerId: 'register'});
                 }
             }
         )
@@ -231,7 +231,7 @@ export default function Header() {
                 </nav>
                 <ToastContainer enableMultiContainer containerId={"page"} position="top-right" autoClose={2000}
                                 pauseOnHover={false}
-                                style={{width: "400px"}}/>
+                                style={{width: "800px"}}/>
                 <nav className="navbar">
                     {/*Navbar*/}
                     <div className="container">
@@ -342,8 +342,8 @@ export default function Header() {
                             <div className="modal fade bd-example-modal-lg" id="registerModal" tabIndex="-1"
                                  role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
                                 <ToastContainer enableMultiContainer containerId="register" position="top-center"
-                                                autoClose={2000} pauseOnHover={false}
-                                                style={{width: "400px"}}/>
+                                                autoClose={3000} pauseOnHover={false}
+                                                style={{width: "600px"}}/>
 
                                 <div className="modal-dialog modal-dialog-register modal-dialog-centered modal-lg"
                                      role="document">
@@ -423,7 +423,7 @@ export default function Header() {
                                                         </div>
                                                         <div className="col-6">
                                                             <div className="mb-3">
-                                                                <label className="form-label">Your name</label>
+                                                                <label className="form-label">Full name</label>
                                                                 <Field type="text"
                                                                        className="form-control input-focus input-register-form"
                                                                        name="fullName"/>

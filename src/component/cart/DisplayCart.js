@@ -287,7 +287,7 @@ export default function DisplayCart() {
                                         <div className="input mb-3">
                                             <label htmlFor="numberphone"><h4>Number Phone</h4></label>
                                             <input type="text" id="numberphone" className="form-control"
-                                                   value={account.name} aria-label="Username"
+                                                   value={account.phone} aria-label="Username"
                                                    aria-describedby="basic-addon1"/>
                                         </div>
                                         <div className="input mb-3 row" style={{width: "unset"}}>
@@ -331,7 +331,7 @@ export default function DisplayCart() {
                                         <div className="row">
                                             <span className="text col-6"><h4>The total amount</h4> </span>
                                             <span
-                                                className="right number col-6"><h4><strong>{total}</strong></h4></span>
+                                                className="right number col-6"><h4><strong><span className="number">{total.toLocaleString()}</span></strong></h4></span>
                                         </div>
                                         <div className="row">
                                             <span className="text col-6"><h4>Discount code</h4> </span>
@@ -346,12 +346,12 @@ export default function DisplayCart() {
                                         <div className="row">
                                             <span className="text col-6"><h4>Reduced amount</h4> </span>
                                             <span
-                                                className="right number col-6"><h4><strong>{total}</strong></h4></span>
+                                                className="right number col-6"><h4><strong><span className="number">{total.toLocaleString()}</span></strong></h4></span>
                                         </div>
                                         <div className="row">
                                             <span className="text col-6"><h4>Total payment amount</h4> </span>
                                             <span
-                                                className="right number col-6"><h4><strong>{total}</strong></h4></span>
+                                                className="right number col-6"><h4><strong><span className="number">{total.toLocaleString()}</span></strong></h4></span>
                                         </div>
                                         <div className="row">
                                             <div className="col-6"><h4>Payment methods</h4></div>

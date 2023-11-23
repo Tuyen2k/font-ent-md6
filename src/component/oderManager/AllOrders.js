@@ -1,42 +1,166 @@
 import {Link, useParams} from "react-router-dom";
 import Header from "../../layout/Header";
 import React, {useEffect, useState} from "react";
-import {findAllOrdersByMerchant, groupByBill, searchByNameAndPhone} from "../../service/BillService";
+import {
+    cancelBill,
+    findAllOrdersByMerchant,
+    groupByBill,
+    searchByNameAndPhone,
+    updateStatus
+} from "../../service/BillService";
+import {findAccountByMerchant} from "../../service/AccountService";
+import SockJS from "sockjs-client";
+import {over} from "stompjs";
+import Pagination from "../pagination/Pagination";
+import {getList} from "../../service/PageService";
+
+
+let stompClient = null;
 
 function AllOrders() {
+    const account = JSON.parse(localStorage.getItem("userInfo"))
     let {id} = useParams();
     const [billDetail, setBillDetail] = useState([]);
-    const [check, setCheck] = useState(true)
+    const [status, setStatus] = useState(true)
+    const [changePage, setChangePage] = useState(false);
     useEffect(() => {
-        if (check){
-            findAllOrdersByMerchant(id).then(r => {
-                setBillDetail(groupByBill(r))
-                console.log(r)
-                setCheck(false)
-            })
+        findAllOrdersByMerchant(id).then(r => {
+            let arr = groupByBill(r)
+            setBillDetail(getList(arr, page, limit))
+            setList(arr)
+            connect()
+        })
+    }, [status, changePage]);
+
+    //websocket
+    let receiver;
+    const connect = () => {
+        let Sock = new SockJS('http://localhost:8080/ws')
+        stompClient = over(Sock)
+        stompClient.connect({}, onConnected, onError);
+    }
+    const onConnected = () => {
+        stompClient.subscribe('/user/' + account.username + account.id + '/private', onPrivateMessage);
+    }
+    const onPrivateMessage = (payload) => {
+        let payloadData = JSON.parse(payload.body);
+        if (payloadData.sendAcc.id_account !== account.id) {
+            setStatus(!status);
+            console.log(payloadData)
         }
-    }, [billDetail]);
+    }
+    const onError = (err) => {
+        console.log(err);
+    }
+    const handledSend = () => {
+        console.log(receiver)
+        if (stompClient) {
+            var chatMessage = {
+                sendAcc: {
+                    id_account: account.id,
+                    name: account.username
+                },
+                receiverAcc: {
+                    id_account: receiver.id_account,
+                    name: receiver.name
+                },
+                message: "true"
+            };
+            console.log(chatMessage);
+            stompClient.send("/app/private-message", {}, JSON.stringify(chatMessage));
+        }
+    }
 
     const search = () => {
         let value = document.getElementById("valueSearch").value;
-        if (value === ""){
+        if (value === "") {
             findAllOrdersByMerchant(id).then(r => {
                 setBillDetail(groupByBill(r))
                 console.log(r)
-                setCheck(false)
             })
         } else {
             console.log(value)
             searchByNameAndPhone(id, value).then(r => {
-                if (r !== undefined){
+                if (r !== undefined) {
                     setBillDetail(groupByBill(r))
-                    setCheck(false)
+
                     console.log(r)
                 } else {
-                    setCheck(true)
+
                 }
             })
         }
+    }
+
+    function handleCancel(id_bill, account) {
+        if (window.confirm("Are you sure you want to cancel this order?")){
+            receiver = account
+            cancelBill(id_bill)
+                .then(success => {
+                    if (success) {
+                        handledSend()
+                        setStatus(!status)
+                        // The status was successfully updated
+                        console.log('Bill status cancel successfully');
+                    } else {
+                        // The status update failed
+                        console.log('Failed to update bill status');
+                    }
+                });
+        }
+    }
+
+    function handleConfirm(id_bill, account) {
+        receiver = account
+        let statusUpdate = {id_status : 2}
+        updateStatus(id_bill, statusUpdate)
+            .then(success => {
+                if (success) {
+                    handledSend()
+                    setStatus(!status)
+                    // The status was successfully updated
+                    console.log('Bill status updated successfully');
+                } else {
+                    // The status update failed
+                    console.log('Failed to update bill status');
+                }
+            });
+    }
+
+    const [list, setList] = useState([]);
+    const [page, setPage] = useState(1)
+    const [limit, setLimit] = useState(5)
+    const totalPage = Math.ceil(list.length / limit)
+    if (totalPage !== 0 && page > totalPage) {
+        setPage(totalPage)
+    }
+
+    const handleChangeItem = (value) => {
+        setLimit(value)
+        setChangePage(!changePage)
+    }
+
+    // useEffect(() => {
+    //     let arr = groupByBill(list)
+    //     setBillDetail(getList(arr, page, limit));
+    // }, [changePage])
+    const handlePageChange = (value) => {
+        if (value === "&laquo;" || value === " ...") {
+            setPage(1)
+        } else if (value === "&lsaquo;") {
+            if (page !== 1) {
+                setPage(page - 1)
+            }
+        } else if (value === "&raquo;" || value === "... ") {
+            setPage(totalPage)
+        } else if (value === "&rsaquo;") {
+            if (page !== totalPage) {
+                setPage(page + 1)
+            }
+        } else {
+            setPage(value)
+        }
+        setChangePage(!changePage)
     }
 
     return (
@@ -77,7 +201,7 @@ function AllOrders() {
                                 </li>
                                 <li style={{height: '75px'}} className="w-full h-full py-3 px-2 border-b border-light-border">
                                     <Link to={`/order-statistics/${id}`}
-                                        className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
+                                          className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
                                         <i className="fas fa-table float-left mx-2"></i>
                                         Order statistics
                                         <span><i className="fa fa-angle-right float-right"></i></span>
@@ -91,6 +215,9 @@ function AllOrders() {
                         {/*Main*/}
                         <main className="bg-white-300 flex-1 p-3 overflow-hidden">
 
+                            <Pagination totalPage={totalPage} page={page} limit={limit} siblings={1}
+                                        onPageChange={handlePageChange} onChangeItem={handleChangeItem}/>
+
                             <div className="flex flex-col">
 
                                 {/* Card Sextion Starts Here */}
@@ -101,11 +228,12 @@ function AllOrders() {
 
 
                                         <div className="rounded overflow-hidden shadow bg-white mx-2 w-full">
-                                            <div className="px-6 py-2 border-b border-light-grey flex items-center justify-between">
+                                            <div
+                                                className="px-6 py-2 border-b border-light-grey flex items-center justify-between">
                                                 <div className="font-bold text-xl">All list orders</div>
                                                 {/* search */}
                                                 <div className="flex">
-                                                    <div style={{ width: '400px' }} className="font-bold text-xl">
+                                                    <div style={{width: '400px'}} className="font-bold text-xl">
                                                         <input
                                                             type="search"
                                                             className="form-control rounded"
@@ -115,7 +243,8 @@ function AllOrders() {
                                                             id="valueSearch"
                                                         />
                                                     </div>
-                                                    <button onClick={search} style={{height: '37px'}} className="ml-2 px-4 py-2 bg-blue-500 text-bg-dark rounded">
+                                                    <button onClick={search} style={{height: '37px'}}
+                                                            className="ml-2 px-4 py-2 bg-blue-500 text-bg-dark rounded">
                                                         Search
                                                     </button>
                                                 </div>
@@ -135,7 +264,7 @@ function AllOrders() {
                                                     <th scope="col">Product Name</th>
                                                     <th scope="col">Total Money (VND)</th>
                                                     <th scope="col">Status</th>
-                                                    <th scope="col">Confirer</th>
+                                                    <th scope="col">Action</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -161,8 +290,8 @@ function AllOrders() {
                                                                 hour: '2-digit',
                                                                 minute: '2-digit',
                                                             })}</td>
-                                                        <td>{item.billDetails.map(item=>{
-                                                            return(
+                                                        <td>{item.billDetails.map(item => {
+                                                            return (
                                                                 <>
                                                                     <p>{item.product.name}</p>
                                                                 </>
@@ -172,15 +301,27 @@ function AllOrders() {
                                                             fontWeight: 'bold',
                                                             color: '#a13d3d',
                                                             textAlign: 'center'
-                                                        }}><span className="number">{item.total.toLocaleString()}</span> </td>
+                                                        }}><span className="number">{item.total.toLocaleString()}</span>
+                                                        </td>
                                                         <td style={{textAlign: 'center'}}>
                                                             <span className="number">{item.bill.status.name}</span>
                                                         </td>
-                                                        <td style={{ textAlign: 'center' }}>
+                                                        <td style={{textAlign: 'center'}}>
                                                             {item.bill.status.id_status === 1 ? (
-                                                                <button className="btn btn-danger">Cancel</button>
+                                                                <>
+                                                                    <button
+                                                                        onClick={() => handleConfirm(item.bill.id_bill, item.bill.account)}
+                                                                        className="btn btn-outline-danger">Confirm
+                                                                    </button>
+                                                                    <button style={{marginLeft: "10px"}}
+                                                                            onClick={() => handleCancel(item.bill.id_bill, item.bill.account)}
+                                                                            className="btn btn-outline-danger">Cancel
+                                                                    </button>
+                                                                </>
                                                             ) : (
-                                                                <></>
+                                                                <>
+                                                                    <div style={{width : "96px"}}></div>
+                                                                </>
                                                             )}
                                                         </td>
                                                     </tr>
