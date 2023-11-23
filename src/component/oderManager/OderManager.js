@@ -70,6 +70,8 @@ function OrderManager(effect, deps) {
                         setCheck(false)
                         setMessage("Result search")
                     } else {
+                        setTotalOrder(0)
+                        setTotalMoNey(0)
                         setBillDetail([])
                         setMessage("No order display")
                     }
@@ -87,12 +89,15 @@ function OrderManager(effect, deps) {
                    setCheck(true)
                } else {
                    if (r.length > 0){
-                       order(r.length)
+                       let arr = groupByBill(r)
+                       setBillDetail(arr)
+                       order(arr.length)
                        money(r)
-                       setBillDetail(groupByBill(r))
                        setCheck(false)
                        setMessage("Result search")
                    } else {
+                       setTotalOrder(0)
+                       setTotalMoNey(0)
                        setBillDetail([])
                        setMessage("No order display")
                    }
@@ -107,13 +112,15 @@ function OrderManager(effect, deps) {
                 setCheck(true);
             } else {
                 if (result.length > 0) {
-                    setBillDetail(groupByBill(result));
-                    console.log(groupByBill(result))
-                    order(result.length);
+                    let arr = groupByBill(result)
+                    setBillDetail(arr)
+                    order(arr.length)
                     money(result);
                     setCheck(false);
                     setMessage("Result search");
                 } else {
+                    setTotalOrder(0)
+                    setTotalMoNey(0)
                     setBillDetail([]);
                     setMessage("No order display");
                 }
@@ -138,12 +145,15 @@ function OrderManager(effect, deps) {
         findByMonthAndMerchant(id, year, value).then(r => {
                 if (r !== undefined) {
                     if (r.length > 0) {
-                        setBillDetail(groupByBill(r))
-                        order(r.length)
+                        let arr = groupByBill(r)
+                        setBillDetail(arr)
+                        order(arr.length)
                         money(r)
                         setMessage("Result search")
                         setCheck(false)
                     } else {
+                        setTotalOrder(0)
+                        setTotalMoNey(0)
                         setBillDetail([])
                         setMessage("No order display")
                     }
@@ -160,12 +170,15 @@ function OrderManager(effect, deps) {
            findByYearAndWeekAndMerchant(id, year, value).then(r => {
                if (r !== undefined){
                    if (r.length > 0){
-                       setBillDetail(groupByBill(r))
-                       order(r.length)
-                       money(r)
+                       let arr = groupByBill(r)
+                       setBillDetail(arr)
+                       order(arr.length)
+                       money(r);
                        setMessage("Result search")
                        setCheck(false)
                    } else {
+                       setTotalOrder(0)
+                       setTotalMoNey(0)
                        setBillDetail([])
                        setMessage("No order display")
                    }
@@ -178,12 +191,15 @@ function OrderManager(effect, deps) {
            findByYearAndWeekAndMerchant(id, year, valueWeek).then(res => {
                if (res !== undefined){
                    if (res.length > 0){
-                       setBillDetail(groupByBill(res))
-                       order(res.length)
+                       let arr = groupByBill(res)
+                       setBillDetail(arr)
+                       order(arr.length)
                        money(res)
                        setMessage("Result search")
                        setCheck(false)
                    } else {
+                       setTotalOrder(0)
+                       setTotalMoNey(0)
                        setBillDetail([])
                        setMessage("No order display")
                    }
@@ -196,10 +212,10 @@ function OrderManager(effect, deps) {
 
 
     const months = Array.from({ length: 12 }, (_, index) => (
-        <option key={index + 1} value={index + 1}>{index + 1}</option>
+        <option key={index + 1} value={index + 1}>{index + 1} month</option>
     ));
     const dates = Array.from({ length: week }, (_, index) => (
-        <option key={index + 1} value={index + 1}>{index + 1}</option>
+        <option key={index + 1} value={index + 1}>{index + 1} week</option>
     ));
 
     const totalWeek = (year) =>{
@@ -352,10 +368,10 @@ function OrderManager(effect, deps) {
                                             <div style={{marginLeft: '30px', width: '200px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
                                                 <select onChange={selectQuarter} className="form-select">
                                                     <option>Quarter </option>
-                                                    <option value="1">1</option>
-                                                    <option value="2">2</option>
-                                                    <option value="3">3</option>
-                                                    <option value="4">4</option>
+                                                    <option value="1">Quarter 1</option>
+                                                    <option value="2">Quarter 2</option>
+                                                    <option value="3">Quarter 3</option>
+                                                    <option value="4">Quarter 4</option>
                                                 </select>
                                             </div>
                                             <div style={{marginLeft: '20px', width: '200px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
@@ -427,7 +443,7 @@ function OrderManager(effect, deps) {
                                                         <td>{item.billDetails.map(item=>{
                                                             return(
                                                                 <>
-                                                                    <p>{item.product.name}</p>
+                                                                    <p style={{textAlign: 'center'}}>{item.product.name}</p>
                                                                 </>
                                                             )
                                                         })}</td>

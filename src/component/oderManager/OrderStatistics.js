@@ -24,8 +24,9 @@ function OrderStatistics() {
     useEffect(() => {
         if (check){
             findAllOrdersByMerchant(id).then(r => {
-                setBillDetail(groupByBill(r))
-                order(r.length)
+                let arr = groupByBill(r)
+                setBillDetail(arr)
+                order(arr.length)
                 money(r)
                 setMessage("Statistics")
             })
@@ -48,11 +49,19 @@ function OrderStatistics() {
     const selectProduct = (e) => {
         findOrderByProduct(e.target.value).then(r => {
             if (r !== undefined){
-                setBillDetail(groupByBill(r))
-                money(r)
-                order(r.length)
-                setMessage("Search By Product")
-                setCheck(false)
+                if (r.length > 0){
+                    let arr = groupByBill(r)
+                    setBillDetail(arr)
+                    order(arr.length)
+                    money(r)
+                    setMessage("Result search")
+                    setCheck(false)
+                } else {
+                    setTotalOrder(0)
+                    setTotalMoNey(0)
+                    setBillDetail([])
+                    setMessage("No order display")
+                }
             } else {
                 setCheck(true)
             }
@@ -62,11 +71,19 @@ function OrderStatistics() {
     const selectStatus = (e) => {
         findOrderByStatus(id, e.target.value).then(r => {
             if (r !== undefined){
-                setBillDetail(groupByBill(r))
-                money(r)
-                order(r.length)
-                setMessage("Search By Status")
-                setCheck(false)
+                if (r.length > 0){
+                    let arr = groupByBill(r)
+                    setBillDetail(arr)
+                    order(arr.length)
+                    money(r)
+                    setMessage("Result search")
+                    setCheck(false)
+                } else {
+                    setTotalOrder(0)
+                    setTotalMoNey(0)
+                    setBillDetail([])
+                    setMessage("No order display")
+                }
             } else {
                 setCheck(true)
             }
@@ -76,12 +93,19 @@ function OrderStatistics() {
     const selectUser = (e) => {
         findOrderByUser(id, e.target.value).then(r => {
             if (r !== undefined){
-                setBillDetail(groupByBill(r))
-                money(r)
-                order(r.length)
-                setMessage("Search By User")
-                setCheck(false)
-                console.log(r)
+                if (r.length > 0){
+                    let arr = groupByBill(r)
+                    setBillDetail(arr)
+                    order(arr.length)
+                    money(r)
+                    setMessage("Result search")
+                    setCheck(false)
+                } else {
+                    setTotalOrder(0)
+                    setTotalMoNey(0)
+                    setBillDetail([])
+                    setMessage("No order display")
+                }
             } else {
                 setCheck(true)
             }
@@ -279,7 +303,7 @@ function OrderStatistics() {
                                                         <td>{item.billDetails.map(item=>{
                                                             return(
                                                                 <>
-                                                                    <p>{item.product.name}</p>
+                                                                    <p style={{textAlign: 'center'}}>{item.product.name}</p>
                                                                 </>
                                                             )
                                                         })}</td>

@@ -215,8 +215,7 @@ function AllOrders() {
                         {/*Main*/}
                         <main className="bg-white-300 flex-1 p-3 overflow-hidden">
 
-                            <Pagination totalPage={totalPage} page={page} limit={limit} siblings={1}
-                                        onPageChange={handlePageChange} onChangeItem={handleChangeItem}/>
+
 
                             <div className="flex flex-col">
 
@@ -228,11 +227,10 @@ function AllOrders() {
 
 
                                         <div className="rounded overflow-hidden shadow bg-white mx-2 w-full">
-                                            <div
-                                                className="px-6 py-2 border-b border-light-grey flex items-center justify-between">
+                                            <div style={{height: '60px'}} className="px-6 py-2 border-b border-light-grey flex items-center justify-between">
                                                 <div className="font-bold text-xl">All list orders</div>
                                                 {/* search */}
-                                                <div className="flex">
+                                                <div className="flex items-center"> {/* Updated this line to use 'items-center' */}
                                                     <div style={{width: '400px'}} className="font-bold text-xl">
                                                         <input
                                                             type="search"
@@ -243,13 +241,16 @@ function AllOrders() {
                                                             id="valueSearch"
                                                         />
                                                     </div>
-                                                    <button onClick={search} style={{height: '37px'}}
-                                                            className="ml-2 px-4 py-2 bg-blue-500 text-bg-dark rounded">
+                                                    <button onClick={search} style={{height: '35px', marginLeft: '8px'}} className="btn btn-outline-danger">
                                                         Search
                                                     </button>
                                                 </div>
                                                 {/* end search */}
+                                                <div style={{marginTop: '14px'}}>
+                                                    <Pagination totalPage={totalPage} page={page} limit={limit} siblings={1} onPageChange={handlePageChange} onChangeItem={handleChangeItem}/>
+                                                </div>
                                             </div>
+
                                         </div>
 
 
@@ -293,7 +294,7 @@ function AllOrders() {
                                                         <td>{item.billDetails.map(item => {
                                                             return (
                                                                 <>
-                                                                    <p>{item.product.name}</p>
+                                                                    <p style={{textAlign: 'center'}}>{item.product.name}</p>
                                                                 </>
                                                             )
                                                         })}</td>
@@ -328,9 +329,11 @@ function AllOrders() {
                                                 ))}
                                                 </tbody>
                                             </table>
+
                                         </div>
                                     </div>
                                     {/* /card */}
+
 
                                 </div>
                                 {/* /Cards Section Ends Here */}
@@ -459,13 +462,7 @@ function AllOrders() {
                         </main>
                         {/*/Main*/}
                     </div>
-                    {/*Footer*/}
-                    <footer className="bg-grey-darkest text-white p-2">
-                        <div className="flex flex-1 mx-auto">&copy; My Design</div>
-                        <div className="flex flex-1 mx-auto">Distributed by: <a href="https://themewagon.com/"
-                                                                                target=" _blank">Themewagon</a></div>
-                    </footer>
-                    {/*/footer*/}
+
 
                 </div>
 
