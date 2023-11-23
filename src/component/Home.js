@@ -19,7 +19,6 @@ export default function Home() {
     const [nameProduct, setNameProduct] = useState("")
     const [load, setLoad] = useState(false);
     const [product, setProduct] = useState(undefined);
-    const [quantity, setQuantity] = useState(1);
     const [merchant, setMerchant] = useState({})
     const [totalOderMoney, setTotalOderMoney] = useState(0);
     const [totalMoney, setTotalMoney] = useState(0);
@@ -94,6 +93,7 @@ export default function Home() {
         try {
             const data = await findOneProduct(id_product);
             setProduct(data);
+            document.getElementById("quantity_p").value = 1
             setMerchant(data.merchant);
             setTotalOderMoney(data.priceSale)
             const total = data.priceSale - coupon
@@ -139,9 +139,11 @@ export default function Home() {
     }
 
     const handleQuantityChange = (event) => {
+        let quantityInput = document.getElementById("quantity_p");
         let newValue = parseInt(event.target.value, 10);
         if (!isNaN(newValue) && newValue >= 1 && newValue <= 20) {
-            setQuantity(newValue);
+            quantityInput.value = newValue
+            // setQuantity(newValue);
             let total = product.priceSale * newValue;
             setTotalOderMoney(total)
         }
@@ -193,7 +195,7 @@ export default function Home() {
 
     return (
         <>
-            <ToastContainer enableMultiContainer containerId="home-notification" position="top-center"
+            <ToastContainer enableMultiContainer containerId="home-notification" position="top-right"
                             autoClose={2000} pauseOnHover={false}
                             style={{width: "400px"}}/>
             {/*Home*/}
@@ -725,7 +727,7 @@ export default function Home() {
                                                             backgroundColor: '#df8686'
                                                         }} type="text" className="form-control bg-secondary text-center"
                                                                id="quantity_p"
-                                                               defaultValue={quantity}
+                                                               defaultValue={1}
                                                                onChange={handleQuantityChange}/>
                                                         <div style={{marginLeft: '10px'}} className="input-group-btn"
                                                              id="plus_div">

@@ -4,7 +4,7 @@ import {couponByIdMerchant} from "../service/CouponService";
 import {findMerchantById} from "../service/MerchantService";
 import {findOneProduct, getAllProductByIdMerchant, getAllProductByMerchant} from "../service/ProductService";
 import Header from "../layout/Header";
-import {toast} from "react-toastify";
+import {toast, ToastContainer} from "react-toastify";
 import {orderNow} from "../service/BillService";
 
 function DetailMerchant() {
@@ -12,7 +12,6 @@ function DetailMerchant() {
     const [product, setProduct] = useState(undefined);
     const [coupons, setCoupons] = useState([]);
     const [merchant, setMerchant] = useState({})
-    const [quantity, setQuantity] = useState(1);
     const [products, setProducts] = useState([]);
     const [load, setLoad] = useState(false);
     const [totalOderMoney, setTotalOderMoney] = useState(0);
@@ -37,6 +36,7 @@ function DetailMerchant() {
         try {
             const data = await findOneProduct(id_product);
             setProduct(data);
+            document.getElementById("quantity_p").value = 1
             setMerchant(data.merchant);
             setTotalOderMoney(data.priceSale)
             const total = data.priceSale - coupon
@@ -82,9 +82,11 @@ function DetailMerchant() {
     }
 
     const handleQuantityChange = (event) => {
+        let quantityInput = document.getElementById("quantity_p");
         let newValue = parseInt(event.target.value, 10);
         if (!isNaN(newValue) && newValue >= 1 && newValue <= 20) {
-            setQuantity(newValue);
+            quantityInput.value = newValue
+            // setQuantity(newValue);
             let total = product.priceSale * newValue;
             setTotalOderMoney(total)
         }
@@ -108,20 +110,21 @@ function DetailMerchant() {
 
     const account = JSON.parse(localStorage.getItem("userInfo"))
     function handleOrderNow() {
+        let quantityOrder = document.getElementById("quantity_p").value;
         if (account !== null) {
-            if (merchant !== null && merchant.account.id_account === account.id) {
-                toast.error('Your action is not authorized, please try again later!', {containerId: 'home-notification'});
+            if (merchant !== null && product.merchant.account.id_account === account.id) {
+                toast.error('Your action is not authorized, please try again later!', {containerId: 'merchant-detail'});
                 return
             }
-            orderNow(product, account.id).then(res => {
+            orderNow(product, account.id, quantityOrder).then(res => {
                 if (res === true) {
-                    toast.success('Order success!', {containerId: 'home-notification'});
+                    toast.success('Order success!', {containerId: 'merchant-detail'});
                 } else {
-                    toast.error('An error occurred. Please check again!', {containerId: 'home-notification'});
+                    toast.error('An error occurred. Please check again!', {containerId: 'merchant-detail'});
                 }
             })
         } else {
-            toast.error('Please login!', {containerId: 'home-notification'});
+            toast.error('Please login!', {containerId: 'merchant-detail'});
         }
     }
 
@@ -130,6 +133,9 @@ function DetailMerchant() {
     return (
         <>
             <Header/>
+            <ToastContainer enableMultiContainer containerId="merchant-detail" position="top-right"
+                            autoClose={1500} pauseOnHover={false}
+                            style={{width: "400px"}}/>
             <div style={{height: '400px', marginTop: "20px"}} className="now-detail-restaurant clearfix">
                 <div style={{marginRight: '700px',width: '600px',marginBottom: '30px'}} className="input-group rounded ">
                     <input onKeyUp={handleInputName} style={{marginLeft: '200px'}} type="search" className="form-control rounded"
@@ -592,7 +598,7 @@ function DetailMerchant() {
                                                             backgroundColor: '#df8686'
                                                         }} type="text" className="form-control bg-secondary text-center"
                                                                id="quantity_p"
-                                                               defaultValue={quantity}
+                                                               defaultValue={1}
                                                                onChange={handleQuantityChange}/>
                                                         <div style={{marginLeft: '10px'}} className="input-group-btn"
                                                              id="plus_div">
