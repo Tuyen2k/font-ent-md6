@@ -25,6 +25,7 @@ import OderManager from "./component/oderManager/OderManager";
 import '@fortawesome/fontawesome-free/css/all.css';
 import AllOrders from "./component/oderManager/AllOrders";
 import OrderStatistics from "./component/oderManager/OrderStatistics";
+import NewCouponList from "./component/NewCouponList";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -43,7 +44,7 @@ root.render(
             <Route path={'/merchant/update/:id'} element={<UpdateMerchant/>}></Route>
             <Route path={'/detailProduct/:id'} element={<DetailProduct/>}></Route>
             <Route path={'/cart/account'} element={<DisplayCart/>}></Route>
-            <Route path={'/list_coupon/:id'} element={<CouponList/>}></Route>
+            <Route path={'/list_coupon/:id'} element={<NewCouponList/>}></Route>
             <Route path={'/create_Coupon/:id'} element={<CreateCoupon/>}></Route>
             <Route path={'/update_Coupon/:id'} element={<UpdateCoupon/>}></Route>
             <Route path={'/order-manager/:id'} element={<OderManager/>}></Route>
