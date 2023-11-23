@@ -6,13 +6,16 @@ import {
     MDBCardBody,
     MDBCardImage,
     MDBRow,
-    MDBCol
+    MDBCol, MDBCardHeader, MDBCardFooter
 }
     from 'mdb-react-ui-kit';
 import formik, {ErrorMessage, Field, Form, Formik} from "formik";
 import {Link, useNavigate, useParams} from "react-router-dom";
 import {upImageFirebase} from "../firebase/Upfirebase";
 import {saveCoupon} from "../service/CouponService";
+import {toast, ToastContainer} from "react-toastify";
+import Header from "../layout/Header";
+import Footer from "../layout/Footer";
 
 function CreateCoupon() {
     const navigate = useNavigate()
@@ -24,6 +27,8 @@ function CreateCoupon() {
     const btn_modal = useRef()
     const [checkDiscount, setCheckDiscount] = useState(false);
     const [discountType, setDiscountType] = useState('amount');
+    const [file, setFile] = useState(undefined)
+    const inputFile = useRef()
     const [coupon, setCoupon] = useState({
         name: '',
         image: '',
@@ -31,37 +36,34 @@ function CreateCoupon() {
         percentageDiscount: '',
         quantity: '',
         merchant: {
-         // sau phải thay bằng id merchant gửi qua
             id_merchant: id
         }
 
     })
+    let merchant = JSON.parse(localStorage.getItem("merchant"))
+
     const handleCreateCoupon = (e) => {
-        setLoad(false)
-        upImageFirebase(image).then(r => {
-            let createCoupon = {...e, image: r.name}
-            console.log(createCoupon)
-            saveCoupon(createCoupon).then(r => {
-                    if (r === true) {
-                        setMessage("Create success!")
-                        btn_modal.current.click();
-                        setLoad(true)
-                        setExist(false)
-                    } else {
-                        setMessage("Create error!")
-                        btn_modal.current.click();
-                    }
-                }
-            )
-        })
-    }
-    const handleInputChangeImage = (e) => {
-        const file = e.target.files[0]
-        if (!file) {
-            setMessage("Please choose image for the coupon!!!")
-            btn_modal.current.click();
+        let imageTemp = "https://southernplasticsurgery.com.au/wp-content/uploads/2013/10/user-placeholder.png"
+        if (image !== undefined) {
+            const uploadResult = upImageFirebase(image);
+            imageTemp = uploadResult.name;
         }
-        setImage(file)
+        let createCoupon = {...e, image: imageTemp}
+        console.log(createCoupon)
+        saveCoupon(createCoupon).then(r => {
+                if (r === true) {
+                    toast.success("Create product success!!!", {containerId: 'create-coupon'})
+                } else {
+                    toast.error("Action error occurred. Please check again!!!", {containerId: 'create-coupon'})
+                }
+            }
+        )
+    }
+    const handledInputFile = (file) => {
+        setFile(file);
+    }
+    const handledClickInput = () => {
+        inputFile.current.click();
     }
 
     const schema = yup.object().shape({
@@ -71,35 +73,58 @@ function CreateCoupon() {
 
     return (
         <>
-            <Link to={"/list_coupon/1"}><svg style={{color: 'black'}} xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" className="bi bi-x" viewBox="0 0 16 16">
-                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-            </svg>
-            </Link>
+            <Header/>
+            <ToastContainer enableMultiContainer containerId={"create-coupon"} position="top-right" autoClose={2000}
+                            pauseOnHover={false}
+                            style={{width: "400px"}}/>
             {load ? (
-                    <MDBContainer className="my-4">
+                    <MDBContainer className="my-4" style={{width: "1000px"}}>
                         <MDBCard>
-                            <MDBRow className='g-0'>
-
-                                <MDBCol md='5'>
-                                    <MDBCardImage style={{height: '552px'}}
-                                                  src='https://ben.com.vn/tin-tuc/wp-content/uploads/2021/04/voucher-la-gi.jpg'
-                                                  alt="register form" className='rounded-start w-100'/>
-                                </MDBCol>
-
-                                <MDBCol md='7'>
-                                    <MDBCardBody className='d-flex flex-column'>
-
-                                        <h5 className="fw-normal my-4 pb-3"
+                            <Formik initialValues={coupon} onSubmit={(e) => handleCreateCoupon(e)}
+                                    validationSchema={schema}>
+                                <Form>
+                                    <MDBCardHeader style={{backgroundColor: "white"}}>
+                                        <h5
                                             style={{
-                                                letterSpacing: '1px',
-                                                fontWeight: 'bolder',
-                                                textAlign: "center"
+                                                textAlign: "center", marginTop: "10px", marginBottom: "20px"
                                             }}>Create Coupon</h5>
+                                    </MDBCardHeader>
+                                    <MDBRow className='g-0'>
+                                        <MDBCol md='5'>
+                                            <div style={{display: "flex"}}
+                                                 onClick={handledClickInput}>
+                                                <div>
+                                                    <input ref={inputFile} className="form-control"
+                                                           name="image" type="file" id="formFile"
+                                                           style={{display: 'none'}}
+                                                           onChange={(e) => handledInputFile(e.target.files[0])}/>
 
-                                        <div style={{width: "500px", margin: 'auto'}}>
-                                            <Formik initialValues={coupon} onSubmit={(e) => handleCreateCoupon(e)}
-                                                    validationSchema={schema}>
-                                                <Form>
+                                                    {file === undefined ? (
+                                                        <div>
+                                                            <img
+                                                                src="https://southernplasticsurgery.com.au/wp-content/uploads/2013/10/user-placeholder.png"
+                                                                style={{
+                                                                    height: "278px"
+                                                                }} alt="placeholder"/>
+                                                        </div>
+                                                    ) : (
+                                                        <div>
+                                                            <img className="image-input"
+                                                                 src={URL.createObjectURL(file)}
+                                                                 alt='image'
+                                                                 style={{
+                                                                     borderRadius: "50%",
+                                                                     width: "278px",
+                                                                     height: "278px"
+                                                                 }}/>
+                                                        </div>)}
+                                                </div>
+                                            </div>
+                                        </MDBCol>
+
+                                        <MDBCol md='7'>
+                                            <MDBCardBody className='d-flex flex-column'>
+                                                <div style={{width: "500px", margin: 'auto'}}>
                                                     <div className="mb-3">
                                                         <label className="form-label">Name</label>
                                                         <Field className="form-control" name="name"/>
@@ -151,27 +176,38 @@ function CreateCoupon() {
 
                                                     <div className="mb-3">
                                                         <label className="form-label">Quantity</label>
-                                                        <Field type="number" className="form-control" name="quantity"/>
+                                                        <Field type="number"  min="1" max="200" className="form-control" name="quantity"/>
                                                         <ErrorMessage className="error" name="quantity" component="div"/>
                                                     </div>
-                                                    <div className="mb-3">
-                                                        <label className="form-label">Image</label>
-                                                        <input className="form-control" type="file"
-                                                               onChange={(e) => handleInputChangeImage(e)}/>
-                                                    </div>
-                                                    <div style={{textAlign: 'center'}}>
-                                                        <button style={{width: '500px', backgroundColor: '#d78c8c', color: 'white', border: 'none'}} type={"submit"}
-                                                                className="btn btn-outline-success">Update
-                                                        </button>
-                                                    </div>
-                                                </Form>
-                                            </Formik>
+
+                                                </div>
+
+                                            </MDBCardBody>
+                                        </MDBCol>
+
+                                    </MDBRow>
+                                    <MDBCardFooter style={{backgroundColor: "white"}}>
+                                        <div className="row">
+                                            <div className="col-3">
+                                                <Link to={`/list_coupon/${merchant.id_merchant}`}
+                                                      style={{color: "black", padding: "6px 0 0 0"}}
+                                                      type="submit">
+                                                    <img style={{height: "20px", width: "20px"}}
+                                                         src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/back.png?alt=media&token=2c33e5a3-f355-4f82-b095-32b64ec48bd1"
+                                                         alt=""/> Back</Link>
+                                            </div>
+                                            <div className="col-6" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                <button style={{
+                                                    width: '300px',
+                                                }} type={"submit"}
+                                                        className="btn btn-outline-danger">Create
+                                                </button>
+                                            </div>
+                                            <div className="col-3"></div>
                                         </div>
-
-                                    </MDBCardBody>
-                                </MDBCol>
-
-                            </MDBRow>
+                                    </MDBCardFooter>
+                                </Form>
+                            </Formik>
                         </MDBCard>
 
                     </MDBContainer>
@@ -184,37 +220,7 @@ function CreateCoupon() {
                         </div>
                     </div>
                 )}
-            {/*button modal*/}
-            <button type="button" ref={btn_modal} className="btn btn-primary" data-bs-toggle="modal"
-                    data-bs-target="#exampleModal" style={{display: "none"}}>
-            </button>
-
-            {/*modal*/}
-            <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel"
-                 aria-hidden="true">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">Notification</h5>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body">
-                            <span>{message}</span>
-                        </div>
-                        <div className="modal-footer">
-                            {isExist ? (
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close
-                                </button>
-                            ) : (
-                                <button type="button" className="btn btn-secondary" onClick={() => navigate(`/list_coupon/${id}`)}
-                                        data-bs-dismiss="modal">Close
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <Footer/>
         </>
     );
 }

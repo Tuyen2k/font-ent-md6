@@ -53,7 +53,7 @@ export default function UpdateProduct() {
             return
         }
         setLoad(false)
-        let a = {id_merchant: 1}
+        let a = {id_merchant: e.merchant.id_merchant}
         let product = {...e, categories: categories, merchant: a, priceSale: e.price * 0.95}
         try {
             if (file !== undefined) {

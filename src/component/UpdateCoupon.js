@@ -9,13 +9,15 @@ import {
     MDBRow,
     MDBCol,
     MDBIcon,
-    MDBInput
+    MDBInput, MDBCardHeader, MDBCardFooter
 }
     from 'mdb-react-ui-kit';
 import formik, {ErrorMessage, Field, Form, Formik} from "formik";
 import {Link, useNavigate, useParams} from "react-router-dom";
 import {upImageFirebase} from "../firebase/Upfirebase";
 import {findOneCoupon, editCoupon} from "../service/CouponService";
+import Header from "../layout/Header";
+import {toast, ToastContainer} from "react-toastify";
 
 function UpdateCoupon() {
     const navigate = useNavigate()
@@ -24,61 +26,64 @@ function UpdateCoupon() {
     const [isExist, setExist] = useState(true)
     const [image, setImage] = useState(null)
     const [message, setMessage] = useState()
-    const [merchant, setMerchant] = useState()
+    const [merchant, setMerchant] = useState({id_merchant: null})
     const btn_modal = useRef()
     const [coupon, setCoupon] = useState({})
-
+    const [file, setFile] = useState(undefined)
+    const inputFile = useRef()
     useEffect(() => {
         findOneCoupon(id).then(r => {
             setCoupon(r)
             setMerchant(r.merchant)
-            console.log(r)
         })
     }, []);
 
     const handleUpdateCoupon = async (e) => {
-        let updateCoupon;
+                let updateCoupon;
         setLoad(false);
-            try {
-                if (image != null){
-                    const i = await upImageFirebase(image);
-                    updateCoupon = { ...e, image: i.name };
-                    const r = await editCoupon(updateCoupon);
-                    if (r === true) {
-                        setMessage("Update success!!");
-                        btn_modal.current.click();
-                        setLoad(true);
-                        setExist(false);
-                    } else {
-                        setMessage("Erorr success!!");
-                        btn_modal.current.click();
-                    }
-                } else {
-                    const edit = await editCoupon(e);
-                    if (edit === true) {
-                        setMessage("Update success!!");
-                        btn_modal.current.click();
-                        setLoad(true);
-                        setExist(false);
-                    } else {
-                        setMessage("Erorr success!!");
-                        btn_modal.current.click();
-                    }
-                }
+        try {
+            if (file != null) {
+                const i = await upImageFirebase(file);
+                updateCoupon = {...e, image: i.name};
+                const r = await editCoupon(updateCoupon);
+                if (r === true) {
+                    toast.success("Update Success!", {containerId:"update-coupon"})
 
-            } catch (error) {
-                console.error("Error uploading image:", error);
-                setLoad(true);
+                } else {
+                    toast.error("Update Unsuccessfully! Try again", {containerId:"update-coupon"})
+                    btn_modal.current.click();
+                }
+            } else {
+                const edit = await editCoupon(e);
+                if (edit === true) {
+                    toast.success("Update Success!", {containerId:"update-coupon"})
+                    setTimeout(() => {
+                    navigate(`/list_coupon/${merchant.id_merchant}`)},2500)
+
+                } else {
+                    toast.error("Update Unsuccessfully! Try again", {containerId:"update-coupon"})
+                }
             }
+
+        } catch (error) {
+            console.error("Error uploading image:", error);
+            setLoad(true);
         }
+    }
 
 
     const handleInputChangeImage = (e) => {
         const file = e.target.files[0]
         if (!file) {
-           setImage(coupon.image)
+            setImage(coupon.image)
         }
         setImage(file)
+    }
+    const handledInputFile = (file) => {
+        setFile(file);
+    }
+    const handledClickInput = () => {
+        inputFile.current.click();
     }
 
     const schema = yup.object().shape({
@@ -88,36 +93,51 @@ function UpdateCoupon() {
 
     return (
         <>
-            <Link to={"/list_coupon/1"}><svg style={{color: 'black'}} xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" className="bi bi-x" viewBox="0 0 16 16">
-                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-            </svg>
-            </Link>
+            <Header/>
+            <ToastContainer enableMultiContainer containerId={"update-coupon"} position="top-right" autoClose={2000}
+                            pauseOnHover={false}
+                            style={{width: "400px"}}/>
             {load ? (
-                    <MDBContainer className="my-4">
+                    <MDBContainer className="my-4" style={{width: "1000px"}}>
                         <MDBCard>
-                            <MDBRow className='g-0'>
-
-                                <MDBCol md='5'>
-                                    <MDBCardImage style={{height: '552px'}}
-                                                  src='https://ben.com.vn/tin-tuc/wp-content/uploads/2021/04/voucher-la-gi.jpg'
-                                                  alt="register form" className='rounded-start w-100'/>
-                                </MDBCol>
-
-                                <MDBCol md='7'>
-                                    <MDBCardBody className='d-flex flex-column'>
-
-                                        <h5 className="fw-normal my-4 pb-3"
+                            <Formik initialValues={coupon} onSubmit={(e) => handleUpdateCoupon(e)}
+                                    enableReinitialize={true}
+                                    validationSchema={schema}>
+                                <Form>
+                                    <MDBCardHeader style={{backgroundColor: "white"}}>
+                                        <h5
                                             style={{
-                                                letterSpacing: '1px',
-                                                fontWeight: 'bolder',
-                                                textAlign: "center"
+                                                textAlign: "center", marginTop: "10px", marginBottom: "20px"
                                             }}>Update Coupon</h5>
+                                    </MDBCardHeader>
+                                    <MDBRow className='g-0'>
 
-                                        <div style={{width: "500px", margin: 'auto'}}>
-                                            <Formik initialValues={coupon} onSubmit={(e) => handleUpdateCoupon(e)}
-                                                    enableReinitialize={true}
-                                                    validationSchema={schema}>
-                                                <Form>
+                                        <MDBCol md='5'>
+                                            <div style={{display: "flex",paddingLeft: "40px"}}
+                                                 onClick={handledClickInput}>
+                                                <div>
+                                                    <input ref={inputFile} className="form-control"
+                                                           name="image" type="file" id="formFile"
+                                                           style={{display: 'none'}}
+                                                           onChange={(e) => setFile(e.target.files[0])}/>
+
+                                                    {file === undefined && coupon.image !== ""? (
+                                                        <div>
+                                                            <img style={{width: "278px", height: "278px"}} className="image-input" src={coupon.image} alt="coupon-img"/>
+                                                        </div>
+                                                    ) : (
+                                                        <div>
+                                                            <img style={{width: "278px", height: "278px"}} className='image-input' alt="image"
+                                                                 src={URL.createObjectURL(file)}/>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </MDBCol>
+
+                                        <MDBCol md='7'>
+                                            <MDBCardBody className='d-flex flex-column'>
+                                                <div style={{width: "500px", margin: 'auto'}}>
                                                     <div className="mb-3">
                                                         <label className="form-label">Name</label>
                                                         <Field className="form-control" name="name"/>
@@ -128,14 +148,14 @@ function UpdateCoupon() {
                                                         <div className="mb-3">
                                                             <label className="form-label">Discount Amount</label>
                                                             <Field min="1" type="number" className="form-control"
-                                                                   name="discountAmount" requid/>
+                                                                   name="discountAmount" required/>
                                                         </div>
                                                     )}
                                                     {coupon.percentageDiscount && (
                                                         <div className="mb-3">
                                                             <label className="form-label">Percentage Discount</label>
                                                             <Field min="1" max="100" type="number" className="form-control"
-                                                                   name="percentageDiscount" requid/>
+                                                                   name="percentageDiscount" required/>
                                                         </div>
                                                     )}
                                                     <div className="mb-3">
@@ -143,24 +163,35 @@ function UpdateCoupon() {
                                                         <Field type="number" className="form-control" name="quantity"/>
                                                         <ErrorMessage className="error" name="quantity" component="div"/>
                                                     </div>
-                                                    <div className="mb-3">
-                                                        <label className="form-label">Image</label>
-                                                        <input className="form-control" type="file"
-                                                               onChange={(e) => handleInputChangeImage(e)}/>
-                                                    </div>
-                                                    <div style={{textAlign: 'center'}}>
-                                                        <button style={{width: '500px', backgroundColor: '#d78c8c', color: 'white', border: 'none'}} type={"submit"}
-                                                                className="btn btn-outline-success">Update
-                                                        </button>
-                                                    </div>
-                                                </Form>
-                                            </Formik>
+                                                </div>
+
+                                            </MDBCardBody>
+                                        </MDBCol>
+
+                                    </MDBRow>
+                                    <MDBCardFooter style={{backgroundColor: "white"}}>
+                                        <div className="row">
+                                            <div className="col-3">
+                                                <Link to={`/list_coupon/${merchant.id_merchant}`}
+                                                      style={{color: "black", padding: "6px 0 0 0"}}
+                                                      type="submit">
+                                                    <img style={{height: "20px", width: "20px"}}
+                                                         src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/back.png?alt=media&token=2c33e5a3-f355-4f82-b095-32b64ec48bd1"
+                                                         alt=""/> Back</Link>
+                                            </div>
+                                            <div className="col-6" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                                                <button style={{
+                                                    width: '300px',
+                                                }} type={"submit"}
+                                                        className="btn btn-outline-danger">Update
+                                                </button>
+                                            </div>
+                                            <div className="col-3"></div>
                                         </div>
+                                    </MDBCardFooter>
+                                </Form>
+                            </Formik>
 
-                                    </MDBCardBody>
-                                </MDBCol>
-
-                            </MDBRow>
                         </MDBCard>
 
                     </MDBContainer>
@@ -196,7 +227,8 @@ function UpdateCoupon() {
                                 <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close
                                 </button>
                             ) : (
-                                <button type="button" className="btn btn-secondary" onClick={() => navigate(`/list_coupon/${id}`)}
+                                <button type="button" className="btn btn-secondary"
+                                        onClick={() => navigate(`/list_coupon/${id}`)}
                                         data-bs-dismiss="modal">Close
                                 </button>
                             )}

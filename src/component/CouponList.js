@@ -10,6 +10,7 @@ function CouponList() {
     const [indexDelete, setIndexDelete] = useState();
     const btn_modal = useRef()
     const [message, setMessage] = useState("")
+
     useEffect(() => {
         couponByIdMerchant(1).then(r => {
             setCoupons(r)
