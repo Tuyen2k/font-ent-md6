@@ -1,4 +1,4 @@
-import {Link, useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import React, {useEffect, useRef, useState} from "react";
 import {couponByIdMerchant, deleteCoupon} from "../service/CouponService";
 import Header from "../layout/Header";
@@ -10,7 +10,7 @@ import {getList} from "../service/PageService";
 function NewCouponList() {
     let {id} = useParams();
     const [list, setList] = useState([]);
-
+    const navigate = useNavigate();
     const [couponList, setCouponList] = useState([]);
     const [changePage, setChangePage] = useState(false);
     const [isDelete, setDelete] = useState(false);
@@ -57,9 +57,9 @@ function NewCouponList() {
         setCoupons([...result])
     }
 
-    const displayModal = (id_product) => {
+    const displayModal = (id_coupon) => {
         setModalDelete(true)
-        setIndexDelete(id_product)
+        setIndexDelete(id_coupon)
     }
     const handlePageChange = (value) => {
         if (value === "&laquo;" || value === " ...") {
@@ -85,10 +85,10 @@ function NewCouponList() {
     }
 
     const handleDeleteCoupon = () => {
-        deleteCoupon(indexDelete).then( r => {
-            if (r === true){
-                couponByIdMerchant(1).then(r => {
-                    setCoupons(r)
+        deleteCoupon(indexDelete).then(r => {
+            if (r === true) {
+                couponByIdMerchant(merchant.id_merchant).then(r => {
+                    setCoupons(r.reverse())  // Reverse the order of the list before setting it
                     setModalDelete(false)
                     setMessage("Delete product success!!!")
                     btn_modal.current.click();
@@ -101,11 +101,11 @@ function NewCouponList() {
     }
 
 
-    return(
+    return (
         <>
             <Header/>
             <div className="container">
-                <section className="section-newsfeed" style={{marginTop : "20px", marginBottom : "20px"}}>
+                <section className="section-newsfeed" style={{marginTop: "20px", marginBottom: "20px"}}>
                     <Pagination totalPage={totalPage} page={page} limit={limit} siblings={1}
                                 onPageChange={handlePageChange} onChangeItem={handleChangeItem}/>
                     <hr style={{marginTop: "0px"}}/>
@@ -119,10 +119,11 @@ function NewCouponList() {
                         <div className="col-9">
                             <div className="row" style={{marginLeft: "5px"}}>
                                 <Link className="col-2 link-offset-1-hover"
-                                      style={{color: "#ff3d3d", marginTop: "13px"}} to={"/create_Coupon/${id}"}>
-                                   <span> <h5 style={{marginBottom: "0px"}}> <img style={{height : "20px", width:"20px", marginBottom: "5px"}}
-                                                                                  src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/add.png?alt=media&token=ff56ec11-8fa4-48c4-9a6b-4adbff8468db"
-                                                                                  alt=""/> Add new</h5></span></Link>
+                                      style={{color: "#ff3d3d", marginTop: "13px"}} to={`/create_Coupon/${merchant.id_merchant}`}>
+                                   <span> <h5 style={{marginBottom: "0px"}}> <img
+                                       style={{height: "20px", width: "20px", marginBottom: "5px"}}
+                                       src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/add.png?alt=media&token=ff56ec11-8fa4-48c4-9a6b-4adbff8468db"
+                                       alt=""/> Add new</h5></span></Link>
                                 <div className="col-6" style={{marginTop: "10px"}}><h4>Your coupons</h4></div>
                                 <div className="col-4" style={{marginTop: "10px"}}>
                                     <input type="search" className="form-control rounded"
@@ -185,20 +186,21 @@ function NewCouponList() {
                                                     {/*<div className="description mb-5">{coupon.description}</div>*/}
                                                     <div className="promotion" style={{marginTop: "10px"}}>
                                                         <span
-                                                            className="number"><strong>{coupon.discountAmount ? coupon.discountAmount + " VND" : coupon.percentageDiscount + "%"} discount</strong></span>
+                                                            className="number"><strong>{coupon.discountAmount ? coupon.discountAmount.toLocaleString() + " VND" : coupon.percentageDiscount + "%"} discount</strong></span>
                                                     </div>
                                                 </div>
                                             </div>
                                             <div className="col-2">
                                                 <div className="d-flex justify-content-end">
-                                                    {/*<img className="icon-detail-merchant"*/}
-                                                    {/*     onClick={() => navigate(`/product/update/${coupon.id_product}`)}*/}
-                                                    {/*     src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/fcfff593-8038-474f-b1ea-8e7373c9d326.png?alt=media&token=f7b2c870-9cdb-4781-b4f8-49eefdc01f0f"*/}
-                                                    {/*     alt="update"/>*/}
-                                                    {/*<img className="icon-detail-merchant"*/}
-                                                    {/*     onClick={() => displayModal(coupon.id_product)}*/}
-                                                    {/*     src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/delete.png?alt=media&token=e1d0f8fd-2f66-44af-b738-0e6aab66ec1f"*/}
-                                                    {/*     alt="delete"/>*/}
+                                                    <img className="icon-detail-merchant"
+                                                         onClick={() => navigate(`/update_coupon/${coupon.id}`)}
+                                                         src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/fcfff593-8038-474f-b1ea-8e7373c9d326.png?alt=media&token=f7b2c870-9cdb-4781-b4f8-49eefdc01f0f"
+                                                         alt="update"/>
+                                                    <img className="icon-detail-merchant" data-bs-toggle="modal"
+                                                         data-bs-target="#staticBackdrop"
+                                                         onClick={() => displayModal(coupon.id)}
+                                                         src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/delete.png?alt=media&token=e1d0f8fd-2f66-44af-b738-0e6aab66ec1f"
+                                                         alt="delete"/>
 
 
                                                     {/*<button className="mr-2 btn btn-warning"*/}
@@ -232,7 +234,7 @@ function NewCouponList() {
                                                                             data-bs-dismiss="modal">Cancel
                                                                     </button>
                                                                     <button className="mx-2 btn btn-primary"
-
+                                                                            onClick={handleDeleteCoupon}
                                                                             type="button">Confirm
                                                                     </button>
                                                                 </div>
@@ -285,4 +287,5 @@ function NewCouponList() {
         </>
     )
 }
+
 export default NewCouponList;
