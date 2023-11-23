@@ -42,10 +42,10 @@ function CreateCoupon() {
     })
     let merchant = JSON.parse(localStorage.getItem("merchant"))
 
-    const handleCreateCoupon = (e) => {
-        let imageTemp = "https://southernplasticsurgery.com.au/wp-content/uploads/2013/10/user-placeholder.png"
-        if (image !== undefined) {
-            const uploadResult = upImageFirebase(image);
+    const handleCreateCoupon = async (e)  => {
+        let imageTemp = "https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/products%2FUntitled-1.png5ac3227c-399f-46b5-9371-2c8ce35e51d4?alt=media&token=109dae2e-251f-44b3-b76b-d7855e7634b2"
+        if (file !== undefined) {
+            const uploadResult = await upImageFirebase(file);
             imageTemp = uploadResult.name;
         }
         let createCoupon = {...e, image: imageTemp}
@@ -78,7 +78,7 @@ function CreateCoupon() {
                             pauseOnHover={false}
                             style={{width: "400px"}}/>
             {load ? (
-                    <MDBContainer className="my-4" style={{width: "1000px"}}>
+                    <MDBContainer className="custom-my-4">
                         <MDBCard>
                             <Formik initialValues={coupon} onSubmit={(e) => handleCreateCoupon(e)}
                                     validationSchema={schema}>
@@ -101,22 +101,15 @@ function CreateCoupon() {
 
                                                     {file === undefined ? (
                                                         <div>
-                                                            <img
-                                                                src="https://southernplasticsurgery.com.au/wp-content/uploads/2013/10/user-placeholder.png"
-                                                                style={{
-                                                                    height: "278px"
-                                                                }} alt="placeholder"/>
+                                                            <img className="image-coupon"
+                                                                src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/products%2FUntitled-1.png5ac3227c-399f-46b5-9371-2c8ce35e51d4?alt=media&token=109dae2e-251f-44b3-b76b-d7855e7634b2"
+                                                                 alt="placeholder"/>
                                                         </div>
                                                     ) : (
                                                         <div>
-                                                            <img className="image-input"
+                                                            <img className="image-coupon"
                                                                  src={URL.createObjectURL(file)}
-                                                                 alt='image'
-                                                                 style={{
-                                                                     borderRadius: "50%",
-                                                                     width: "278px",
-                                                                     height: "278px"
-                                                                 }}/>
+                                                                 alt='image'/>
                                                         </div>)}
                                                 </div>
                                             </div>

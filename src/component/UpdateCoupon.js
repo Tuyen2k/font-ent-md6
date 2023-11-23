@@ -23,9 +23,6 @@ function UpdateCoupon() {
     const navigate = useNavigate()
     let {id} = useParams();
     const [load, setLoad] = useState(true)
-    const [isExist, setExist] = useState(true)
-    const [image, setImage] = useState(null)
-    const [message, setMessage] = useState()
     const [merchant, setMerchant] = useState({id_merchant: null})
     const btn_modal = useRef()
     const [coupon, setCoupon] = useState({})
@@ -58,7 +55,7 @@ function UpdateCoupon() {
                 if (edit === true) {
                     toast.success("Update Success!", {containerId:"update-coupon"})
                     setTimeout(() => {
-                    navigate(`/list_coupon/${merchant.id_merchant}`)},2500)
+                    navigate(`/list_coupon/${merchant.id_merchant}`)},2800)
 
                 } else {
                     toast.error("Update Unsuccessfully! Try again", {containerId:"update-coupon"})
@@ -71,17 +68,6 @@ function UpdateCoupon() {
         }
     }
 
-
-    const handleInputChangeImage = (e) => {
-        const file = e.target.files[0]
-        if (!file) {
-            setImage(coupon.image)
-        }
-        setImage(file)
-    }
-    const handledInputFile = (file) => {
-        setFile(file);
-    }
     const handledClickInput = () => {
         inputFile.current.click();
     }
@@ -98,7 +84,7 @@ function UpdateCoupon() {
                             pauseOnHover={false}
                             style={{width: "400px"}}/>
             {load ? (
-                    <MDBContainer className="my-4" style={{width: "1000px"}}>
+                    <MDBContainer className="custom-my-4">
                         <MDBCard>
                             <Formik initialValues={coupon} onSubmit={(e) => handleUpdateCoupon(e)}
                                     enableReinitialize={true}
@@ -123,11 +109,11 @@ function UpdateCoupon() {
 
                                                     {file === undefined && coupon.image !== ""? (
                                                         <div>
-                                                            <img style={{width: "278px", height: "278px"}} className="image-input" src={coupon.image} alt="coupon-img"/>
+                                                            <img className="image-coupon" src={coupon.image} alt="coupon-img"/>
                                                         </div>
                                                     ) : (
                                                         <div>
-                                                            <img style={{width: "278px", height: "278px"}} className='image-input' alt="image"
+                                                            <img className='image-coupon' alt="image"
                                                                  src={URL.createObjectURL(file)}/>
                                                         </div>
                                                     )}
@@ -204,38 +190,6 @@ function UpdateCoupon() {
                         </div>
                     </div>
                 )}
-            {/*button modal*/}
-            <button type="button" ref={btn_modal} className="btn btn-primary" data-bs-toggle="modal"
-                    data-bs-target="#exampleModal" style={{display: "none"}}>
-            </button>
-
-            {/*modal*/}
-            <div className="modal fade" id="exampleModal" tabIndex="-1" aria-labelledby="exampleModalLabel"
-                 aria-hidden="true">
-                <div className="modal-dialog">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title" id="exampleModalLabel">Notification</h5>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body">
-                            <span>{message}</span>
-                        </div>
-                        <div className="modal-footer">
-                            {isExist ? (
-                                <button type="button" className="btn btn-secondary" data-bs-dismiss="modal">Close
-                                </button>
-                            ) : (
-                                <button type="button" className="btn btn-secondary"
-                                        onClick={() => navigate(`/list_coupon/${id}`)}
-                                        data-bs-dismiss="modal">Close
-                                </button>
-                            )}
-                        </div>
-                    </div>
-                </div>
-            </div>
         </>
     );
 }

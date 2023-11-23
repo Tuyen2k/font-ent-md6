@@ -15,7 +15,6 @@ import ProductList from "./component/ProductList";
 import UpdateProduct from "./component/UpdateProduct";
 import FormRegister from "./component/CreateMerchant";
 import DisplayCart from "./component/cart/DisplayCart";
-import CouponList from "./component/CouponList";
 import CreateCoupon from "./component/CreateCoupon";
 import UpdateCoupon from "./component/UpdateCoupon";
 import DetailProduct from "./component/DetailProduct";
