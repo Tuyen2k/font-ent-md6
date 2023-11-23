@@ -9,6 +9,10 @@ import {
     groupByBill
 } from "../../service/BillService";
 import {getAllProductByIdMerchant} from "../../service/ProductService";
+import Footer from "../../layout/Footer";
+import {getList} from "../../service/PageService";
+import Pagination from "../pagination/Pagination";
+import Chart from "./Chart";
 function OrderStatistics() {
     let {id} = useParams();
     const [billDetail, setBillDetail] = useState([]);
@@ -21,11 +25,14 @@ function OrderStatistics() {
     const [totalProduct, setTotalProduct] = useState(0);
     const [totalOrder, setTotalOrder] = useState(0);
     const [totalUser, setTotalUser] = useState(0);
+    const [changePage, setChangePage] = useState(false);
+    const [data, setData] = useState([])
+
     useEffect(() => {
         if (check){
             findAllOrdersByMerchant(id).then(r => {
                 let arr = groupByBill(r)
-                setBillDetail(arr)
+                setBillDetail(getList(arr, page, limit))
                 order(arr.length)
                 money(r)
                 setMessage("Statistics")
@@ -43,25 +50,13 @@ function OrderStatistics() {
             setUser(r.reverse())
             setTotalUser(r.length)
         })
-    }, [check]);
+    }, [check, changePage, data]);
 
 
     const selectProduct = (e) => {
         findOrderByProduct(e.target.value).then(r => {
             if (r !== undefined){
-                if (r.length > 0){
-                    let arr = groupByBill(r)
-                    setBillDetail(arr)
-                    order(arr.length)
-                    money(r)
-                    setMessage("Result search")
-                    setCheck(false)
-                } else {
-                    setTotalOrder(0)
-                    setTotalMoNey(0)
-                    setBillDetail([])
-                    setMessage("No order display")
-                }
+                setBill(r)
             } else {
                 setCheck(true)
             }
@@ -71,19 +66,7 @@ function OrderStatistics() {
     const selectStatus = (e) => {
         findOrderByStatus(id, e.target.value).then(r => {
             if (r !== undefined){
-                if (r.length > 0){
-                    let arr = groupByBill(r)
-                    setBillDetail(arr)
-                    order(arr.length)
-                    money(r)
-                    setMessage("Result search")
-                    setCheck(false)
-                } else {
-                    setTotalOrder(0)
-                    setTotalMoNey(0)
-                    setBillDetail([])
-                    setMessage("No order display")
-                }
+                setBill(r)
             } else {
                 setCheck(true)
             }
@@ -93,23 +76,27 @@ function OrderStatistics() {
     const selectUser = (e) => {
         findOrderByUser(id, e.target.value).then(r => {
             if (r !== undefined){
-                if (r.length > 0){
-                    let arr = groupByBill(r)
-                    setBillDetail(arr)
-                    order(arr.length)
-                    money(r)
-                    setMessage("Result search")
-                    setCheck(false)
-                } else {
-                    setTotalOrder(0)
-                    setTotalMoNey(0)
-                    setBillDetail([])
-                    setMessage("No order display")
-                }
+                setBill(r)
             } else {
                 setCheck(true)
             }
         })
+    }
+
+    const setBill = (r) => {
+        if (r.length > 0) {
+            let arr = groupByBill(r);
+            setBillDetail(arr);
+            order(arr.length);
+            money(r);
+            setMessage("Result search");
+            setCheck(false);
+        } else {
+            setTotalOrder(0);
+            setTotalMoNey(0);
+            setBillDetail([]);
+            setMessage("No order display");
+        }
     }
 
     const money = (r) => {
@@ -123,6 +110,40 @@ function OrderStatistics() {
     const order = (r) => {
         setTotalOrder(r)
     }
+
+
+    // phan trang
+    const [page, setPage] = useState(1)
+    const [limit, setLimit] = useState(5)
+    const totalPage = Math.ceil(totalOrder / limit)
+    if (totalPage !== 0 && page > totalPage) {
+        setPage(totalPage)
+    }
+
+    const handleChangeItem = (value) => {
+        setLimit(value)
+        setChangePage(!changePage)
+    }
+    const handlePageChange = (value) => {
+        if (value === "&laquo;" || value === " ...") {
+            setPage(1)
+        } else if (value === "&lsaquo;") {
+            if (page !== 1) {
+                setPage(page - 1)
+            }
+        } else if (value === "&raquo;" || value === "... ") {
+            setPage(totalPage)
+        } else if (value === "&rsaquo;") {
+            if (page !== totalPage) {
+                setPage(page + 1)
+            }
+        } else {
+            setPage(value)
+        }
+        setChangePage(!changePage)
+    }
+
+    //end phan trang
 
 
     return (
@@ -319,6 +340,11 @@ function OrderStatistics() {
                                                 ))}
                                                 </tbody>
                                             </table>
+                                            <div style={{marginTop: '14px'}}>
+                                                <Pagination totalPage={totalPage} page={page} limit={limit} siblings={1}
+                                                            onPageChange={handlePageChange}
+                                                            onChangeItem={handleChangeItem}/>
+                                            </div>
                                         </div>
                                     </div>
                                     {/* /card */}
@@ -326,128 +352,15 @@ function OrderStatistics() {
                                 </div>
                                 {/* /Cards Section Ends Here */}
 
-                                {/* Progress Bar */}
-                                <div className="flex flex-1 flex-col md:flex-row lg:flex-row mx-2 mt-2">
-                                    <div className="rounded overflow-hidden shadow bg-white mx-2 w-full pt-2">
-                                        <div className="px-6 py-2 border-b border-light-grey">
-                                            <div className="font-bold text-xl">Progress Among Projects</div>
-                                        </div>
-                                        <div className="">
-                                            <div className="w-full">
-
-                                                <div className="shadow w-full bg-grey-light">
-                                                    <div className="bg-blue-500 text-xs leading-none py-1 text-center text-white"
-                                                         style={{width: "45%"}}>45%
-                                                    </div>
-                                                </div>
-
-
-                                                <div className="shadow w-full bg-grey-light mt-2">
-                                                    <div className="bg-teal-500 text-xs leading-none py-1 text-center text-white"
-                                                         style={{width: "55%"}}>55%
-                                                    </div>
-                                                </div>
-
-
-                                                <div className="shadow w-full bg-grey-light mt-2">
-                                                    <div className="bg-orange-500 text-xs leading-none py-1 text-center text-white"
-                                                         style={{width: "65%"}}>65%
-                                                    </div>
-                                                </div>
-
-
-                                                <div className="shadow w-full bg-grey-300 mt-2">
-                                                    <div className="bg-red-800 text-xs leading-none py-1 text-center text-white"
-                                                         style={{width: "75%"}}>75%
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {/*Profile Tabs*/}
                                 <div className="flex flex-1 flex-col md:flex-row lg:flex-row mx-2 p-1 mt-2 mx-auto lg:mx-2 md:mx-2 justify-between">
-                                    {/*Top user 1*/}
-                                    <div className="rounded rounded-t-lg overflow-hidden shadow max-w-xs my-3">
-                                        <img src="https://i.imgur.com/w1Bdydo.jpg" alt="" className="w-full"/>
-                                        <div className="flex justify-center -mt-8">
-                                            <img src="https://i.imgur.com/8Km9tLL.jpg" alt=""
-                                                 className="rounded-full border-solid border-white border-2 -mt-3"/>
-                                        </div>
-                                        <div className="text-center px-3 pb-6 pt-2">
-                                            <h3 className="text-black text-sm bold font-sans">Olivia Dunham</h3>
-                                            <p className="mt-2 font-sans font-light text-grey-700">Hello, i'm from another the other
-                                                side!</p>
-                                        </div>
-                                        <div className="flex justify-center pb-3 text-grey-dark">
-                                            <div className="text-center mr-3 border-r pr-3">
-                                                <h2>34</h2>
-                                                <span>Photos</span>
-                                            </div>
-                                            <div className="text-center">
-                                                <h2>42</h2>
-                                                <span>Friends</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {/*Top user 2*/}
-                                    <div className="rounded rounded-t-lg overflow-hidden shadow max-w-xs my-3">
-                                        <img src="https://i.imgur.com/w1Bdydo.jpg" alt="" className="w-full"/>
-                                        <div className="flex justify-center -mt-8">
-                                            <img src="https://i.imgur.com/8Km9tLL.jpg" alt=""
-                                                 className="rounded-full border-solid border-white border-2 -mt-3"/>
-                                        </div>
-                                        <div className="text-center px-3 pb-6 pt-2">
-                                            <h3 className="text-black text-sm bold font-sans">Olivia Dunham</h3>
-                                            <p className="mt-2 font-sans font-light text-grey-dark">Hello, i'm from another the other
-                                                side!</p>
-                                        </div>
-                                        <div className="flex justify-center pb-3 text-grey-dark">
-                                            <div className="text-center mr-3 border-r pr-3">
-                                                <h2>34</h2>
-                                                <span>Photos</span>
-                                            </div>
-                                            <div className="text-center">
-                                                <h2>42</h2>
-                                                <span>Friends</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {/*Top user 3*/}
-                                    <div className="rounded rounded-t-lg overflow-hidden shadow max-w-xs my-3">
-                                        <img src="https://i.imgur.com/w1Bdydo.jpg" alt="" className="w-full"/>
-                                        <div className="flex justify-center -mt-8">
-                                            <img src="https://i.imgur.com/8Km9tLL.jpg" alt=""
-                                                 className="rounded-full border-solid border-white border-2 -mt-3"/>
-                                        </div>
-                                        <div className="text-center px-3 pb-6 pt-2">
-                                            <h3 className="text-black text-sm bold font-sans">Olivia Dunham</h3>
-                                            <p className="mt-2 font-sans font-light text-grey-dark">Hello, i'm from another the other
-                                                side!</p>
-                                        </div>
-                                        <div className="flex justify-center pb-3 text-grey-dark">
-                                            <div className="text-center mr-3 border-r pr-3">
-                                                <h2>34</h2>
-                                                <span>Photos</span>
-                                            </div>
-                                            <div className="text-center">
-                                                <h2>42</h2>
-                                                <span>Friends</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {/*/Profile Tabs*/}
+
                             </div>
+                            </div>
+                            <Chart/>
                         </main>
                         {/*/Main*/}
                     </div>
-                    {/*Footer*/}
-                    <footer className="bg-grey-darkest text-white p-2">
-                        <div className="flex flex-1 mx-auto">&copy; My Design</div>
-                        <div className="flex flex-1 mx-auto">Distributed by:  <a href="https://themewagon.com/" target=" _blank">Themewagon</a></div>
-                    </footer>
-                    {/*/footer*/}
+                    <Footer/>
 
                 </div>
 

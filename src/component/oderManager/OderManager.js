@@ -1,11 +1,7 @@
 import {Link, useParams} from "react-router-dom";
 import Header from "../../layout/Header";
 import React, {useEffect, useState} from "react";
-import {
-    findAllOrdersByMerchant,
-   findUser,
-    groupByBill
-} from "../../service/BillService";
+import {findAllOrdersByMerchant, findUser, groupByBill} from "../../service/BillService";
 import {getAllProductByIdMerchant} from "../../service/ProductService";
 import {
     findByMonthAndMerchant,
@@ -13,6 +9,11 @@ import {
     findByTimeRange,
     findByYearAndWeekAndMerchant
 } from "../../service/BillDetailService";
+import Footer from "../../layout/Footer";
+import Pagination from "../pagination/Pagination";
+import {getList} from "../../service/PageService";
+import Chart from "../../component/oderManager/Chart"
+
 function OrderManager(effect, deps) {
     let {id} = useParams();
     const [billDetail, setBillDetail] = useState([]);
@@ -21,6 +22,7 @@ function OrderManager(effect, deps) {
     const [check, setCheck] = useState(true);
     const [message, setMessage] = useState("");
     const [totalMoNey, setTotalMoNey] = useState(0);
+    const [displayMonth, setDisplayMonth] = useState(12)
     const [totalProduct, setTotalProduct] = useState(0);
     const [totalOrder, setTotalOrder] = useState(0);
     const [totalUser, setTotalUser] = useState(0);
@@ -30,11 +32,14 @@ function OrderManager(effect, deps) {
     const [week, setWeek] = useState(0);
     const [startTime, setStartTime] = useState(undefined);
     const [endTime, setEndTime] = useState(undefined);
+    const [changePage, setChangePage] = useState(false);
+    const [data, setData] = useState([])
     useEffect(() => {
-        if (check){
+        if (check) {
             findAllOrdersByMerchant(id).then(r => {
                 let arr = groupByBill(r)
-                setBillDetail(arr)
+                setData(calculateTotalByDayOfWeek(arr))
+                setBillDetail(getList(arr, page, limit))
                 order(arr.length)
                 money(r)
                 setYear(new Date().getFullYear())
@@ -45,36 +50,23 @@ function OrderManager(effect, deps) {
         getAllProductByIdMerchant(id).then(re => {
             setProduct(re)
             setTotalProduct(re.length)
-
         })
         findUser(id).then(r => {
             setUser(r.reverse())
             setTotalUser(r.length)
         })
-    }, [check], week);
+    }, [check, changePage, week,data ]);
 
 
     const startDate = (e) => {
         const value = e.target.value
         setStartTime(value)
-        if (endTime !== undefined && value !== undefined){
+        if (endTime !== undefined && value !== undefined) {
             findByTimeRange(id, startTime, value).then(r => {
-                if (r === undefined){
+                if (r === undefined) {
                     setCheck(true)
                 } else {
-                    if (r.length > 0){
-                        let arr = groupByBill(r)
-                        setBillDetail(arr)
-                        order(arr.length)
-                        money(r)
-                        setCheck(false)
-                        setMessage("Result search")
-                    } else {
-                        setTotalOrder(0)
-                        setTotalMoNey(0)
-                        setBillDetail([])
-                        setMessage("No order display")
-                    }
+                    setBill(r)
                 }
             })
         }
@@ -83,47 +75,26 @@ function OrderManager(effect, deps) {
     const endDate = (e) => {
         const value = e.target.value
         setEndTime(value)
-       if (startTime !== undefined && value !== undefined){
-           findByTimeRange(id, startTime, value).then(r => {
-               if (r === undefined){
-                   setCheck(true)
-               } else {
-                   if (r.length > 0){
-                       let arr = groupByBill(r)
-                       setBillDetail(arr)
-                       order(arr.length)
-                       money(r)
-                       setCheck(false)
-                       setMessage("Result search")
-                   } else {
-                       setTotalOrder(0)
-                       setTotalMoNey(0)
-                       setBillDetail([])
-                       setMessage("No order display")
-                   }
-               }
-           })
-       }
+        if (startTime !== undefined && value !== undefined) {
+            findByTimeRange(id, startTime, value).then(r => {
+                if (r === undefined) {
+                    setCheck(true)
+                } else {
+                    setBill(r)
+                }
+            })
+        }
     }
     const fetchDataByQuarter = async (valueQuarter) => {
         try {
             const result = await findByQuarter(id, valueQuarter);
-            if (result === undefined) {
-                setCheck(true);
+            if (result !== undefined) {
+                setDisplayMonth(3)
+                setBill(result)
+                console.log(groupByBill(result))
+                setData(calculateTotalByQuarter(groupByBill(result)))
             } else {
-                if (result.length > 0) {
-                    let arr = groupByBill(result)
-                    setBillDetail(arr)
-                    order(arr.length)
-                    money(result);
-                    setCheck(false);
-                    setMessage("Result search");
-                } else {
-                    setTotalOrder(0)
-                    setTotalMoNey(0)
-                    setBillDetail([]);
-                    setMessage("No order display");
-                }
+                setCheck(true);
             }
         } catch (error) {
             console.error(error);
@@ -136,89 +107,139 @@ function OrderManager(effect, deps) {
         await fetchDataByQuarter(value);
     };
 
+    const selectMonth = async (e) => {
+        const value = e.target.value;
+        try {
+            const monthFromQuarter = (quarter === 0) ? value : getMonthFromQuarterAndMonth(quarter, value);
+            setWeek(getWeeksInMonth(value, year));
+            setMonth(value);
+            const r = await findByMonthAndMerchant(id, year, monthFromQuarter);
+            if (r !== undefined) {
+                if (setBill(r)){
+                    setData(calculateTotalByMonth(groupByBill(r)))
+                }
+            } else {
+                setCheck(true);
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            // Xử lý lỗi nếu cần
+        }
+    };
 
-    const selectMonth = (e) => {
-            const value = e.target.value;
-            setWeek(getWeeksInMonth(value, year))
-            setMonth(value)
-        console.log(value)
-        findByMonthAndMerchant(id, year, value).then(r => {
+
+    const selectWeek = (e) => {
+        const value = e.target.value;
+        if (month === undefined) {
+            findByYearAndWeekAndMerchant(id, year, value).then(r => {
                 if (r !== undefined) {
-                    if (r.length > 0) {
-                        let arr = groupByBill(r)
-                        setBillDetail(arr)
-                        order(arr.length)
-                        money(r)
-                        setMessage("Result search")
-                        setCheck(false)
-                    } else {
-                        setTotalOrder(0)
-                        setTotalMoNey(0)
-                        setBillDetail([])
-                        setMessage("No order display")
+                    if (setBill(r)){
+                        setData(calculateTotalByDayOfWeek(groupByBill(r)))
                     }
                 } else {
                     setCheck(true)
                 }
             })
+        } else {
+            const valueWeek = getWeeksFromStartOfYear(year, month, value)
+            findByYearAndWeekAndMerchant(id, year, valueWeek).then(res => {
+                if (res !== undefined) {
+                    if (setBill(res)) {
+                    }
+                } else {
+                    setCheck(true)
+                }
+            })
+        }
+    }
+    const setBill = (r) => {
+        if (r.length > 0) {
+            let arr = groupByBill(r);
+            setBillDetail(getList(arr, page, limit))
+            order(arr.length);
+            money(r);
+            setMessage("Result search");
+            setCheck(false);
+            return true
+        } else {
+            setTotalOrder(0);
+            setTotalMoNey(0);
+            setBillDetail([]);
+            setData([])
+            setMessage("No order display");
+            return false
+        }
     }
 
-
-    const selectWeek = (e) => {
-        const value = e.target.value;
-       if (month === undefined){
-           findByYearAndWeekAndMerchant(id, year, value).then(r => {
-               if (r !== undefined){
-                   if (r.length > 0){
-                       let arr = groupByBill(r)
-                       setBillDetail(arr)
-                       order(arr.length)
-                       money(r);
-                       setMessage("Result search")
-                       setCheck(false)
-                   } else {
-                       setTotalOrder(0)
-                       setTotalMoNey(0)
-                       setBillDetail([])
-                       setMessage("No order display")
-                   }
-               } else {
-                   setCheck(true)
-               }
-           })
-       } else {
-           const valueWeek = getWeeksFromStartOfYear(year, month,value)
-           findByYearAndWeekAndMerchant(id, year, valueWeek).then(res => {
-               if (res !== undefined){
-                   if (res.length > 0){
-                       let arr = groupByBill(res)
-                       setBillDetail(arr)
-                       order(arr.length)
-                       money(res)
-                       setMessage("Result search")
-                       setCheck(false)
-                   } else {
-                       setTotalOrder(0)
-                       setTotalMoNey(0)
-                       setBillDetail([])
-                       setMessage("No order display")
-                   }
-               } else {
-                   setCheck(true)
-               }
-           })
-       }
-    }
+    const calculateTotalByDayOfWeek = (billDetails) => {
+        let a = 0;
+        const result = Array.from({ length: 7 }, (_, index) => {
+            const currentDate = new Date();
+            currentDate.setDate(currentDate.getDate() - currentDate.getDay() + index);
+            return {name: '', Money: 0 ,Orders: 0};
+        });
+        billDetails.forEach(detail => {
+            const orderDate = new Date(detail.bill.time_purchase);
+            const dayOfWeek = orderDate.getDay();
+            result[dayOfWeek].Money += detail.total;
+            result[dayOfWeek].Orders += 1;
+        });
+        for (let i = 0; i < result.length; i++) {
+            result[i].name = "Days " + (i+1);
+        }
+         return result;
+    };
 
 
-    const months = Array.from({ length: 12 }, (_, index) => (
+    const calculateTotalByMonth = (billDetails) => {
+        const result = Array.from({ length: 4 }, (_, index) => {
+            const currentDate = new Date();
+            currentDate.setDate(1);
+            currentDate.setDate(currentDate.getDate() + (index * 7));
+            const monthNumber = currentDate.getMonth() + 1;
+            return { name: '', Money: 0, Orders: 0 };
+        });
+        billDetails.forEach(detail => {
+            const orderDate = new Date(detail.bill.time_purchase);
+            const monthIndex = Math.floor((orderDate.getDate() - 1) / 7);
+            result[monthIndex].Money += detail.total;
+            result[monthIndex].Orders += 1;
+        });
+        for (let i = 0; i < result.length; i++) {
+            result[i].name = 'Week ' + (i+1)
+        }
+        return result;
+    };
+
+    const calculateTotalByQuarter = (billDetails) => {
+        const result = Array.from({ length: 3 }, (_, index) => {
+            return { name: ``, Money: 0, Orders: 0 };
+        });
+        billDetails.forEach(detail => {
+            const orderDate = new Date(detail.bill.time_purchase);
+            const monthIndex = orderDate.getMonth() % 3;
+            // Cập nhật tổng đơn và tổng tiền cho tháng đó trong mảng kết quả
+            result[monthIndex].Money += detail.total;
+            result[monthIndex].Orders += 1;
+        });
+        for (let i = 0; i < result.length; i++) {
+            result[i].name = `Quarter ${i + 1}`;
+        }
+        return result;
+    };
+
+
+
+
+
+    const months = Array.from({length: displayMonth}, (_, index) => (
         <option key={index + 1} value={index + 1}>{index + 1} month</option>
     ));
-    const dates = Array.from({ length: week }, (_, index) => (
+    const dates = Array.from({length: week}, (_, index) => (
         <option key={index + 1} value={index + 1}>{index + 1} week</option>
     ));
 
-    const totalWeek = (year) =>{
+    const totalWeek = (year) => {
         const firstDayOfYear = new Date(year, 0, 1);
         const daysToNearestWednesday = (4 - firstDayOfYear.getDay() + 7) % 7;
         const nearestWednesday = new Date(firstDayOfYear);
@@ -228,7 +249,7 @@ function OrderManager(effect, deps) {
 
     }
 
-    const getWeeksInMonth = (year, month)=> {
+    const getWeeksInMonth = (year, month) => {
         const firstDayOfMonth = new Date(year, month - 1, 1);
         const daysToNearestWednesday = (4 - firstDayOfMonth.getDay() + 7) % 7;
         const nearestWednesday = new Date(firstDayOfMonth);
@@ -245,6 +266,10 @@ function OrderManager(effect, deps) {
 
 
     }
+    const getMonthFromQuarterAndMonth = (quarter, monthInQuarter) => {
+        const month = (quarter - 1) * 3;
+        return month + parseInt(monthInQuarter);
+    }
 
     const money = (r) => {
         let count = 0;
@@ -257,6 +282,42 @@ function OrderManager(effect, deps) {
     const order = (r) => {
         setTotalOrder(r)
     }
+
+    // phan trang
+
+    const [page, setPage] = useState(1)
+    const [limit, setLimit] = useState(5)
+    const totalPage = Math.ceil(totalOrder / limit)
+    if (totalPage !== 0 && page > totalPage) {
+        setPage(totalPage)
+    }
+
+    const handleChangeItem = (value) => {
+        setLimit(value)
+        setChangePage(!changePage)
+    }
+    const handlePageChange = (value) => {
+        if (value === "&laquo;" || value === " ...") {
+            setPage(1)
+        } else if (value === "&lsaquo;") {
+            if (page !== 1) {
+                setPage(page - 1)
+            }
+        } else if (value === "&raquo;" || value === "... ") {
+            setPage(totalPage)
+        } else if (value === "&rsaquo;") {
+            if (page !== totalPage) {
+                setPage(page + 1)
+            }
+        } else {
+            setPage(value)
+        }
+        setChangePage(!changePage)
+    }
+
+
+
+
     return (
         <>
             {/*Container */}
@@ -270,18 +331,21 @@ function OrderManager(effect, deps) {
 
                     <div className="flex flex-1">
                         {/*Sidebar*/}
-                        <aside style={{marginTop : '18px'}} id="sidebar" className="bg-side-nav w-1/2 md:w-1/6 lg:w-1/6 border-r border-side-nav hidden md:block lg:block">
+                        <aside style={{marginTop: '18px'}} id="sidebar"
+                               className="bg-side-nav w-1/2 md:w-1/6 lg:w-1/6 border-r border-side-nav hidden md:block lg:block">
 
                             <ul className="list-reset flex flex-col">
-                                <li style={{backgroundColor: '#efd6d6', height: '73px'}} className=" w-full h-full py-3 px-2 border-b border-light-border">
+                                <li style={{backgroundColor: '#efd6d6', height: '73px'}}
+                                    className=" w-full h-full py-3 px-2 border-b border-light-border">
                                     <a
-                                          className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
+                                        className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
                                         <i className="fas fa-tachometer-alt float-left mx-2"></i>
                                         Dashboard
                                         <span><i className="fas fa-angle-right float-right"></i></span>
                                     </a>
                                 </li>
-                                <li style={{height: '73px'}} className="w-full h-full py-3 px-2 border-b border-light-border">
+                                <li style={{height: '73px'}}
+                                    className="w-full h-full py-3 px-2 border-b border-light-border">
                                     <Link to={`/all-order/${id}`}
                                           className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
                                         <i className="fab fa-wpforms float-left mx-2"></i>
@@ -289,9 +353,10 @@ function OrderManager(effect, deps) {
                                         <span><i className="fa fa-angle-right float-right"></i></span>
                                     </Link>
                                 </li>
-                                <li style={{height: '73px'}} className="w-full h-full py-3 px-2 border-b border-light-border">
-                                    <Link  to={`/order-statistics/${id}`}
-                                        className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
+                                <li style={{height: '73px'}}
+                                    className="w-full h-full py-3 px-2 border-b border-light-border">
+                                    <Link to={`/order-statistics/${id}`}
+                                          className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
                                         <i className="fas fa-table float-left mx-2"></i>
                                         Order statistics
                                         <span><i className="fa fa-angle-right float-right"></i></span>
@@ -303,12 +368,13 @@ function OrderManager(effect, deps) {
                         {/*/Sidebar*/}
 
                         {/*Main*/}
-                        <main className="bg-white-300 flex-1 p-3 overflow-hidden">
+                        <main style={{backgroundColor: '#eeeeee'}} className="bg-white-300 flex-1 p-3 overflow-hidden">
 
                             <div className="flex flex-col">
                                 {/* Stats Row Starts Here */}
                                 <div className="flex flex-1 flex-col md:flex-row lg:flex-row mx-2">
-                                    <div className="shadow-lg bg-red-vibrant border-l-8 hover:bg-red-vibrant-dark border-red-vibrant-dark mb-2 p-2 md:w-1/4 mx-2">
+                                    <div
+                                        className="shadow-lg bg-red-vibrant border-l-8 hover:bg-red-vibrant-dark border-red-vibrant-dark mb-2 p-2 md:w-1/4 mx-2">
                                         <div className="p-4 flex flex-col">
                                             <a href="#" className="no-underline text-white text-2xl">
                                                 <span className="number">{totalMoNey.toLocaleString()}</span>
@@ -320,7 +386,8 @@ function OrderManager(effect, deps) {
                                         </div>
                                     </div>
 
-                                    <div className="shadow bg-info border-l-8 hover:bg-info-dark border-info-dark mb-2 p-2 md:w-1/4 mx-2">
+                                    <div
+                                        className="shadow bg-info border-l-8 hover:bg-info-dark border-info-dark mb-2 p-2 md:w-1/4 mx-2">
                                         <div className="p-4 flex flex-col">
                                             <a href="#" className="no-underline text-white text-2xl">
                                                 {totalOrder} Orders
@@ -331,7 +398,8 @@ function OrderManager(effect, deps) {
                                         </div>
                                     </div>
 
-                                    <div className="shadow bg-warning border-l-8 hover:bg-warning-dark border-warning-dark mb-2 p-2 md:w-1/4 mx-2">
+                                    <div
+                                        className="shadow bg-warning border-l-8 hover:bg-warning-dark border-warning-dark mb-2 p-2 md:w-1/4 mx-2">
                                         <div className="p-4 flex flex-col">
                                             <a href="#" className="no-underline text-white text-2xl">
                                                 {totalUser} Customers
@@ -342,7 +410,8 @@ function OrderManager(effect, deps) {
                                         </div>
                                     </div>
 
-                                    <div className="shadow bg-success border-l-8 hover:bg-success-dark border-success-dark mb-2 p-2 md:w-1/4 mx-2">
+                                    <div
+                                        className="shadow bg-success border-l-8 hover:bg-success-dark border-success-dark mb-2 p-2 md:w-1/4 mx-2">
                                         <div className="p-4 flex flex-col">
                                             <a href="#" className="no-underline text-white text-2xl">
                                                 {totalProduct} Products
@@ -365,41 +434,49 @@ function OrderManager(effect, deps) {
                                         <div className="flex items-center px-6 py-2 border-b border-light-grey">
                                             <div className="font-bold text-xl" style={{width: '250px'}}>{message}</div>
 
-                                            <div style={{marginLeft: '30px', width: '200px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
+                                            <div style={{marginLeft: '30px', width: '200px'}}
+                                                 className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
                                                 <select onChange={selectQuarter} className="form-select">
-                                                    <option>Quarter </option>
+                                                    <option>Quarter</option>
                                                     <option value="1">Quarter 1</option>
                                                     <option value="2">Quarter 2</option>
                                                     <option value="3">Quarter 3</option>
                                                     <option value="4">Quarter 4</option>
                                                 </select>
                                             </div>
-                                            <div style={{marginLeft: '20px', width: '200px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
+                                            <div style={{marginLeft: '20px', width: '200px'}}
+                                                 className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
                                                 <select onChange={selectMonth} className="form-select">
                                                     <option>Month</option>
                                                     {months}
                                                 </select>
                                             </div>
-                                            <div style={{marginLeft: '20px', width: '200px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
+                                            <div style={{marginLeft: '20px', width: '200px'}}
+                                                 className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
                                                 <select onChange={selectWeek} className="form-select">
                                                     <option>Week</option>
                                                     {dates}
                                                 </select>
                                             </div>
 
-                                            <div style={{marginLeft: '50px', width: '93px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
-                                                <div style={{ width: '200px' }}>
-                                                    <input onChange={startDate} type="date" className="form-input" />
+                                            <div style={{marginLeft: '50px', width: '93px'}}
+                                                 className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
+                                                <div style={{width: '200px'}}>
+                                                    <input onChange={startDate} type="date" className="form-input"/>
                                                 </div>
                                             </div>
-                                            <div style={{ width: '220px',marginLeft: '35px' }}>
-                                                <input onChange={endDate} type="date" className="form-input" />
+                                            <div style={{width: '220px', marginLeft: '35px'}}>
+                                                <input onChange={endDate} type="date" className="form-input"/>
                                             </div>
 
-                                            <div style={{marginLeft: '30px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
-                                               <button onClick={()=> {setCheck(true);
-                                                   setStartTime(undefined);
-                                                   setEndTime(undefined)}} className="btn btn-dark">Clear</button>
+                                            <div style={{marginLeft: '30px'}}
+                                                 className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
+                                                <button onClick={() => {
+                                                    setCheck(true);
+                                                    setStartTime(undefined);
+                                                    setEndTime(undefined)
+                                                }} className="btn btn-dark">Clear
+                                                </button>
                                             </div>
 
 
@@ -440,8 +517,8 @@ function OrderManager(effect, deps) {
                                                                 hour: '2-digit',
                                                                 minute: '2-digit',
                                                             })}</td>
-                                                        <td>{item.billDetails.map(item=>{
-                                                            return(
+                                                        <td>{item.billDetails.map(item => {
+                                                            return (
                                                                 <>
                                                                     <p style={{textAlign: 'center'}}>{item.product.name}</p>
                                                                 </>
@@ -451,7 +528,8 @@ function OrderManager(effect, deps) {
                                                             fontWeight: 'bold',
                                                             color: '#a13d3d',
                                                             textAlign: 'center'
-                                                        }}><span className="number">{item.total.toLocaleString()}</span> </td>
+                                                        }}><span className="number">{item.total.toLocaleString()}</span>
+                                                        </td>
                                                         <td style={{textAlign: 'center'}}>
                                                             <span className="number">{item.bill.status.name}</span>
                                                         </td>
@@ -459,139 +537,33 @@ function OrderManager(effect, deps) {
                                                 ))}
                                                 </tbody>
                                             </table>
+                                            <div style={{marginTop: '14px'}}>
+                                                <Pagination totalPage={totalPage} page={page} limit={limit} siblings={1}
+                                                            onPageChange={handlePageChange}
+                                                            onChangeItem={handleChangeItem}/>
+                                            </div>
                                         </div>
                                     </div>
                                     {/* /card */}
-
                                 </div>
                                 {/* /Cards Section Ends Here */}
-
-                                {/* Progress Bar */}
-                                <div className="flex flex-1 flex-col md:flex-row lg:flex-row mx-2 mt-2">
-                                    <div className="rounded overflow-hidden shadow bg-white mx-2 w-full pt-2">
-                                        <div className="px-6 py-2 border-b border-light-grey">
-                                            <div className="font-bold text-xl">Progress Among Projects</div>
-                                        </div>
-                                        <div className="">
-                                            <div className="w-full">
-
-                                                <div className="shadow w-full bg-grey-light">
-                                                    <div className="bg-blue-500 text-xs leading-none py-1 text-center text-white"
-                                                         style={{width: "45%"}}>45%
-                                                    </div>
-                                                </div>
-
-
-                                                <div className="shadow w-full bg-grey-light mt-2">
-                                                    <div className="bg-teal-500 text-xs leading-none py-1 text-center text-white"
-                                                         style={{width: "55%"}}>55%
-                                                    </div>
-                                                </div>
-
-
-                                                <div className="shadow w-full bg-grey-light mt-2">
-                                                    <div className="bg-orange-500 text-xs leading-none py-1 text-center text-white"
-                                                         style={{width: "65%"}}>65%
-                                                    </div>
-                                                </div>
-
-
-                                                <div className="shadow w-full bg-grey-300 mt-2">
-                                                    <div className="bg-red-800 text-xs leading-none py-1 text-center text-white"
-                                                         style={{width: "75%"}}>75%
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {/*Profile Tabs*/}
-                                <div className="flex flex-1 flex-col md:flex-row lg:flex-row mx-2 p-1 mt-2 mx-auto lg:mx-2 md:mx-2 justify-between">
-                                    {/*Top user 1*/}
-                                    <div className="rounded rounded-t-lg overflow-hidden shadow max-w-xs my-3">
-                                        <img src="https://i.imgur.com/w1Bdydo.jpg" alt="" className="w-full"/>
-                                        <div className="flex justify-center -mt-8">
-                                            <img src="https://i.imgur.com/8Km9tLL.jpg" alt=""
-                                                 className="rounded-full border-solid border-white border-2 -mt-3"/>
-                                        </div>
-                                        <div className="text-center px-3 pb-6 pt-2">
-                                            <h3 className="text-black text-sm bold font-sans">Olivia Dunham</h3>
-                                            <p className="mt-2 font-sans font-light text-grey-700">Hello, i'm from another the other
-                                                side!</p>
-                                        </div>
-                                        <div className="flex justify-center pb-3 text-grey-dark">
-                                            <div className="text-center mr-3 border-r pr-3">
-                                                <h2>34</h2>
-                                                <span>Photos</span>
-                                            </div>
-                                            <div className="text-center">
-                                                <h2>42</h2>
-                                                <span>Friends</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {/*Top user 2*/}
-                                    <div className="rounded rounded-t-lg overflow-hidden shadow max-w-xs my-3">
-                                        <img src="https://i.imgur.com/w1Bdydo.jpg" alt="" className="w-full"/>
-                                        <div className="flex justify-center -mt-8">
-                                            <img src="https://i.imgur.com/8Km9tLL.jpg" alt=""
-                                                 className="rounded-full border-solid border-white border-2 -mt-3"/>
-                                        </div>
-                                        <div className="text-center px-3 pb-6 pt-2">
-                                            <h3 className="text-black text-sm bold font-sans">Olivia Dunham</h3>
-                                            <p className="mt-2 font-sans font-light text-grey-dark">Hello, i'm from another the other
-                                                side!</p>
-                                        </div>
-                                        <div className="flex justify-center pb-3 text-grey-dark">
-                                            <div className="text-center mr-3 border-r pr-3">
-                                                <h2>34</h2>
-                                                <span>Photos</span>
-                                            </div>
-                                            <div className="text-center">
-                                                <h2>42</h2>
-                                                <span>Friends</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {/*Top user 3*/}
-                                    <div className="rounded rounded-t-lg overflow-hidden shadow max-w-xs my-3">
-                                        <img src="https://i.imgur.com/w1Bdydo.jpg" alt="" className="w-full"/>
-                                        <div className="flex justify-center -mt-8">
-                                            <img src="https://i.imgur.com/8Km9tLL.jpg" alt=""
-                                                 className="rounded-full border-solid border-white border-2 -mt-3"/>
-                                        </div>
-                                        <div className="text-center px-3 pb-6 pt-2">
-                                            <h3 className="text-black text-sm bold font-sans">Olivia Dunham</h3>
-                                            <p className="mt-2 font-sans font-light text-grey-dark">Hello, i'm from another the other
-                                                side!</p>
-                                        </div>
-                                        <div className="flex justify-center pb-3 text-grey-dark">
-                                            <div className="text-center mr-3 border-r pr-3">
-                                                <h2>34</h2>
-                                                <span>Photos</span>
-                                            </div>
-                                            <div className="text-center">
-                                                <h2>42</h2>
-                                                <span>Friends</span>
-                                            </div>
-                                        </div>
-                                    </div>
+                                <div
+                                    className="flex flex-1 flex-col md:flex-row lg:flex-row mx-2 p-1 mt-2 mx-auto lg:mx-2 md:mx-2 justify-between">
                                 </div>
                                 {/*/Profile Tabs*/}
                             </div>
                         </main>
                         {/*/Main*/}
+
                     </div>
-                    {/*Footer*/}
-                    <footer className="bg-grey-darkest text-white p-2">
-                        <div className="flex flex-1 mx-auto">&copy; My Design</div>
-                        <div className="flex flex-1 mx-auto">Distributed by:  <a href="https://themewagon.com/" target=" _blank">Themewagon</a></div>
-                    </footer>
-                    {/*/footer*/}
 
                 </div>
 
             </div>
+            <div>
+                <Chart data={data} />
+            </div>
+            <Footer/>
         </>
 
     )
