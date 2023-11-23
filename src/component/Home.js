@@ -166,7 +166,7 @@ export default function Home() {
     function handleOrderNow() {
         let quantityOrder = document.getElementById("quantity_p").value;
         if (account !== null) {
-            if (merchant !== null && merchant.account.id_account === account.id) {
+            if (product.merchant.account.id_account === account.id) {
                 toast.error('Your action is not authorized, please try again later!', {containerId: 'home-notification'});
                 return
             }
@@ -645,7 +645,7 @@ export default function Home() {
                                                 <h3 className="font-weight-semi-bold">{product.name}</h3>
                                                 {/*link dẫn tới merchant, cần có cả id merchant để lấy dữ liệu. */}
 
-                                                <Link to={`/detail_merchant/${merchant.id_merchant}`}><h5>{merchant.name} - Shop
+                                                <Link to={`/detail_merchant/${product.merchant.id_merchant}`}><h5>{product.merchant.name} - Shop
                                                     Online</h5></Link>
                                                 <div style={{marginTop: '8px'}} className="d-flex">
                                                     <div className="text-primary mr-2">

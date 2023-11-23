@@ -1131,5 +1131,11 @@ div.error {
     margin-right: 0 !important;
 }
 
+.name-title{
+    width: 500px; /* Độ rộng của container */
+    white-space: nowrap; /* Không ngắt dòng */
+    overflow: hidden; /* Ẩn phần văn bản vượt quá độ rộng */
+    text-overflow: ellipsis; /* Hiển thị ba dấu chấm ở cuối */
+}
 
 

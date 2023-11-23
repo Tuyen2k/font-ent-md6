@@ -112,7 +112,7 @@ function DetailMerchant() {
     function handleOrderNow() {
         let quantityOrder = document.getElementById("quantity_p").value;
         if (account !== null) {
-            if (merchant !== null && product.merchant.account.id_account === account.id) {
+            if (product.merchant.account.id_account === account.id) {
                 toast.error('Your action is not authorized, please try again later!', {containerId: 'merchant-detail'});
                 return
             }
@@ -136,13 +136,15 @@ function DetailMerchant() {
             <ToastContainer enableMultiContainer containerId="merchant-detail" position="top-right"
                             autoClose={1500} pauseOnHover={false}
                             style={{width: "400px"}}/>
-            <div style={{height: '400px', marginTop: "20px"}} className="now-detail-restaurant clearfix">
-                <div style={{marginRight: '700px',width: '600px',marginBottom: '30px'}} className="input-group rounded ">
-                    <input onKeyUp={handleInputName} style={{marginLeft: '200px'}} type="search" className="form-control rounded"
-                           placeholder="Search" aria-label="Search"
-                           aria-describedby="search-addon"
-                    />
-                </div>
+            <div style={{height: '300px', marginTop: "20px"}} className="now-detail-restaurant clearfix" >
+                {/*<div className="container">*/}
+                {/*    <div style={{marginRight: '700px',width: '600px',marginBottom: '30px'}} className="input-group rounded ">*/}
+                {/*        <input onKeyUp={handleInputName} style={{marginLeft: '200px'}} type="search" className="form-control rounded"*/}
+                {/*               placeholder="Search" aria-label="Search"*/}
+                {/*               aria-describedby="search-addon"*/}
+                {/*        />*/}
+                {/*    </div>*/}
+                {/*</div>*/}
                 <div className="container">
                     <div className="row px-xl-5">
                         <div className="col-lg-5 pb-5">
@@ -215,7 +217,14 @@ function DetailMerchant() {
             {/*list sp*/}
             <section className="section-newsfeed">
                 <div className="title with-action">
-                    <h2>List Product</h2>
+                    <div className="row">
+                        <div className="col-4"></div>
+                        <h2 className="col-4" style={{textAlign: "center"}}>List Product</h2>
+                        <input onKeyUp={handleInputName} type="search" style={{backgroundColor: "white", border:"1px solid #dee2e6"}} className="col-4 rounded"
+                               placeholder="Search" aria-label="Search"
+                               aria-describedby="search-addon"
+                        />
+                    </div>
                 </div>
 
                 <div className="content">
