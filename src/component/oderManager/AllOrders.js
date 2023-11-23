@@ -53,10 +53,10 @@ function AllOrders() {
 
                     <div className="flex flex-1">
                         {/*Sidebar*/}
-                        <aside id="sidebar"
+                        <aside style={{marginTop: '18px'}} id="sidebar"
                                className="bg-side-nav w-1/2 md:w-1/6 lg:w-1/6 border-r border-side-nav hidden md:block lg:block">
 
-                            <ul className="list-reset flex flex-col">
+                            <ul style={{height: '75px'}} className="list-reset flex flex-col">
                                 <Link to={`/order-manager/${id}`}
                                       className="w-full h-full py-3 px-2 border-b border-light-border">
                                     <a href=""
@@ -66,7 +66,7 @@ function AllOrders() {
                                         <span><i className="fas fa-angle-right float-right"></i></span>
                                     </a>
                                 </Link>
-                                <li style={{backgroundColor: '#efd6d6'}}
+                                <li style={{backgroundColor: '#efd6d6',height: '75px'}}
                                     className=" w-full h-full py-3 px-2 border-b border-light-border">
                                     <a
                                         className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
@@ -75,68 +75,13 @@ function AllOrders() {
                                         <span><i className="fa fa-angle-right float-right"></i></span>
                                     </a>
                                 </li>
-                                <li className="w-full h-full py-3 px-2 border-b border-light-border">
+                                <li style={{height: '75px'}} className="w-full h-full py-3 px-2 border-b border-light-border">
                                     <Link to={`/order-statistics/${id}`}
                                         className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
                                         <i className="fas fa-table float-left mx-2"></i>
                                         Order statistics
                                         <span><i className="fa fa-angle-right float-right"></i></span>
                                     </Link>
-                                </li>
-                                <li className="w-full h-full py-3 px-2 border-b border-light-border">
-                                    <a href=""
-                                       className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
-                                        <i className="fas fa-grip-horizontal float-left mx-2"></i>
-                                        Buttons
-                                        <span><i className="fa fa-angle-right float-right"></i></span>
-                                    </a>
-                                </li>
-                                <li className="w-full h-full py-3 px-2 border-b border-light-border">
-                                    <a href=""
-                                       className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
-                                        <i className="fab fa-uikit float-left mx-2"></i>
-                                        Ui components
-                                        <span><i className="fa fa-angle-right float-right"></i></span>
-                                    </a>
-                                </li>
-                                <li className="w-full h-full py-3 px-2 border-b border-300-border">
-                                    <a href=""
-                                       className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
-                                        <i className="fas fa-square-full float-left mx-2"></i>
-                                        Modals
-                                        <span><i className="fa fa-angle-right float-right"></i></span>
-                                    </a>
-                                </li>
-                                <li className="w-full h-full py-3 px-2">
-                                    <a href="#"
-                                       className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
-                                        <i className="far fa-file float-left mx-2"></i>
-                                        Pages
-                                        <span><i className="fa fa-angle-down float-right"></i></span>
-                                    </a>
-                                    <ul className="list-reset -mx-2 bg-white-medium-dark">
-                                        <li className="border-t mt-2 border-light-border w-full h-full px-2 py-3">
-                                            <a href=""
-                                               className="mx-4 font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
-                                                Login Page
-                                                <span><i className="fa fa-angle-right float-right"></i></span>
-                                            </a>
-                                        </li>
-                                        <li className="border-t border-light-border w-full h-full px-2 py-3">
-                                            <a href=""
-                                               className="mx-4 font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
-                                                Register Page
-                                                <span><i className="fa fa-angle-right float-right"></i></span>
-                                            </a>
-                                        </li>
-                                        <li className="border-t border-light-border w-full h-full px-2 py-3">
-                                            <a href=""
-                                               className="mx-4 font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
-                                                404 Page
-                                                <span><i className="fa fa-angle-right float-right"></i></span>
-                                            </a>
-                                        </li>
-                                    </ul>
                                 </li>
                             </ul>
 
