@@ -25,7 +25,7 @@ function Chart(props) {
                         <CartesianGrid strokeDasharray="3 3"/>
                         <Tooltip/>
                         <Legend/>
-                        <Line type="monotone" dataKey="Money" stroke="#82ca9d" activeDot={{r: 8}}/>
+                        <Line type="monotone" dataKey="Money" stroke="rgb(73 201 121)" activeDot={{r: 8}}/>
                         <Line type="monotone" dataKey="Orders" stroke="#8884d8" style={{display: 'none'}} />
                     </LineChart>
                 </ResponsiveContainer>

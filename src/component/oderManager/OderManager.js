@@ -467,7 +467,7 @@ function OrderManager(effect, deps) {
                                             </div>
                                             <div>
                                                 <span style={{marginLeft: '15px'}}>
-                                                <button className="btn btn-danger"
+                                                <button style={{backgroundColor: 'rgb(73 201 121)', color: 'white', borderRadius: '5px', height:'37px', width: '65px'}}
                                                         onClick={()=>{document.getElementById("chart-manage").
                                                         scrollIntoView({behavior: "smooth"})}}>Chart</button>
                                             </span>
@@ -556,7 +556,7 @@ function OrderManager(effect, deps) {
                                 <button
                                     style={{
                                         backgroundColor: 'white',
-                                        marginLeft: '60px', // Adjust this value to your preference
+                                        marginLeft: '60px',
                                         height: '25px',
                                         width: '50px',
                                         color: '#82ca9d',

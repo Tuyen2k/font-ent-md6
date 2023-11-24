@@ -198,7 +198,7 @@ function OrderStatistics() {
                         {/*/Sidebar*/}
 
                         {/*Main*/}
-                        <main style={{backgroundColor: '#eeeeee'}} className="bg-white-300 flex-1 p-3 overflow-hidden">
+                        <main id="show-list" style={{backgroundColor: '#eeeeee'}} className="bg-white-300 flex-1 p-3 overflow-hidden">
 
                             <div className="flex flex-col">
                                 {/* Stats Row Starts Here */}
@@ -291,10 +291,11 @@ function OrderStatistics() {
                                             </div>
                                             <div className="ml-4">
                                                 <span style={{marginLeft: '30px'}}>
-                                                <button className="btn btn-danger"
+                                                <button style={{backgroundColor: 'rgb(73 201 121)', color: 'white', borderRadius: '5px', height:'37px', width: '65px'}}
                                                         onClick={()=>{document.getElementById("chart-order").
                                                         scrollIntoView({behavior: "smooth"})}}>Chart</button>
                                             </span>
+
                                             </div>
 
 
@@ -366,9 +367,37 @@ function OrderStatistics() {
 
                             </div>
                             </div>
-                            <div id="chart-manage" style={{marginTop: '20px',backgroundColor: 'white', marginLeft: '15px', marginRight: '15px', borderRadius: '5px'}} className="footer-wraper">
-                                <button style={{backgroundColor: 'white', marginLeft:'1200px', height: '25px', width:'50px', color: '#8884d8',marginTop:'10px', fontSize: '18px'}}
-                                        onClick={()=> setConversion(!conversion)}>Conversion</button>
+                            <div id="chart-order" style={{marginTop: '20px',backgroundColor: 'white', marginLeft: '15px', marginRight: '15px', borderRadius: '5px'}} className="footer-wraper">
+                                <button
+                                    style={{
+                                        backgroundColor: 'white',
+                                        marginLeft: '1150px',
+                                        height: '25px',
+                                        width: '50px',
+                                        color: '#8884d8',
+                                        marginTop: '10px',
+                                        fontSize: '18px'
+                                    }}
+                                    onClick={() => setConversion(!conversion)}
+                                >
+                                    Conversion
+                                </button>
+                                <button
+                                    style={{
+                                        backgroundColor: 'white',
+                                        marginLeft: '60px',
+                                        height: '25px',
+                                        width: '50px',
+                                        color: '#82ca9d',
+                                        marginTop: '10px',
+                                        fontSize: '18px'
+                                    }}
+                                    onClick={() => {
+                                        document.getElementById("show-list").scrollIntoView({ behavior: "smooth" });
+                                    }}
+                                >
+                                    List
+                                </button>
                                 {conversion ? (
                                     <Chart data={data}/>
                                 ) : (

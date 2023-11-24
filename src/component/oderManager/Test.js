@@ -23,7 +23,7 @@ function MyBarChar(props) {
                         <Tooltip />
                         <Legend />
                         <Bar dataKey="Money" fill="#82ca9d" />
-                        <Bar  dataKey="Orders" fill="#8884d8"  />
+                        <Bar dataKey="Orders" fill="#8884d8" />
                     </BarChart>
                 </ResponsiveContainer>
             </div>
