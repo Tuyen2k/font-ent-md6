@@ -6,11 +6,15 @@ function Chart(props) {
 
     return (
         <>
-            <div>
-                <ResponsiveContainer className="chart" height={300}>
+            <div style={{textAlign: 'center', marginBottom: '40px'}}>
+                <h4 style={{marginTop: '30px', color: 'rgb(129 120 120)'}}>Chart statistics</h4>
+                <b/>
+            </div>
+            <div style={{marginBottom: '20px'}}>
+                <ResponsiveContainer className="chart" height={450}>
                     <LineChart
                         width={600}
-                        height={300}
+                        height={500}
                         data={data}
                         margin={{top: 5, right: 30, left: 20, bottom: 5}}
                     >

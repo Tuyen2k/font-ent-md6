@@ -187,14 +187,6 @@ function AllOrders() {
                                         <span><i className="fas fa-angle-right float-right"></i></span>
                                     </Link>
                                 </li>
-                                <li style={{height: '73px',backgroundColor: '#efd6d6', }} className="w-full h-full py-3 px-2 border-b border-light-border">
-                                    <a
-                                          className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
-                                        <i className="fab fa-wpforms float-left mx-2"></i>
-                                        All orders
-                                        <span><i className="fa fa-angle-right float-right"></i></span>
-                                    </a>
-                                </li>
                                 <li style={{height: '73px'}} className="w-full h-full py-3 px-2 border-b border-light-border">
                                     <Link  to={`/order-statistics/${id}`}
                                            className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
@@ -202,6 +194,14 @@ function AllOrders() {
                                         Order statistics
                                         <span><i className="fa fa-angle-right float-right"></i></span>
                                     </Link>
+                                </li>
+                                <li style={{height: '73px',backgroundColor: '#efd6d6', }} className="w-full h-full py-3 px-2 border-b border-light-border">
+                                    <a
+                                        className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
+                                        <i className="fab fa-wpforms float-left mx-2"></i>
+                                        All orders
+                                        <span><i className="fa fa-angle-right float-right"></i></span>
+                                    </a>
                                 </li>
                             </ul>
 

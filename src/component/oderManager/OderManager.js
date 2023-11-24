@@ -32,21 +32,21 @@ function OrderManager(effect, deps) {
     const [week, setWeek] = useState(0);
     const [startTime, setStartTime] = useState(undefined);
     const [endTime, setEndTime] = useState(undefined);
-    const [changePage, setChangePage] = useState(false);
     const [data, setData] = useState([])
     useEffect(() => {
         if (check) {
             findAllOrdersByMerchant(id).then(r => {
                 let arr = groupByBill(r)
-                setData(calculateTotalByDayOfWeek(arr))
-                setBillDetail(getList(arr, page, limit))
+                setData(calculateTotalByYear(arr))
+                setBillDetail(arr)
                 order(arr.length)
                 money(r)
                 setYear(new Date().getFullYear())
                 setMessage("Statistics")
+                setWeek(totalWeek(year));
             })
+
         }
-        setWeek(totalWeek(year));
         getAllProductByIdMerchant(id).then(re => {
             setProduct(re)
             setTotalProduct(re.length)
@@ -55,7 +55,7 @@ function OrderManager(effect, deps) {
             setUser(r.reverse())
             setTotalUser(r.length)
         })
-    }, [check, changePage, week,data ]);
+    }, [check]);
 
 
     const startDate = (e) => {
@@ -66,7 +66,9 @@ function OrderManager(effect, deps) {
                 if (r === undefined) {
                     setCheck(true)
                 } else {
-                    setBill(r)
+                    if (setBill(r)){
+                        setData(calculateTotalByQuarter(groupByBill(r)))
+                    }
                 }
             })
         }
@@ -80,7 +82,9 @@ function OrderManager(effect, deps) {
                 if (r === undefined) {
                     setCheck(true)
                 } else {
-                    setBill(r)
+                    if (setBill(r)){
+                        setData(calculateTotalByQuarter(groupByBill(r)))
+                    }
                 }
             })
         }
@@ -91,7 +95,6 @@ function OrderManager(effect, deps) {
             if (result !== undefined) {
                 setDisplayMonth(3)
                 setBill(result)
-                console.log(groupByBill(result))
                 setData(calculateTotalByQuarter(groupByBill(result)))
             } else {
                 setCheck(true);
@@ -112,7 +115,7 @@ function OrderManager(effect, deps) {
         try {
             const monthFromQuarter = (quarter === 0) ? value : getMonthFromQuarterAndMonth(quarter, value);
             setWeek(getWeeksInMonth(value, year));
-            setMonth(value);
+            setMonth(monthFromQuarter);
             const r = await findByMonthAndMerchant(id, year, monthFromQuarter);
             if (r !== undefined) {
                 if (setBill(r)){
@@ -145,6 +148,7 @@ function OrderManager(effect, deps) {
             findByYearAndWeekAndMerchant(id, year, valueWeek).then(res => {
                 if (res !== undefined) {
                     if (setBill(res)) {
+                        setData(calculateTotalByDayOfWeek(groupByBill(res)))
                     }
                 } else {
                     setCheck(true)
@@ -155,7 +159,7 @@ function OrderManager(effect, deps) {
     const setBill = (r) => {
         if (r.length > 0) {
             let arr = groupByBill(r);
-            setBillDetail(getList(arr, page, limit))
+            setBillDetail(arr)
             order(arr.length);
             money(r);
             setMessage("Result search");
@@ -165,7 +169,9 @@ function OrderManager(effect, deps) {
             setTotalOrder(0);
             setTotalMoNey(0);
             setBillDetail([]);
-            setData([])
+            setData([{name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0},
+                {name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0},
+                {name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0}])
             setMessage("No order display");
             return false
         }
@@ -223,7 +229,23 @@ function OrderManager(effect, deps) {
             result[monthIndex].Orders += 1;
         });
         for (let i = 0; i < result.length; i++) {
-            result[i].name = `Quarter ${i + 1}`;
+            result[i].name = `Month ${i + 1}`;
+        }
+        return result;
+    };
+
+    const calculateTotalByYear = (billDetails) => {
+        const result = Array.from({ length: 12 }, (_, index) => {
+            return { name: ``, Money: 0, Orders: 0 };
+        });
+        billDetails.forEach(detail => {
+            const orderDate = new Date(detail.bill.time_purchase);
+            const monthIndex = orderDate.getMonth()
+            result[monthIndex].Money += detail.total;
+            result[monthIndex].Orders += 1;
+        });
+        for (let i = 0; i < result.length; i++) {
+            result[i].name = `Month ${i + 1}`;
         }
         return result;
     };
@@ -283,40 +305,6 @@ function OrderManager(effect, deps) {
         setTotalOrder(r)
     }
 
-    // phan trang
-
-    const [page, setPage] = useState(1)
-    const [limit, setLimit] = useState(5)
-    const totalPage = Math.ceil(totalOrder / limit)
-    if (totalPage !== 0 && page > totalPage) {
-        setPage(totalPage)
-    }
-
-    const handleChangeItem = (value) => {
-        setLimit(value)
-        setChangePage(!changePage)
-    }
-    const handlePageChange = (value) => {
-        if (value === "&laquo;" || value === " ...") {
-            setPage(1)
-        } else if (value === "&lsaquo;") {
-            if (page !== 1) {
-                setPage(page - 1)
-            }
-        } else if (value === "&raquo;" || value === "... ") {
-            setPage(totalPage)
-        } else if (value === "&rsaquo;") {
-            if (page !== totalPage) {
-                setPage(page + 1)
-            }
-        } else {
-            setPage(value)
-        }
-        setChangePage(!changePage)
-    }
-
-
-
 
     return (
         <>
@@ -346,19 +334,19 @@ function OrderManager(effect, deps) {
                                 </li>
                                 <li style={{height: '73px'}}
                                     className="w-full h-full py-3 px-2 border-b border-light-border">
-                                    <Link to={`/all-order/${id}`}
+                                    <Link to={`/order-statistics/${id}`}
                                           className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
-                                        <i className="fab fa-wpforms float-left mx-2"></i>
-                                        All orders
+                                        <i className="fas fa-table float-left mx-2"></i>
+                                        Order statistics
                                         <span><i className="fa fa-angle-right float-right"></i></span>
                                     </Link>
                                 </li>
                                 <li style={{height: '73px'}}
                                     className="w-full h-full py-3 px-2 border-b border-light-border">
-                                    <Link to={`/order-statistics/${id}`}
+                                    <Link to={`/all-order/${id}`}
                                           className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
-                                        <i className="fas fa-table float-left mx-2"></i>
-                                        Order statistics
+                                        <i className="fab fa-wpforms float-left mx-2"></i>
+                                        All orders
                                         <span><i className="fa fa-angle-right float-right"></i></span>
                                     </Link>
                                 </li>
@@ -432,9 +420,9 @@ function OrderManager(effect, deps) {
 
                                     <div className="rounded overflow-hidden shadow bg-white mx-2 w-full">
                                         <div className="flex items-center px-6 py-2 border-b border-light-grey">
-                                            <div className="font-bold text-xl" style={{width: '250px'}}>{message}</div>
-
-                                            <div style={{marginLeft: '30px', width: '200px'}}
+                                            <div className="font-bold text-xl" style={{width: '300px'}}>{message}
+                                            </div>
+                                            <div style={{marginLeft: '1px', width: '200px'}}
                                                  className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
                                                 <select onChange={selectQuarter} className="form-select">
                                                     <option>Quarter</option>
@@ -459,13 +447,13 @@ function OrderManager(effect, deps) {
                                                 </select>
                                             </div>
 
-                                            <div style={{marginLeft: '50px', width: '93px'}}
+                                            <div style={{marginLeft: '40px', width: '70px'}}
                                                  className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
                                                 <div style={{width: '200px'}}>
                                                     <input onChange={startDate} type="date" className="form-input"/>
                                                 </div>
                                             </div>
-                                            <div style={{width: '220px', marginLeft: '35px'}}>
+                                            <div style={{width: '245px', marginLeft: '55px'}}>
                                                 <input onChange={endDate} type="date" className="form-input"/>
                                             </div>
 
@@ -477,6 +465,13 @@ function OrderManager(effect, deps) {
                                                     setEndTime(undefined)
                                                 }} className="btn btn-dark">Clear
                                                 </button>
+                                            </div>
+                                            <div>
+                                                <span style={{marginLeft: '15px'}}>
+                                                <button className="btn btn-danger"
+                                                        onClick={()=>{document.getElementById("chart-manage").
+                                                        scrollIntoView({behavior: "smooth"})}}>Chart</button>
+                                            </span>
                                             </div>
 
 
@@ -537,11 +532,6 @@ function OrderManager(effect, deps) {
                                                 ))}
                                                 </tbody>
                                             </table>
-                                            <div style={{marginTop: '14px'}}>
-                                                <Pagination totalPage={totalPage} page={page} limit={limit} siblings={1}
-                                                            onPageChange={handlePageChange}
-                                                            onChangeItem={handleChangeItem}/>
-                                            </div>
                                         </div>
                                     </div>
                                     {/* /card */}
@@ -552,18 +542,18 @@ function OrderManager(effect, deps) {
                                 </div>
                                 {/*/Profile Tabs*/}
                             </div>
+                            <div id="chart-manage" style={{marginTop: '20px',backgroundColor: 'white', marginLeft: '15px', marginRight: '15px', borderRadius: '5px'}} className="footer-wraper">
+                                <Chart data={data}/>
+                            </div>
                         </main>
                         {/*/Main*/}
 
                     </div>
-
+                    <Footer/>
                 </div>
 
             </div>
-            <div>
-                <Chart data={data} />
-            </div>
-            <Footer/>
+
         </>
 
     )

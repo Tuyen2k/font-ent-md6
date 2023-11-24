@@ -25,14 +25,14 @@ function OrderStatistics() {
     const [totalProduct, setTotalProduct] = useState(0);
     const [totalOrder, setTotalOrder] = useState(0);
     const [totalUser, setTotalUser] = useState(0);
-    const [changePage, setChangePage] = useState(false);
     const [data, setData] = useState([])
 
     useEffect(() => {
         if (check){
             findAllOrdersByMerchant(id).then(r => {
                 let arr = groupByBill(r)
-                setBillDetail(getList(arr, page, limit))
+                setBillDetail(arr)
+                setData(calculateTotalByYear(arr))
                 order(arr.length)
                 money(r)
                 setMessage("Statistics")
@@ -50,15 +50,19 @@ function OrderStatistics() {
             setUser(r.reverse())
             setTotalUser(r.length)
         })
-    }, [check, changePage, data]);
-
-
+    }, [check]);
     const selectProduct = (e) => {
         findOrderByProduct(e.target.value).then(r => {
             if (r !== undefined){
                 setBill(r)
             } else {
-                setCheck(true)
+                setTotalOrder(0);
+                setTotalMoNey(0);
+                setData([{name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0},
+                    {name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0},
+                    {name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0}])
+                setMessage("No order display");
+                setBillDetail([])
             }
         })
     }
@@ -68,7 +72,13 @@ function OrderStatistics() {
             if (r !== undefined){
                 setBill(r)
             } else {
-                setCheck(true)
+                setTotalOrder(0);
+                setTotalMoNey(0);
+                setData([{name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0},
+                    {name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0},
+                    {name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0}])
+                setMessage("No order display");
+                setBillDetail([])
             }
         })
     }
@@ -78,7 +88,13 @@ function OrderStatistics() {
             if (r !== undefined){
                 setBill(r)
             } else {
-                setCheck(true)
+                setTotalOrder(0);
+                setTotalMoNey(0);
+                setData([{name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0},
+                    {name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0},
+                    {name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0}])
+                setMessage("No order display");
+                setBillDetail([])
             }
         })
     }
@@ -89,13 +105,18 @@ function OrderStatistics() {
             setBillDetail(arr);
             order(arr.length);
             money(r);
+            setData(calculateTotalByYear(arr))
             setMessage("Result search");
             setCheck(false);
         } else {
+            setBillDetail([])
             setTotalOrder(0);
             setTotalMoNey(0);
-            setBillDetail([]);
+            setData([{name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0},
+                {name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0},
+                {name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0}])
             setMessage("No order display");
+
         }
     }
 
@@ -111,39 +132,23 @@ function OrderStatistics() {
         setTotalOrder(r)
     }
 
-
-    // phan trang
-    const [page, setPage] = useState(1)
-    const [limit, setLimit] = useState(5)
-    const totalPage = Math.ceil(totalOrder / limit)
-    if (totalPage !== 0 && page > totalPage) {
-        setPage(totalPage)
-    }
-
-    const handleChangeItem = (value) => {
-        setLimit(value)
-        setChangePage(!changePage)
-    }
-    const handlePageChange = (value) => {
-        if (value === "&laquo;" || value === " ...") {
-            setPage(1)
-        } else if (value === "&lsaquo;") {
-            if (page !== 1) {
-                setPage(page - 1)
-            }
-        } else if (value === "&raquo;" || value === "... ") {
-            setPage(totalPage)
-        } else if (value === "&rsaquo;") {
-            if (page !== totalPage) {
-                setPage(page + 1)
-            }
-        } else {
-            setPage(value)
+    const calculateTotalByYear = (billDetails) => {
+        const result = Array.from({ length: 12 }, (_, index) => {
+            return { name: ``, Money: 0, Orders: 0 };
+        });
+        billDetails.forEach(detail => {
+            const orderDate = new Date(detail.bill.time_purchase);
+            const monthIndex = orderDate.getMonth()
+            result[monthIndex].Money += detail.total;
+            result[monthIndex].Orders += 1;
+        });
+        for (let i = 0; i < result.length; i++) {
+            result[i].name = `Month ${i + 1}`;
         }
-        setChangePage(!changePage)
-    }
+        return result;
+    };
 
-    //end phan trang
+
 
 
     return (
@@ -171,14 +176,6 @@ function OrderStatistics() {
                                         <span><i className="fas fa-angle-right float-right"></i></span>
                                     </Link>
                                 </li>
-                                <li style={{height: '75px'}}className="w-full h-full py-3 px-2 border-b border-light-border">
-                                    <Link to={`/all-order/${id}`}
-                                          className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
-                                        <i className="fab fa-wpforms float-left mx-2"></i>
-                                        All orders
-                                        <span><i className="fa fa-angle-right float-right"></i></span>
-                                    </Link>
-                                </li>
                                 <li style={{backgroundColor: '#efd6d6',height: '75px'}} className="w-full h-full py-3 px-2 border-b border-light-border">
                                     <a
                                        className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
@@ -187,13 +184,21 @@ function OrderStatistics() {
                                         <span><i className="fa fa-angle-right float-right"></i></span>
                                     </a>
                                 </li>
+                                <li style={{height: '75px'}} className="w-full h-full py-3 px-2 border-b border-light-border">
+                                    <Link to={`/all-order/${id}`}
+                                          className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
+                                        <i className="fab fa-wpforms float-left mx-2"></i>
+                                        All orders
+                                        <span><i className="fa fa-angle-right float-right"></i></span>
+                                    </Link>
+                                </li>
                             </ul>
 
                         </aside>
                         {/*/Sidebar*/}
 
                         {/*Main*/}
-                        <main className="bg-white-300 flex-1 p-3 overflow-hidden">
+                        <main style={{backgroundColor: '#eeeeee'}} className="bg-white-300 flex-1 p-3 overflow-hidden">
 
                             <div className="flex flex-col">
                                 {/* Stats Row Starts Here */}
@@ -253,8 +258,9 @@ function OrderStatistics() {
 
                                     <div className="rounded overflow-hidden shadow bg-white mx-2 w-full">
                                         <div className="flex items-center px-6 py-2 border-b border-light-grey">
-                                            <div className="font-bold text-xl" style={{width: '250px'}}>{message}</div>
-                                            <div style={{marginLeft: '500px', width: '300px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
+                                            <div style={{width: '300px'}} className="font-bold text-xl">{message}
+                                               </div>
+                                            <div style={{marginLeft: '90px', width: '300px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
                                                 <select onChange={selectProduct}  className="form-select">
                                                     <option>Product</option>
                                                     {product && product.map(item => (
@@ -283,6 +289,15 @@ function OrderStatistics() {
 
                                                 </select>
                                             </div>
+                                            <div className="ml-4">
+                                                <span style={{marginLeft: '30px'}}>
+                                                <button className="btn btn-danger"
+                                                        onClick={()=>{document.getElementById("chart-order").
+                                                        scrollIntoView({behavior: "smooth"})}}>Chart</button>
+                                            </span>
+                                            </div>
+
+
 
                                         </div>
                                         <div className="table-responsive">
@@ -340,11 +355,6 @@ function OrderStatistics() {
                                                 ))}
                                                 </tbody>
                                             </table>
-                                            <div style={{marginTop: '14px'}}>
-                                                <Pagination totalPage={totalPage} page={page} limit={limit} siblings={1}
-                                                            onPageChange={handlePageChange}
-                                                            onChangeItem={handleChangeItem}/>
-                                            </div>
                                         </div>
                                     </div>
                                     {/* /card */}
@@ -356,7 +366,9 @@ function OrderStatistics() {
 
                             </div>
                             </div>
-                            <Chart/>
+                            <div id="chart-order" className="footer-wraper">
+                            <Chart data={data}/>
+                            </div>
                         </main>
                         {/*/Main*/}
                     </div>
