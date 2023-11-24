@@ -246,9 +246,9 @@ export default function Header() {
                                 Hà Nội
                                 <i className="fa-solid fa-sort-down"></i>
                                 <ul className="menu-nav-city-select">
-                                    <li className="city-item">Hồ Chí Minh</li>
-                                    <li className="city-item">Hải Phòng</li>
-                                    <li className="city-item">Đà Nẵng</li>
+                                    <li className="city-item" style={{marginLeft:"5px"}}>Hồ Chí Minh</li>
+                                    <li className="city-item" style={{marginLeft:"5px"}}>Hải Phòng</li>
+                                    <li className="city-item" style={{marginLeft:"5px"}}>Đà Nẵng</li>
                                 </ul>
                             </div>
 

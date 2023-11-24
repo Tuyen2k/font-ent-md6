@@ -18,11 +18,10 @@ export default function Home() {
     const [message, setMessage] = useState("")
     const [nameProduct, setNameProduct] = useState("")
     const [load, setLoad] = useState(false);
-    const [product, setProduct] = useState({});
-    const [quantity, setQuantity] = useState(1);
+    const [product, setProduct] = useState(undefined);
     const [merchant, setMerchant] = useState({})
-    const [totalOderMoney, setTotalOderMoney] = useState();
-    const [totalMoney, setTotalMoney] = useState();
+    const [totalOderMoney, setTotalOderMoney] = useState(0);
+    const [totalMoney, setTotalMoney] = useState(0);
     const [coupons, setCoupons] = useState([]);
     const [coupon, setCoupon] = useState(1);
     const [merchants, setMerchants] = useState([]);
@@ -94,6 +93,7 @@ export default function Home() {
         try {
             const data = await findOneProduct(id_product);
             setProduct(data);
+            document.getElementById("quantity_p").value = 1
             setMerchant(data.merchant);
             setTotalOderMoney(data.priceSale)
             const total = data.priceSale - coupon
@@ -139,9 +139,11 @@ export default function Home() {
     }
 
     const handleQuantityChange = (event) => {
+        let quantityInput = document.getElementById("quantity_p");
         let newValue = parseInt(event.target.value, 10);
         if (!isNaN(newValue) && newValue >= 1 && newValue <= 20) {
-            setQuantity(newValue);
+            quantityInput.value = newValue
+            // setQuantity(newValue);
             let total = product.priceSale * newValue;
             setTotalOderMoney(total)
         }
@@ -162,12 +164,13 @@ export default function Home() {
     }
 
     function handleOrderNow() {
+        let quantityOrder = document.getElementById("quantity_p").value;
         if (account !== null) {
-            if (merchant !== null && merchant.account.id_account === account.id) {
+            if (product.merchant.account.id_account === account.id) {
                 toast.error('Your action is not authorized, please try again later!', {containerId: 'home-notification'});
                 return
             }
-            orderNow(product, account.id).then(res => {
+            orderNow(product, account.id, quantityOrder).then(res => {
                 if (res === true) {
                     toast.success('Order success!', {containerId: 'home-notification'});
                 } else {
@@ -192,7 +195,7 @@ export default function Home() {
 
     return (
         <>
-            <ToastContainer enableMultiContainer containerId="home-notification" position="top-center"
+            <ToastContainer enableMultiContainer containerId="home-notification" position="top-right"
                             autoClose={2000} pauseOnHover={false}
                             style={{width: "400px"}}/>
             {/*Home*/}
@@ -309,7 +312,7 @@ export default function Home() {
                                                                     onClick={() => displayModal(item.id_product)}
                                                                     type="button" data-toggle="modal"
                                                                     data-target="#exampleModalLong" style={{
-                                                                backgroundColor: '#d78c8c',
+                                                                backgroundColor: '#ff3d3d',
                                                                 padding: '7px',
                                                                 borderRadius: '10px',
                                                                 width: '180px',
@@ -398,7 +401,7 @@ export default function Home() {
                                                                 onClick={() => displayModal(item.id_product)}
                                                                 type="button" data-toggle="modal"
                                                                 data-target="#exampleModalLong" style={{
-                                                            backgroundColor: '#d78c8c',
+                                                            backgroundColor: '#ff3d3d',
                                                             padding: '7px',
                                                             borderRadius: '10px',
                                                             width: '180px',
@@ -475,7 +478,7 @@ export default function Home() {
                                                                 onClick={() => displayModal(item.id_product)}
                                                                 type="button" data-toggle="modal"
                                                                 data-target="#exampleModalLong" style={{
-                                                            backgroundColor: '#d78c8c',
+                                                            backgroundColor: '#ff3d3d',
                                                             padding: '7px',
                                                             borderRadius: '10px',
                                                             width: '180px',
@@ -555,7 +558,7 @@ export default function Home() {
                                                                 <path
                                                                     d="M15.854.146a.5.5 0 0 1 0 .708L11.707 5H14.5a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5v-4a.5.5 0 0 1 1 0v2.793L15.146.146a.5.5 0 0 1 .708 0zm-12.2 1.182a.678.678 0 0 0-1.015-.063L1.605 2.3c-.483.484-.661 1.169-.45 1.77a17.568 17.568 0 0 0 4.168 6.608 17.569 17.569 0 0 0 6.608 4.168c.601.211 1.286.033 1.77-.45l1.034-1.034a.678.678 0 0 0-.063-1.015l-2.307-1.794a.678.678 0 0 0-.58-.122l-2.19.547a1.745 1.745 0 0 1-1.657-.459L5.482 8.062a1.745 1.745 0 0 1-.46-1.657l.548-2.19a.678.678 0 0 0-.122-.58L3.654 1.328zM1.884.511a1.745 1.745 0 0 1 2.612.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"/>
                                                             </svg>
-                                                            <span>  Phone : <span
+                                                            <span>  Phone: <span
                                                                 style={{fontWeight: 'bold'}}>{item.phone}</span></span>
                                                         </div>
                                                     </div>
@@ -605,135 +608,141 @@ export default function Home() {
 
             {/*modal*/}
             <div className="modal fade" id="show_product" tabIndex="-1" aria-labelledby="exampleModalLabel"
-                 aria-hidden="true">
+                 aria-hidden="true" style={{margin: "0px"}}>
                 <div className="modal-dialog modal-dialog-centered modal-lg">
                     <div className="modal-content" style={{minHeight: '75vh', minWidth: '100vh'}}>
-                        <div className="modal-header">
-                            <h3 style={{marginLeft: '350px'}} className="modal-title" id="show_productLabel">ORDER
-                                NOW</h3>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
+                        <div className="modal-header" >
+                            <div className="row">
+                                <div className="col-1"></div>
+                                <div className="col-10" style={{display: "flex", justifyContent:"center", alignItems:"center"}}>
+                                    <h3 className="modal-title" id="show_productLabel">ORDER NOW</h3>
+                                </div>
+                                <button type="button" className="btn-close col-1" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
                         </div>
-                        <div className="modal-body" style={{height: '520px'}}>
-                            <div style={{marginTop: '30px'}} className="now-detail-restaurant clearfix">
-                                <div className="container">
-                                    <div className="row">
-                                        <div className="col-5">
-                                            <div id="product-carousel" className="carousel slide" data-ride="carousel">
-                                                <div style={{
-                                                    // width: '480px',
-                                                    // height: '500px',
-                                                    position: 'relative',
-                                                    float: 'left'
-                                                }}>
-                                                    {/*<div className="carousel-item active">*/}
+                        {product !== undefined && (
+                            <div className="modal-body">
+                                <div style={{marginTop: '30px'}} className="now-detail-restaurant clearfix">
+                                    <div className="container">
+                                        <div className="row">
+                                            <div className="col-5">
+                                                <div id="product-carousel" className="carousel slide" data-ride="carousel">
+                                                    <div style={{
+                                                        // width: '480px',
+                                                        // height: '500px',
+                                                        position: 'relative',
+                                                        float: 'left'
+                                                    }}>
+                                                        {/*<div className="carousel-item active">*/}
                                                         <img style={{width: '300px', height: '250px'}}
                                                              src={product.image} alt="Image"/>
-                                                    {/*</div>*/}
+                                                        {/*</div>*/}
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div className="col-lg-7 pb-5">
-                                            <h3 className="font-weight-semi-bold">{product.name}</h3>
-                                            {/*link dẫn tới merchant, cần có cả id merchant để lấy dữ liệu. */}
-                                            <Link to={`/detail_merchant/${merchant.id_merchant}`}>{merchant.name} - Shop
-                                                Online</Link>
-                                            <div style={{marginTop: '8px'}} className="d-flex mb-3">
-                                                <div className="text-primary mr-2">
-                                                    <small style={{color: '#d1d124'}} className="fas fa-star"></small>
-                                                    <small style={{color: '#d1d124'}} className="fas fa-star"></small>
-                                                    <small style={{color: '#d1d124'}} className="fas fa-star"></small>
-                                                    <small style={{color: '#d1d124'}}
-                                                           className="fas fa-star-half-alt"></small>
-                                                    <small style={{color: '#d1d124'}} className="far fa-star"></small>
+                                            <div className="col-lg-7">
+                                                <h3 className="font-weight-semi-bold">{product.name}</h3>
+                                                {/*link dẫn tới merchant, cần có cả id merchant để lấy dữ liệu. */}
+
+                                                <Link to={`/detail_merchant/${product.merchant.id_merchant}`}><h5>{product.merchant.name} - Shop
+                                                    Online</h5></Link>
+                                                <div style={{marginTop: '8px'}} className="d-flex">
+                                                    <div className="text-primary mr-2">
+                                                        <small style={{color: '#d1d124'}} className="fas fa-star"></small>
+                                                        <small style={{color: '#d1d124'}} className="fas fa-star"></small>
+                                                        <small style={{color: '#d1d124'}} className="fas fa-star"></small>
+                                                        <small style={{color: '#d1d124'}}
+                                                               className="fas fa-star-half-alt"></small>
+                                                        <small style={{color: '#d1d124'}} className="far fa-star"></small>
+                                                    </div>
+                                                    <small className="pt-1">{product.view}</small>
                                                 </div>
-                                                <small className="pt-1">{product.view}</small>
-                                            </div>
-                                            <div className="row">
-                                                    <span className="number col-4" style={{marginTop:"3px"}}>
+                                                <div className="row">
+                                                    <span className="col-4" style={{marginTop:"3px"}}>
                                                         <h5 className="font-weight-semi-bold text-muted">
-                                                            <del><em>{product.price} VND</em></del>
+                                                            <del><em><span className="number"></span>{product.price.toLocaleString()} VND</em></del>
                                                     </h5></span>
-                                                <h4 className="font-weight-semi-bold col-6" style={{marginLeft :"0px"}}>
-                                                    <input id="price_sale" type="number" value={product.priceSale}
-                                                           hidden="hidden"/>{product.priceSale} VND</h4>
-                                                <div className="col-2"></div>
-                                            </div>
-                                            <div className="d-flex mb-3">
-                                                <h5 className="text-dark font-weight-medium mb-0 mr-3">Category : </h5>
-                                                {product.categories && product.categories.map((item, index) => {
-                                                    if (index < product.categories.length -1){
-                                                        return(
-                                                            <div onClick={() => handleInputCategory(item.id_category)}
-                                                                className="custom-control custom-radio custom-control-inline">
-                                                                <label style={{marginLeft: '5px'}}
-                                                                       htmlFor="size-1">{item.name},</label>
-                                                            </div>
-                                                        )
-                                                    }else {
-                                                        return (
-                                                            <div onClick={() => handleInputCategory(item.id_category)}
-                                                                className="custom-control custom-radio custom-control-inline">
-                                                                <label style={{marginLeft: '5px'}}
-                                                                       htmlFor="size-1">{item.name}</label>
-                                                            </div>
-                                                        )
-                                                    }
-                                                })}
-                                            </div>
-                                            <div className="d-flex mb-4">
-                                                <h5 className="text-dark font-weight-medium mb-0 mr-3">Purchase : </h5>
-                                                <form>
-                                                    <div className="custom-control custom-radio custom-control-inline">
-                                                        <label htmlFor="color-1">{product.purchase}</label>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                            <div className="d-flex mb-4">
-                                                <h5 className="text-dark font-weight-medium mb-0 mr-3">Time make : </h5>
-                                                <form>
-                                                    <div className="custom-control custom-radio custom-control-inline">
-                                                        <label htmlFor="color-1">{product.timeMake}</label>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                            <div className="d-flex align-items-center mb-4 pt-2">
-                                                <div className="input-group quantity mr-3" style={{width: '130px'}}>
-                                                    <div className="input-group-btn" id="minus_div">
-                                                        <button onClick={subtraction} style={{
-                                                            backgroundColor: '#df8686',
-                                                            padding: '10px',
-                                                            display: 'inline-block',
-                                                            borderRadius: '10px',
-                                                            width: '35px',
-                                                            border: 'none'
-                                                        }}>
-                                                            {/*tru*/}
-                                                            <i style={{color: "white"}} className="fa fa-minus"></i>
-                                                        </button>
-                                                    </div>
-                                                    <input style={{
-                                                        borderRadius: '8px',
-                                                        marginLeft: '10px',
-                                                        color: 'white',
-                                                        backgroundColor: '#df8686'
-                                                    }} type="text" className="form-control bg-secondary text-center"
-                                                           id="quantity_p"
-                                                           defaultValue={quantity}
-                                                           onChange={handleQuantityChange}/>
-                                                    <div style={{marginLeft: '10px'}} className="input-group-btn"
-                                                         id="plus_div">
-                                                        <button onClick={addition} style={{
-                                                            backgroundColor: '#df8686',
-                                                            padding: '10px',
-                                                            display: 'inline-block',
-                                                            borderRadius: '10px',
-                                                            width: '35px',
-                                                            border: 'none'
-                                                        }}>
-                                                            {/*cong*/}
-                                                            <i style={{color: "white"}} className="fa fa-plus"></i>
-                                                        </button>
+                                                    <h5 className="font-weight-semi-bold col-6" style={{marginLeft :"0px"}}>
+                                                        <span className="number"/>{product.priceSale.toLocaleString()} VND</h5>
+                                                    <div className="col-2"></div>
+                                                </div>
+                                                <div className="d-flex mb-3">
+                                                    <h5 className="text-dark font-weight-medium mb-0 mr-3">Category: </h5>
+                                                    {product.categories && product.categories.map((item, index) => {
+                                                        if (index < product.categories.length -1){
+                                                            return(
+                                                                <div onClick={() => handleInputCategory(item.id_category)}
+                                                                     className="custom-control custom-radio custom-control-inline">
+                                                                    <label style={{marginLeft: '5px'}}
+                                                                           htmlFor="size-1">{item.name},</label>
+                                                                </div>
+                                                            )
+                                                        }else {
+                                                            return (
+                                                                <div onClick={() => handleInputCategory(item.id_category)}
+                                                                     className="custom-control custom-radio custom-control-inline">
+                                                                    <label style={{marginLeft: '5px'}}
+                                                                           htmlFor="size-1">{item.name}</label>
+                                                                </div>
+                                                            )
+                                                        }
+                                                    })}
+                                                </div>
+                                                <div className="d-flex mb-3">
+                                                    <h5 className="text-dark font-weight-medium mb-0 mr-3">Purchase: </h5>
+                                                    <form>
+                                                        <div className="custom-control custom-radio custom-control-inline">
+                                                            <label htmlFor="color-1">{product.purchase}</label>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <div className="d-flex mb-3">
+                                                    <h5 className="text-dark font-weight-medium mb-0 mr-3">Time make: </h5>
+                                                    <form>
+                                                        <div className="custom-control custom-radio custom-control-inline">
+                                                            <label htmlFor="color-1">{product.timeMake}</label>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                                <div className="d-flex align-items-center mb-3 pt-2">
+                                                    <div className="input-group quantity mr-3" style={{width: '130px'}}>
+                                                        <div className="input-group-btn" id="minus_div">
+                                                            <button onClick={subtraction} style={{
+                                                                backgroundColor: '#ff3d3d',
+                                                                padding: '5px',
+                                                                display: 'inline-block',
+                                                                borderRadius: '10px',
+                                                                width: '35px',
+                                                                border: 'none'
+                                                            }}>
+                                                                {/*tru*/}
+                                                                <i style={{color: "white"}} className="fa fa-minus"></i>
+                                                            </button>
+                                                        </div>
+                                                        <input style={{
+                                                            borderRadius: '8px',
+                                                            marginLeft: '10px',
+                                                            color: 'white',
+                                                            backgroundColor: '#df8686'
+                                                        }} type="text" className="form-control bg-secondary text-center"
+                                                               id="quantity_p"
+                                                               defaultValue={1}
+                                                               onChange={handleQuantityChange}/>
+                                                        <div style={{marginLeft: '10px'}} className="input-group-btn"
+                                                             id="plus_div">
+                                                            <button onClick={addition} style={{
+                                                                backgroundColor: '#ff3d3d',
+                                                                padding: '5px',
+                                                                display: 'inline-block',
+                                                                borderRadius: '10px',
+                                                                width: '35px',
+                                                                border: 'none'
+                                                            }}>
+                                                                {/*cong*/}
+                                                                <i style={{color: "white"}} className="fa fa-plus"></i>
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -741,68 +750,60 @@ export default function Home() {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        )}
                         <div className="modal-footer" style={{
                             display: 'flex',
                             justifyContent: 'space-between',
                             alignItems: 'center',
                             marginTop: '10px'
                         }}>
-
-                            <button style={{backgroundColor: 'white', border: "none"}}>
-                                <span style={{marginLeft: '40px'}}> Coupon</span>
-                                <div>
-                                    <svg style={{marginLeft: '50px'}} xmlns="http://www.w3.org/2000/svg" width="45"
-                                         height="45"
-                                         fill="currentColor" className="bi bi-credit-card" viewBox="0 0 16 16">
-                                        <path
-                                            d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"/>
-                                        <path
-                                            d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
-                                    </svg>
+                            <div className="row">
+                                <div className="col-6">
+                                    <button style={{backgroundColor: 'white', border: "none"}}>
+                                        <span style={{marginLeft: '40px'}}> Coupon</span>
+                                        <div>
+                                            <svg style={{marginLeft: '50px'}} xmlns="http://www.w3.org/2000/svg" width="45"
+                                                 height="45"
+                                                 fill="currentColor" className="bi bi-credit-card" viewBox="0 0 16 16">
+                                                <path
+                                                    d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"/>
+                                                <path
+                                                    d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
+                                            </svg>
+                                        </div>
+                                    </button>
                                 </div>
-                            </button>
-                            <div>
-                                <h4 style={{
-                                    marginRight: '60px',
-                                    marginBottom: 0,
-                                    display: 'flex',
-                                    alignItems: 'center'
-                                }}>
-                                    Total order money : <span style={{
-                                    color: 'red',
-                                    marginLeft: '5px',
-                                    marginRight: '5px'
-                                }}>{totalOderMoney}</span> VND
-                                </h4>
-                                <h4 style={{
-                                    marginRight: '60px',
-                                    marginBottom: 0,
-                                    display: 'flex',
-                                    alignItems: 'center'
-                                }}>
-                                    Discount: <span style={{color: 'red'}}></span> VND
-                                </h4>
-                                <h4 style={{
-                                    marginRight: '60px',
-                                    marginBottom: 0,
-                                    display: 'flex',
-                                    alignItems: 'center'
-                                }}>
-                                    Total money: <span style={{color: 'red'}}>{totalMoney}</span> VND
-                                </h4>
-                                {/*<h6 style={{ marginBottom: 0 }}>thrifty: {} </h6>*/}
+                                <div className="col-6">
+                                    <div >
+                                        <h5>
+                                            Total order money: <span style={{color: 'red', marginLeft: '5px', marginRight: '5px'}}>
+                                        {totalOderMoney.toLocaleString()}</span> VND
+                                        </h5>
+                                        <h5>
+                                            Discount: <span style={{color: 'red'}}></span> VND
+                                        </h5>
+                                        <h5>
+                                            Total money: <span style={{color: 'red'}}>{totalMoney.toLocaleString()}</span> VND
+                                        </h5>
+                                        {/*<h6 style={{ marginBottom: 0 }}>thrifty: {} </h6>*/}
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div className="modal-footer">
-                            <button onClick={() => handleOrderNow()} style={{
-                                width: '400px',
-                                height: '40px',
-                                backgroundColor: '#df8686',
-                                border: 'none',
-                                marginRight: '240px'
-                            }} type="button" className="btn btn-secondary" data-bs-dismiss="modal">Pay now
-                            </button>
+
+
+
+                        <div >
+                            <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                <button onClick={() => handleOrderNow()} style={{
+                                    width: '100px',
+                                    height: '40px',
+                                    marginBottom:"10px",
+                                    backgroundColor: '#ff3d3d',
+                                    border:"0px"
+                                }} type="button" className="btn btn-secondary" data-bs-dismiss="modal">Pay now
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

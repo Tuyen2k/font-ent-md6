@@ -843,6 +843,17 @@ hr {
     position: absolute;
     left: 6px;
 }
+.custom-my-4 {
+    margin-top: 1.5rem !important;
+    margin-bottom: 1.5rem !important;
+    padding-top: 50px; /* Adjust the padding value as needed */
+    padding-bottom: 150px; /* Adjust the padding value as needed */
+    width: 1000px !important;
+}
+.image-coupon{
+    height: 200px;
+    margin:16px 0 0 16px !important;
+}
 
 .form-check {
     display: inline-flex !important;
@@ -1131,5 +1142,10 @@ div.error {
     margin-right: 0 !important;
 }
 
-
+.name-title{
+    width: 500px; /* Độ rộng của container */
+    white-space: nowrap; /* Không ngắt dòng */
+    overflow: hidden; /* Ẩn phần văn bản vượt quá độ rộng */
+    text-overflow: ellipsis; /* Hiển thị ba dấu chấm ở cuối */
+}
 
