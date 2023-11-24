@@ -27,6 +27,8 @@ export default function CreateProduct() {
         description: ""
     })
     const navigate = useNavigate()
+    let merchant = JSON.parse(localStorage.getItem("merchant"))
+
 
     useEffect(() => {
         getAllCategories().then(res => {
@@ -45,7 +47,7 @@ export default function CreateProduct() {
         }
         setLoad(false)
         upImageFirebase(file).then(res => {
-            let a = {id_merchant: 1}
+            let a = {id_merchant: merchant.id_merchant}
             let product = {...e, image: res.name, categories: categories, merchant: a, priceSale: e.price * 0.95}
             saveProduct(product).then(response => {
                 if (response) {
