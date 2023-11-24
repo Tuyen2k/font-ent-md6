@@ -7,6 +7,7 @@ import {couponByIdMerchant} from "../service/CouponService";
 import {getAllMerchantCheckDelete} from "../service/MerchantService";
 import {orderNow} from "../service/BillService";
 import {toast, ToastContainer} from "react-toastify";
+import {handledSendNotification} from "../service/Websocket";
 
 
 export default function Home() {
@@ -172,6 +173,9 @@ export default function Home() {
             }
             orderNow(product, account.id, quantityOrder).then(res => {
                 if (res === true) {
+                    let notification = `${account.username} just placed an order with your merchant, please check your merchant`
+                    let link = `http://localhost:3000/all-order/${product.merchant.id_merchant}`
+                    handledSendNotification(account, product.merchant.account, notification, link)
                     toast.success('Order success!', {containerId: 'home-notification'});
                 } else {
                     toast.error('An error occurred. Please check again!', {containerId: 'home-notification'});

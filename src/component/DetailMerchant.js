@@ -6,6 +6,7 @@ import {findOneProduct, getAllProductByIdMerchant, getAllProductByMerchant} from
 import Header from "../layout/Header";
 import {toast, ToastContainer} from "react-toastify";
 import {orderNow} from "../service/BillService";
+import {handledSendNotification} from "../service/Websocket";
 
 function DetailMerchant() {
     let {id} = useParams();
@@ -118,6 +119,9 @@ function DetailMerchant() {
             }
             orderNow(product, account.id, quantityOrder).then(res => {
                 if (res === true) {
+                    let notification = `${account.username} just placed an order with your merchant, please check your merchant`
+                    let link = `http://localhost:3000/all-order/${product.merchant.id_merchant}`
+                    handledSendNotification(account, product.merchant.account, notification, link)
                     toast.success('Order success!', {containerId: 'merchant-detail'});
                 } else {
                     toast.error('An error occurred. Please check again!', {containerId: 'merchant-detail'});
@@ -242,7 +246,7 @@ function DetailMerchant() {
                                             {item.name}
                                         </div>
                                         <div style={{color: 'black'}} className="name mb-5">
-                                            Purchase: {item.view}
+                                            Purchase: {item.purchase}
                                         </div>
                                         <div className="promotion">
                                             <i className="fa-solid fa-tag"></i>

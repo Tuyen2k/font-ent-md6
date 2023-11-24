@@ -1,54 +1,36 @@
-//
-// import {over} from 'stompjs';
-// import SockJS from 'sockjs-client'
-//
-// export function websocket(){
-//
-//     let stompClient = null;
-//     const sendAcc = JSON.parse(localStorage.getItem("sendAcc"))
-//     const connect=()=>{
-//         let Sock = new SockJS('http://localhost:8080/ws')
-//         stompClient = over(Sock)
-//         stompClient.connect({},onConnected, onError);
-//     }
-//     const onConnected = () => {
-//         stompClient.subscribe('/user/'+sendAcc.name+sendAcc.id +'/private', onPrivateMessage);
-//     }
-//     const onPrivateMessage = (payload)=>{
-//         console.log(payload);
-//         let payloadData = JSON.parse(payload.body);
-//         if (payloadData.sendAcc.id !== sendAcc.id){
-//             setChats(chats =>[...chats, payloadData]);
-//         }
-//     }
-//     const onError = (err) => {
-//         console.log(err);
-//     }
-//
-//     const handleMessage=(message)=>{
-//         setData({...data,"message":message})
-//     }
-//
-//     const handledSend=()=>{
-//         if (stompClient) {
-//             var chatMessage = {
-//                 sendAcc: {
-//                     id: sendAcc.id,
-//                     name: sendAcc.name
-//                 },
-//                 receiverAcc:{
-//                     id:tab.id,
-//                     name: tab.name
-//                 },
-//                 message: data.message
-//             };
-//             if(data.sendAcc.id !== tab){
-//                 chats.push(chatMessage);
-//                 setChats(chats =>[...chats]);
-//             }
-//             console.log(chatMessage);
-//             stompClient.send("/app/private-message", {}, JSON.stringify(chatMessage));
-//             setData({...data,"message": ""});
-//         }
-//     }
-// }
+import {over} from 'stompjs';
+import SockJS from 'sockjs-client'
+import {useState} from "react";
+
+
+let stompClient = null;
+export const connect = (sendAcc) => {
+    let Sock = new SockJS('http://localhost:8080/ws')
+    stompClient = over(Sock)
+    stompClient.connect({}, ()=>{
+        stompClient.subscribe('/user/' + sendAcc.username + sendAcc.id + '/private-notification', (payload)=>{
+            console.log(JSON.parse(payload.body));
+        })
+    }, (err)=>{
+        console.log(err)
+    });
+}
+
+export const handledSendNotification = (sendAcc, recAcc, notification, link) => {
+    console.log(recAcc)
+    if (stompClient) {
+        var notificationSend = {
+            sendAcc: {
+                id_account: sendAcc.id,
+                name: sendAcc.username
+            },
+            recAcc: {
+                id_account: recAcc.id_account,
+                name: recAcc.name
+            },
+            notification: notification,
+            link: link
+        };
+        stompClient.send("/app/private-notification", {}, JSON.stringify(notificationSend));
+    }
+}

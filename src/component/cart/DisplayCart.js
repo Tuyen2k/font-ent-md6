@@ -6,6 +6,8 @@ import Header from "../../layout/Header";
 import Footer from "../../layout/Footer";
 import {couponByIdMerchant} from "../../service/CouponService";
 import {toast, ToastContainer} from "react-toastify";
+import {handledSendNotification} from "../../service/Websocket";
+import {findAccountByMerchant} from "../../service/AccountService";
 
 
 export default function DisplayCart() {
@@ -256,6 +258,7 @@ export default function DisplayCart() {
     function handleAddBill() {
         addBill(orders).then(res => {
             if (res === true) {
+                handleSendNotification(orders)
                 setIsOrder(false)
                 setTotal(0)
                 setOrders([])
@@ -269,6 +272,22 @@ export default function DisplayCart() {
                 // btn_modal.current.click()
             }
         })
+    }
+
+    async function handleSendNotification(cartDetails){
+        let arr = [cartDetails[0].cart.merchant]
+        for (let i = 1; i < cartDetails.length; i++) {
+            if (cartDetails[i].cart.merchant.id_merchant !== cartDetails[i-1].cart.merchant.id_merchant){
+                let merchant =  cartDetails[i].cart.merchant
+                arr.push(merchant)
+            }
+        }
+        for (let i = 0; i < arr.length; i++) {
+            let recAcc = await findAccountByMerchant(arr[i].id_merchant)
+            let notification = `${account.username} just placed an order with your merchant, please check your merchant`
+            let link = `http://localhost:3000/all-order/${arr[i].id_merchant}`
+            handledSendNotification(account, recAcc, notification, link)
+        }
     }
 
     function handleCheckOrder() {
@@ -293,6 +312,8 @@ export default function DisplayCart() {
         return arr
     }
 
+
+    //coupon chưa xong
     function handleTotalOrder(){
         for (let i = 0; i < orders.length; i++) {
             for (let j = 0; j < coupon.length; j++) {
