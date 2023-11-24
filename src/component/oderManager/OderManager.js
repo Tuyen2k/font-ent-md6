@@ -357,7 +357,7 @@ function OrderManager(effect, deps) {
                         {/*Main*/}
                         <main style={{backgroundColor: '#eeeeee'}} className="bg-white-300 flex-1 p-3 overflow-hidden">
 
-                            <div className="flex flex-col">
+                            <div id="show-list" className="flex flex-col">
                                 {/* Stats Row Starts Here */}
                                 <div className="flex flex-1 flex-col md:flex-row lg:flex-row mx-2">
                                     <div
@@ -413,7 +413,7 @@ function OrderManager(effect, deps) {
                                 {/* /Stats Row Ends Here */}
 
                                 {/* Card Sextion Starts Here */}
-                                <div id="show-list" className="flex flex-1 flex-col md:flex-row lg:flex-row mx-2">
+                                <div className="flex flex-1 flex-col md:flex-row lg:flex-row mx-2">
 
                                     {/* card */}
 
