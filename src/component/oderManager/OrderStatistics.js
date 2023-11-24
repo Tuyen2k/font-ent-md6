@@ -9,6 +9,10 @@ import {
     groupByBill
 } from "../../service/BillService";
 import {getAllProductByIdMerchant} from "../../service/ProductService";
+import Footer from "../../layout/Footer";
+import {getList} from "../../service/PageService";
+import Pagination from "../pagination/Pagination";
+import Chart from "./Chart";
 function OrderStatistics() {
     let {id} = useParams();
     const [billDetail, setBillDetail] = useState([]);
@@ -21,11 +25,14 @@ function OrderStatistics() {
     const [totalProduct, setTotalProduct] = useState(0);
     const [totalOrder, setTotalOrder] = useState(0);
     const [totalUser, setTotalUser] = useState(0);
+    const [data, setData] = useState([])
+
     useEffect(() => {
         if (check){
             findAllOrdersByMerchant(id).then(r => {
                 let arr = groupByBill(r)
                 setBillDetail(arr)
+                setData(calculateTotalByYear(arr))
                 order(arr.length)
                 money(r)
                 setMessage("Statistics")
@@ -44,26 +51,18 @@ function OrderStatistics() {
             setTotalUser(r.length)
         })
     }, [check]);
-
-
     const selectProduct = (e) => {
         findOrderByProduct(e.target.value).then(r => {
             if (r !== undefined){
-                if (r.length > 0){
-                    let arr = groupByBill(r)
-                    setBillDetail(arr)
-                    order(arr.length)
-                    money(r)
-                    setMessage("Result search")
-                    setCheck(false)
-                } else {
-                    setTotalOrder(0)
-                    setTotalMoNey(0)
-                    setBillDetail([])
-                    setMessage("No order display")
-                }
+                setBill(r)
             } else {
-                setCheck(true)
+                setTotalOrder(0);
+                setTotalMoNey(0);
+                setData([{name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0},
+                    {name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0},
+                    {name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0}])
+                setMessage("No order display");
+                setBillDetail([])
             }
         })
     }
@@ -71,21 +70,15 @@ function OrderStatistics() {
     const selectStatus = (e) => {
         findOrderByStatus(id, e.target.value).then(r => {
             if (r !== undefined){
-                if (r.length > 0){
-                    let arr = groupByBill(r)
-                    setBillDetail(arr)
-                    order(arr.length)
-                    money(r)
-                    setMessage("Result search")
-                    setCheck(false)
-                } else {
-                    setTotalOrder(0)
-                    setTotalMoNey(0)
-                    setBillDetail([])
-                    setMessage("No order display")
-                }
+                setBill(r)
             } else {
-                setCheck(true)
+                setTotalOrder(0);
+                setTotalMoNey(0);
+                setData([{name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0},
+                    {name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0},
+                    {name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0}])
+                setMessage("No order display");
+                setBillDetail([])
             }
         })
     }
@@ -93,23 +86,38 @@ function OrderStatistics() {
     const selectUser = (e) => {
         findOrderByUser(id, e.target.value).then(r => {
             if (r !== undefined){
-                if (r.length > 0){
-                    let arr = groupByBill(r)
-                    setBillDetail(arr)
-                    order(arr.length)
-                    money(r)
-                    setMessage("Result search")
-                    setCheck(false)
-                } else {
-                    setTotalOrder(0)
-                    setTotalMoNey(0)
-                    setBillDetail([])
-                    setMessage("No order display")
-                }
+                setBill(r)
             } else {
-                setCheck(true)
+                setTotalOrder(0);
+                setTotalMoNey(0);
+                setData([{name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0},
+                    {name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0},
+                    {name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0}])
+                setMessage("No order display");
+                setBillDetail([])
             }
         })
+    }
+
+    const setBill = (r) => {
+        if (r.length > 0) {
+            let arr = groupByBill(r);
+            setBillDetail(arr);
+            order(arr.length);
+            money(r);
+            setData(calculateTotalByYear(arr))
+            setMessage("Result search");
+            setCheck(false);
+        } else {
+            setBillDetail([])
+            setTotalOrder(0);
+            setTotalMoNey(0);
+            setData([{name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0},
+                {name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0},
+                {name: '', Money: 0 , Orders: 0}, {name: '', Money: 0 , Orders: 0}])
+            setMessage("No order display");
+
+        }
     }
 
     const money = (r) => {
@@ -123,6 +131,24 @@ function OrderStatistics() {
     const order = (r) => {
         setTotalOrder(r)
     }
+
+    const calculateTotalByYear = (billDetails) => {
+        const result = Array.from({ length: 12 }, (_, index) => {
+            return { name: ``, Money: 0, Orders: 0 };
+        });
+        billDetails.forEach(detail => {
+            const orderDate = new Date(detail.bill.time_purchase);
+            const monthIndex = orderDate.getMonth()
+            result[monthIndex].Money += detail.total;
+            result[monthIndex].Orders += 1;
+        });
+        for (let i = 0; i < result.length; i++) {
+            result[i].name = `Month ${i + 1}`;
+        }
+        return result;
+    };
+
+
 
 
     return (
@@ -150,14 +176,6 @@ function OrderStatistics() {
                                         <span><i className="fas fa-angle-right float-right"></i></span>
                                     </Link>
                                 </li>
-                                <li style={{height: '75px'}}className="w-full h-full py-3 px-2 border-b border-light-border">
-                                    <Link to={`/all-order/${id}`}
-                                          className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
-                                        <i className="fab fa-wpforms float-left mx-2"></i>
-                                        All orders
-                                        <span><i className="fa fa-angle-right float-right"></i></span>
-                                    </Link>
-                                </li>
                                 <li style={{backgroundColor: '#efd6d6',height: '75px'}} className="w-full h-full py-3 px-2 border-b border-light-border">
                                     <a
                                        className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
@@ -166,13 +184,21 @@ function OrderStatistics() {
                                         <span><i className="fa fa-angle-right float-right"></i></span>
                                     </a>
                                 </li>
+                                <li style={{height: '75px'}} className="w-full h-full py-3 px-2 border-b border-light-border">
+                                    <Link to={`/all-order/${id}`}
+                                          className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
+                                        <i className="fab fa-wpforms float-left mx-2"></i>
+                                        All orders
+                                        <span><i className="fa fa-angle-right float-right"></i></span>
+                                    </Link>
+                                </li>
                             </ul>
 
                         </aside>
                         {/*/Sidebar*/}
 
                         {/*Main*/}
-                        <main className="bg-white-300 flex-1 p-3 overflow-hidden">
+                        <main style={{backgroundColor: '#eeeeee'}} className="bg-white-300 flex-1 p-3 overflow-hidden">
 
                             <div className="flex flex-col">
                                 {/* Stats Row Starts Here */}
@@ -232,8 +258,9 @@ function OrderStatistics() {
 
                                     <div className="rounded overflow-hidden shadow bg-white mx-2 w-full">
                                         <div className="flex items-center px-6 py-2 border-b border-light-grey">
-                                            <div className="font-bold text-xl" style={{width: '250px'}}>{message}</div>
-                                            <div style={{marginLeft: '500px', width: '300px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
+                                            <div style={{width: '300px'}} className="font-bold text-xl">{message}
+                                               </div>
+                                            <div style={{marginLeft: '90px', width: '300px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
                                                 <select onChange={selectProduct}  className="form-select">
                                                     <option>Product</option>
                                                     {product && product.map(item => (
@@ -262,6 +289,15 @@ function OrderStatistics() {
 
                                                 </select>
                                             </div>
+                                            <div className="ml-4">
+                                                <span style={{marginLeft: '30px'}}>
+                                                <button className="btn btn-danger"
+                                                        onClick={()=>{document.getElementById("chart-order").
+                                                        scrollIntoView({behavior: "smooth"})}}>Chart</button>
+                                            </span>
+                                            </div>
+
+
 
                                         </div>
                                         <div className="table-responsive">
@@ -326,128 +362,17 @@ function OrderStatistics() {
                                 </div>
                                 {/* /Cards Section Ends Here */}
 
-                                {/* Progress Bar */}
-                                <div className="flex flex-1 flex-col md:flex-row lg:flex-row mx-2 mt-2">
-                                    <div className="rounded overflow-hidden shadow bg-white mx-2 w-full pt-2">
-                                        <div className="px-6 py-2 border-b border-light-grey">
-                                            <div className="font-bold text-xl">Progress Among Projects</div>
-                                        </div>
-                                        <div className="">
-                                            <div className="w-full">
-
-                                                <div className="shadow w-full bg-grey-light">
-                                                    <div className="bg-blue-500 text-xs leading-none py-1 text-center text-white"
-                                                         style={{width: "45%"}}>45%
-                                                    </div>
-                                                </div>
-
-
-                                                <div className="shadow w-full bg-grey-light mt-2">
-                                                    <div className="bg-teal-500 text-xs leading-none py-1 text-center text-white"
-                                                         style={{width: "55%"}}>55%
-                                                    </div>
-                                                </div>
-
-
-                                                <div className="shadow w-full bg-grey-light mt-2">
-                                                    <div className="bg-orange-500 text-xs leading-none py-1 text-center text-white"
-                                                         style={{width: "65%"}}>65%
-                                                    </div>
-                                                </div>
-
-
-                                                <div className="shadow w-full bg-grey-300 mt-2">
-                                                    <div className="bg-red-800 text-xs leading-none py-1 text-center text-white"
-                                                         style={{width: "75%"}}>75%
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {/*Profile Tabs*/}
                                 <div className="flex flex-1 flex-col md:flex-row lg:flex-row mx-2 p-1 mt-2 mx-auto lg:mx-2 md:mx-2 justify-between">
-                                    {/*Top user 1*/}
-                                    <div className="rounded rounded-t-lg overflow-hidden shadow max-w-xs my-3">
-                                        <img src="https://i.imgur.com/w1Bdydo.jpg" alt="" className="w-full"/>
-                                        <div className="flex justify-center -mt-8">
-                                            <img src="https://i.imgur.com/8Km9tLL.jpg" alt=""
-                                                 className="rounded-full border-solid border-white border-2 -mt-3"/>
-                                        </div>
-                                        <div className="text-center px-3 pb-6 pt-2">
-                                            <h3 className="text-black text-sm bold font-sans">Olivia Dunham</h3>
-                                            <p className="mt-2 font-sans font-light text-grey-700">Hello, i'm from another the other
-                                                side!</p>
-                                        </div>
-                                        <div className="flex justify-center pb-3 text-grey-dark">
-                                            <div className="text-center mr-3 border-r pr-3">
-                                                <h2>34</h2>
-                                                <span>Photos</span>
-                                            </div>
-                                            <div className="text-center">
-                                                <h2>42</h2>
-                                                <span>Friends</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {/*Top user 2*/}
-                                    <div className="rounded rounded-t-lg overflow-hidden shadow max-w-xs my-3">
-                                        <img src="https://i.imgur.com/w1Bdydo.jpg" alt="" className="w-full"/>
-                                        <div className="flex justify-center -mt-8">
-                                            <img src="https://i.imgur.com/8Km9tLL.jpg" alt=""
-                                                 className="rounded-full border-solid border-white border-2 -mt-3"/>
-                                        </div>
-                                        <div className="text-center px-3 pb-6 pt-2">
-                                            <h3 className="text-black text-sm bold font-sans">Olivia Dunham</h3>
-                                            <p className="mt-2 font-sans font-light text-grey-dark">Hello, i'm from another the other
-                                                side!</p>
-                                        </div>
-                                        <div className="flex justify-center pb-3 text-grey-dark">
-                                            <div className="text-center mr-3 border-r pr-3">
-                                                <h2>34</h2>
-                                                <span>Photos</span>
-                                            </div>
-                                            <div className="text-center">
-                                                <h2>42</h2>
-                                                <span>Friends</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {/*Top user 3*/}
-                                    <div className="rounded rounded-t-lg overflow-hidden shadow max-w-xs my-3">
-                                        <img src="https://i.imgur.com/w1Bdydo.jpg" alt="" className="w-full"/>
-                                        <div className="flex justify-center -mt-8">
-                                            <img src="https://i.imgur.com/8Km9tLL.jpg" alt=""
-                                                 className="rounded-full border-solid border-white border-2 -mt-3"/>
-                                        </div>
-                                        <div className="text-center px-3 pb-6 pt-2">
-                                            <h3 className="text-black text-sm bold font-sans">Olivia Dunham</h3>
-                                            <p className="mt-2 font-sans font-light text-grey-dark">Hello, i'm from another the other
-                                                side!</p>
-                                        </div>
-                                        <div className="flex justify-center pb-3 text-grey-dark">
-                                            <div className="text-center mr-3 border-r pr-3">
-                                                <h2>34</h2>
-                                                <span>Photos</span>
-                                            </div>
-                                            <div className="text-center">
-                                                <h2>42</h2>
-                                                <span>Friends</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {/*/Profile Tabs*/}
+
+                            </div>
+                            </div>
+                            <div id="chart-order" className="footer-wraper">
+                            <Chart data={data}/>
                             </div>
                         </main>
                         {/*/Main*/}
                     </div>
-                    {/*Footer*/}
-                    <footer className="bg-grey-darkest text-white p-2">
-                        <div className="flex flex-1 mx-auto">&copy; My Design</div>
-                        <div className="flex flex-1 mx-auto">Distributed by:  <a href="https://themewagon.com/" target=" _blank">Themewagon</a></div>
-                    </footer>
-                    {/*/footer*/}
+                    <Footer/>
 
                 </div>
 
