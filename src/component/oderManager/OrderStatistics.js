@@ -10,9 +10,8 @@ import {
 } from "../../service/BillService";
 import {getAllProductByIdMerchant} from "../../service/ProductService";
 import Footer from "../../layout/Footer";
-import {getList} from "../../service/PageService";
-import Pagination from "../pagination/Pagination";
 import Chart from "./Chart";
+import MyBarChar from "./Test";
 function OrderStatistics() {
     let {id} = useParams();
     const [billDetail, setBillDetail] = useState([]);
@@ -26,6 +25,7 @@ function OrderStatistics() {
     const [totalOrder, setTotalOrder] = useState(0);
     const [totalUser, setTotalUser] = useState(0);
     const [data, setData] = useState([])
+    const [conversion, setConversion] = useState(true)
 
     useEffect(() => {
         if (check){
@@ -366,8 +366,14 @@ function OrderStatistics() {
 
                             </div>
                             </div>
-                            <div id="chart-order" className="footer-wraper">
-                            <Chart data={data}/>
+                            <div id="chart-manage" style={{marginTop: '20px',backgroundColor: 'white', marginLeft: '15px', marginRight: '15px', borderRadius: '5px'}} className="footer-wraper">
+                                <button style={{backgroundColor: 'white', marginLeft:'1200px', height: '25px', width:'50px', color: '#8884d8',marginTop:'10px', fontSize: '18px'}}
+                                        onClick={()=> setConversion(!conversion)}>Conversion</button>
+                                {conversion ? (
+                                    <Chart data={data}/>
+                                ) : (
+                                    <MyBarChar data={data}/>
+                                )}
                             </div>
                         </main>
                         {/*/Main*/}

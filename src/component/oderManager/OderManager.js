@@ -10,9 +10,9 @@ import {
     findByYearAndWeekAndMerchant
 } from "../../service/BillDetailService";
 import Footer from "../../layout/Footer";
-import Pagination from "../pagination/Pagination";
-import {getList} from "../../service/PageService";
 import Chart from "../../component/oderManager/Chart"
+import Test from "./Test";
+import MyBarChar from "./Test";
 
 function OrderManager(effect, deps) {
     let {id} = useParams();
@@ -33,6 +33,7 @@ function OrderManager(effect, deps) {
     const [startTime, setStartTime] = useState(undefined);
     const [endTime, setEndTime] = useState(undefined);
     const [data, setData] = useState([])
+    const [conversion, setConversion] = useState(true)
     useEffect(() => {
         if (check) {
             findAllOrdersByMerchant(id).then(r => {
@@ -67,7 +68,7 @@ function OrderManager(effect, deps) {
                     setCheck(true)
                 } else {
                     if (setBill(r)){
-                        setData(calculateTotalByQuarter(groupByBill(r)))
+                        setData(calculateTotalByYear(groupByBill(r)))
                     }
                 }
             })
@@ -83,7 +84,7 @@ function OrderManager(effect, deps) {
                     setCheck(true)
                 } else {
                     if (setBill(r)){
-                        setData(calculateTotalByQuarter(groupByBill(r)))
+                        setData(calculateTotalByYear(groupByBill(r)))
                     }
                 }
             })
@@ -252,8 +253,6 @@ function OrderManager(effect, deps) {
 
 
 
-
-
     const months = Array.from({length: displayMonth}, (_, index) => (
         <option key={index + 1} value={index + 1}>{index + 1} month</option>
     ));
@@ -414,7 +413,7 @@ function OrderManager(effect, deps) {
                                 {/* /Stats Row Ends Here */}
 
                                 {/* Card Sextion Starts Here */}
-                                <div className="flex flex-1 flex-col md:flex-row lg:flex-row mx-2">
+                                <div id="show-list" className="flex flex-1 flex-col md:flex-row lg:flex-row mx-2">
 
                                     {/* card */}
 
@@ -536,22 +535,53 @@ function OrderManager(effect, deps) {
                                     </div>
                                     {/* /card */}
                                 </div>
-                                {/* /Cards Section Ends Here */}
-                                <div
-                                    className="flex flex-1 flex-col md:flex-row lg:flex-row mx-2 p-1 mt-2 mx-auto lg:mx-2 md:mx-2 justify-between">
-                                </div>
-                                {/*/Profile Tabs*/}
+
                             </div>
+
                             <div id="chart-manage" style={{marginTop: '20px',backgroundColor: 'white', marginLeft: '15px', marginRight: '15px', borderRadius: '5px'}} className="footer-wraper">
-                                <Chart data={data}/>
+                                <button
+                                    style={{
+                                        backgroundColor: 'white',
+                                        marginLeft: '1150px',
+                                        height: '25px',
+                                        width: '50px',
+                                        color: '#8884d8',
+                                        marginTop: '10px',
+                                        fontSize: '18px'
+                                    }}
+                                    onClick={() => setConversion(!conversion)}
+                                >
+                                    Conversion
+                                </button>
+                                <button
+                                    style={{
+                                        backgroundColor: 'white',
+                                        marginLeft: '60px', // Adjust this value to your preference
+                                        height: '25px',
+                                        width: '50px',
+                                        color: '#82ca9d',
+                                        marginTop: '10px',
+                                        fontSize: '18px'
+                                    }}
+                                    onClick={() => {
+                                        document.getElementById("show-list").scrollIntoView({ behavior: "smooth" });
+                                    }}
+                                >
+                                    List
+                                </button>
+
+                                {conversion ? (
+                                   <Chart data={data}/>
+                                ) : (
+                                    <MyBarChar data={data}/>
+                                )}
                             </div>
+
                         </main>
                         {/*/Main*/}
-
                     </div>
                     <Footer/>
                 </div>
-
             </div>
 
         </>

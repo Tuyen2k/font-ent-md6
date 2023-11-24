@@ -196,7 +196,7 @@ export default function Header() {
                                     <div className="d-inline-flex align-items-center">
                                         {user ? (
                                             <div className="dropdown">
-                                                <a><img src={user.image} className="profile-picture"/> {user.username}</a>
+                                                <a> <img src={user.image} className="profile-picture" alt={""}/> {user.username}</a>
                                                 <div className="dropdown-menu">
                                                     <Link className="user-function" to="/">Profile</Link>
                                                     {localStorage.getItem("merchant") === null ? (

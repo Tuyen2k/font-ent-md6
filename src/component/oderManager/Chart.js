@@ -1,8 +1,10 @@
 import React, {Component, useState} from 'react';
 import {ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend} from 'recharts';
+import Test from "./Test";
 
 function Chart(props) {
     const data = props.data;
+    const [check, setCheck] = useState(false) ;
 
     return (
         <>
@@ -23,8 +25,8 @@ function Chart(props) {
                         <CartesianGrid strokeDasharray="3 3"/>
                         <Tooltip/>
                         <Legend/>
-                        <Line type="monotone" dataKey="Money" stroke="#8884d8" activeDot={{r: 8}}/>
-                        <Line type="monotone" dataKey="Orders" style={{display: 'none'}} stroke="#82ca9d"/>
+                        <Line type="monotone" dataKey="Money" stroke="#82ca9d" activeDot={{r: 8}}/>
+                        <Line type="monotone" dataKey="Orders" stroke="#8884d8" style={{display: 'none'}} />
                     </LineChart>
                 </ResponsiveContainer>
             </div>

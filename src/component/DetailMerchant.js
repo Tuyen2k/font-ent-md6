@@ -137,14 +137,6 @@ function DetailMerchant() {
                             autoClose={1500} pauseOnHover={false}
                             style={{width: "400px"}}/>
             <div style={{height: '300px', marginTop: "20px"}} className="now-detail-restaurant clearfix" >
-                {/*<div className="container">*/}
-                {/*    <div style={{marginRight: '700px',width: '600px',marginBottom: '30px'}} className="input-group rounded ">*/}
-                {/*        <input onKeyUp={handleInputName} style={{marginLeft: '200px'}} type="search" className="form-control rounded"*/}
-                {/*               placeholder="Search" aria-label="Search"*/}
-                {/*               aria-describedby="search-addon"*/}
-                {/*        />*/}
-                {/*    </div>*/}
-                {/*</div>*/}
                 <div className="container">
                     <div className="row px-xl-5">
                         <div className="col-lg-5 pb-5">
@@ -231,31 +223,41 @@ function DetailMerchant() {
                     <div className="list-view">
                         {products && products.map(item => (
                             <div className="list-item eatery-item-landing">
+                                <Link to={`/detailProduct/${item.id_product}`} >
                                     <div className="img-lazy figure square">
                                         <div className="img"
-                                             style={{backgroundImage: `url(${item.image})`, color: 'black'}}>
+                                             style={{
+                                                 backgroundImage: `url(${item.image})`,
+                                                 color: 'black'
+                                             }}>
                                         </div>
                                     </div>
                                     <div className="content">
-                                        <div style={{textAlign: 'center', marginTop: '8px', color: 'black'}}
+                                        <div style={{
+                                            textAlign: 'center',
+                                            marginTop: '8px',
+                                            color: 'black'
+                                        }}
                                              className="name mb-5">
                                             {item.name}
                                         </div>
                                         <div style={{color: 'black'}} className="name mb-5">
-                                            Purchase: {item.view}
+                                            Purchase: {item.purchase}
                                         </div>
                                         <div className="promotion">
                                             <i className="fa-solid fa-tag"></i>
-                                            <span className="number">{item.priceSale.toLocaleString()} VND</span>
+                                            <span
+                                                style={{color: 'black'}}>{item.priceSale.toLocaleString()} VND</span>
                                         </div>
                                     </div>
+                                </Link>
                                 <div className="name mb-5">
-                                    <button  data-bs-toggle="modal"
-                                             data-bs-target="#show_product"
-                                             className="container-fluid.modal-body"
-                                             onClick={() => displayModal(item.id_product)}
-                                             type="button" data-toggle="modal"
-                                             data-target="#exampleModalLong" style={{
+                                    <button data-bs-toggle="modal"
+                                            data-bs-target="#show_product"
+                                            className="container-fluid.modal-body"
+                                            onClick={() => displayModal(item.id_product)}
+                                            type="button" data-toggle="modal"
+                                            data-target="#exampleModalLong" style={{
                                         backgroundColor: '#ff3d3d',
                                         padding: '7px',
                                         borderRadius: '10px',
