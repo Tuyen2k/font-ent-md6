@@ -8,6 +8,7 @@ import Header from "../layout/Header";
 import Footer from "../layout/Footer";
 import {toast, ToastContainer} from "react-toastify";
 import {findAccountByMerchant} from "../service/AccountService";
+import {handledSendAccountSelf, handledSendNotification} from "../service/Websocket";
 
 function DetailProduct() {
     let {id} = useParams();
@@ -83,6 +84,7 @@ function DetailProduct() {
                 console.log(cartDetail)
                 addToCart(account.id, cartDetail).then(res => {
                     if (res === true) {
+                        handledSendAccountSelf(account, account)
                         toast.success('Add to cart success!!!', {containerId: 'detail-product'});
                     }
                 })

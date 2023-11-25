@@ -13,6 +13,7 @@ import SockJS from "sockjs-client";
 import {over} from "stompjs";
 import {getAllNotification} from "../service/NotificationService";
 import {connect} from "../service/Websocket";
+import {getListCart} from "../service/CartService";
 
 let stompClient = null;
 
@@ -78,7 +79,11 @@ export default function Header() {
         if (userInfo !== null) {
             getAllNotification(userInfo.id).then(res => {
                 setNotification(res)
+                countNotification(res)
                 console.log(res)
+            })
+            getListCart(userInfo.id).then(res =>{
+                setQuantityCart(res.length)
             })
             setUser(userInfo);
             connectHeader(userInfo)
@@ -87,9 +92,19 @@ export default function Header() {
 
     }, [isExist]);
 
-
+    const [quantityNotification,setQuantityNotification] = useState(0)
+    const [quantityCart,setQuantityCart] = useState(0)
     const isLoginDisabled = username.trim() === '' || password.trim() === '';
 
+    function countNotification(list){
+        let count = 0
+        for (let i = 0; i < list.length; i++) {
+            if (!list[i].watch){
+                count++
+            }
+        }
+        setQuantityNotification(count)
+    }
     const handledClickInput = () => {
         inputFile.current.click();
     }
@@ -247,7 +262,7 @@ export default function Header() {
                                                 <span className="icon"><img className="profile-picture"
                                                                                       src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/notification.png?alt=media&token=476a4839-4b5b-4147-80f6-4ba9702972bf"
                                                                                       alt=""/> Notification</span>
-                                                <span className="badge">3</span>
+                                                <span className="badge">{quantityNotification}</span>
                                             </div>
                                             <div className="dropdown-menu" style={{width: "400px"}}>
                                                 {/*list notification*/}
@@ -439,7 +454,7 @@ export default function Header() {
                                                                              style={{color: "#ff0000"}}></i></span>
                                     )}
                                 </div>
-                                <span className="badge">3</span>
+                                <span className="badge">{quantityCart}</span>
                             </div>
                             {/*End login modal*/}
                             {/*Register modal*/}

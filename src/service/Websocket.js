@@ -34,3 +34,19 @@ export const handledSendNotification = (sendAcc, recAcc, notification, link) => 
         stompClient.send("/app/private-notification", {}, JSON.stringify(notificationSend));
     }
 }
+export const handledSendAccountSelf = (sendAcc, recAcc) => {
+    console.log(recAcc)
+    if (stompClient) {
+        var notificationSend = {
+            sendAcc: {
+                id_account: sendAcc.id,
+                name: sendAcc.username
+            },
+            recAcc: {
+                id_account: recAcc.id,
+                name: recAcc.username
+            }
+        };
+        stompClient.send("/app/private-notification", {}, JSON.stringify(notificationSend));
+    }
+}
