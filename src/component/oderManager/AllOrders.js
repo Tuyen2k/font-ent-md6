@@ -13,6 +13,7 @@ import SockJS from "sockjs-client";
 import {over} from "stompjs";
 import Pagination from "../pagination/Pagination";
 import {getList} from "../../service/PageService";
+import Footer from "../../layout/Footer";
 import {handledSendNotification} from "../../service/Websocket";
 
 
@@ -200,91 +201,31 @@ function AllOrders() {
                     {/*/Header*/}
 
                     <div className="flex flex-1">
-                        {/*Sidebar*/}
-                        <aside id="sidebar"
-                               className="bg-side-nav w-1/2 md:w-1/6 lg:w-1/6 border-r border-side-nav hidden md:block lg:block">
-
+                        <aside style={{marginTop : '18px'}} id="sidebar" className="bg-side-nav w-1/2 md:w-1/6 lg:w-1/6 border-r border-side-nav hidden md:block lg:block">
                             <ul className="list-reset flex flex-col">
-                                <Link to={`/order-manager/${id}`}
-                                      className="w-full h-full py-3 px-2 border-b border-light-border">
-                                    <a href=""
-                                       className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
+                                <li style={{height: '73px'}} className=" w-full h-full py-3 px-2 border-b border-light-border">
+                                    <Link to={`/order-manager/${id}`}
+                                        className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
                                         <i className="fas fa-tachometer-alt float-left mx-2"></i>
                                         Dashboard
                                         <span><i className="fas fa-angle-right float-right"></i></span>
-                                    </a>
-                                </Link>
-                                <li style={{backgroundColor: '#efd6d6'}}
-                                    className=" w-full h-full py-3 px-2 border-b border-light-border">
+                                    </Link>
+                                </li>
+                                <li style={{height: '73px'}} className="w-full h-full py-3 px-2 border-b border-light-border">
+                                    <Link  to={`/order-statistics/${id}`}
+                                           className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
+                                        <i className="fas fa-table float-left mx-2"></i>
+                                        Order statistics
+                                        <span><i className="fa fa-angle-right float-right"></i></span>
+                                    </Link>
+                                </li>
+                                <li style={{height: '73px',backgroundColor: '#efd6d6', }} className="w-full h-full py-3 px-2 border-b border-light-border">
                                     <a
                                         className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
                                         <i className="fab fa-wpforms float-left mx-2"></i>
                                         All orders
                                         <span><i className="fa fa-angle-right float-right"></i></span>
                                     </a>
-                                </li>
-                                <li className="w-full h-full py-3 px-2 border-b border-light-border">
-                                    <Link to={`/order-statistics/${id}`}
-                                          className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
-                                        <i className="fas fa-table float-left mx-2"></i>
-                                        Order statistics
-                                        <span><i className="fa fa-angle-right float-right"></i></span>
-                                    </Link>
-                                </li>
-                                <li className="w-full h-full py-3 px-2 border-b border-light-border">
-                                    <a href=""
-                                       className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
-                                        <i className="fas fa-grip-horizontal float-left mx-2"></i>
-                                        Buttons
-                                        <span><i className="fa fa-angle-right float-right"></i></span>
-                                    </a>
-                                </li>
-                                <li className="w-full h-full py-3 px-2 border-b border-light-border">
-                                    <a href=""
-                                       className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
-                                        <i className="fab fa-uikit float-left mx-2"></i>
-                                        Ui components
-                                        <span><i className="fa fa-angle-right float-right"></i></span>
-                                    </a>
-                                </li>
-                                <li className="w-full h-full py-3 px-2 border-b border-300-border">
-                                    <a href=""
-                                       className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
-                                        <i className="fas fa-square-full float-left mx-2"></i>
-                                        Modals
-                                        <span><i className="fa fa-angle-right float-right"></i></span>
-                                    </a>
-                                </li>
-                                <li className="w-full h-full py-3 px-2">
-                                    <a href="#"
-                                       className="font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
-                                        <i className="far fa-file float-left mx-2"></i>
-                                        Pages
-                                        <span><i className="fa fa-angle-down float-right"></i></span>
-                                    </a>
-                                    <ul className="list-reset -mx-2 bg-white-medium-dark">
-                                        <li className="border-t mt-2 border-light-border w-full h-full px-2 py-3">
-                                            <a href=""
-                                               className="mx-4 font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
-                                                Login Page
-                                                <span><i className="fa fa-angle-right float-right"></i></span>
-                                            </a>
-                                        </li>
-                                        <li className="border-t border-light-border w-full h-full px-2 py-3">
-                                            <a href=""
-                                               className="mx-4 font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
-                                                Register Page
-                                                <span><i className="fa fa-angle-right float-right"></i></span>
-                                            </a>
-                                        </li>
-                                        <li className="border-t border-light-border w-full h-full px-2 py-3">
-                                            <a href=""
-                                               className="mx-4 font-sans font-hairline hover:font-normal text-sm text-nav-item no-underline">
-                                                404 Page
-                                                <span><i className="fa fa-angle-right float-right"></i></span>
-                                            </a>
-                                        </li>
-                                    </ul>
                                 </li>
                             </ul>
 
@@ -294,8 +235,7 @@ function AllOrders() {
                         {/*Main*/}
                         <main className="bg-white-300 flex-1 p-3 overflow-hidden">
 
-                            <Pagination totalPage={totalPage} page={page} limit={limit} siblings={1}
-                                        onPageChange={handlePageChange} onChangeItem={handleChangeItem}/>
+
 
                             <div className="flex flex-col">
 
@@ -307,11 +247,10 @@ function AllOrders() {
 
 
                                         <div className="rounded overflow-hidden shadow bg-white mx-2 w-full">
-                                            <div
-                                                className="px-6 py-2 border-b border-light-grey flex items-center justify-between">
+                                            <div style={{height: '60px'}} className="px-6 py-2 border-b border-light-grey flex items-center justify-between">
                                                 <div className="font-bold text-xl">All list orders</div>
                                                 {/* search */}
-                                                <div className="flex">
+                                                <div className="flex items-center"> {/* Updated this line to use 'items-center' */}
                                                     <div style={{width: '400px'}} className="font-bold text-xl">
                                                         <input
                                                             type="search"
@@ -322,13 +261,12 @@ function AllOrders() {
                                                             id="valueSearch"
                                                         />
                                                     </div>
-                                                    <button onClick={search} style={{height: '37px'}}
-                                                            className="ml-2 px-4 py-2 bg-blue-500 text-bg-dark rounded">
+                                                    <button onClick={search} style={{height: '35px', marginLeft: '8px'}} className="btn btn-outline-dark">
                                                         Search
                                                     </button>
                                                 </div>
-                                                {/* end search */}
                                             </div>
+
                                         </div>
 
 
@@ -372,7 +310,7 @@ function AllOrders() {
                                                         <td>{item.billDetails.map(item => {
                                                             return (
                                                                 <>
-                                                                    <p>{item.product.name}</p>
+                                                                    <p style={{textAlign: 'center'}}>{item.product.name}</p>
                                                                 </>
                                                             )
                                                         })}</td>
@@ -407,145 +345,26 @@ function AllOrders() {
                                                 ))}
                                                 </tbody>
                                             </table>
+                                            {/* end search */}
+                                            <div style={{marginTop: '14px'}}>
+                                                <Pagination totalPage={totalPage} page={page} limit={limit} siblings={1} onPageChange={handlePageChange} onChangeItem={handleChangeItem}/>
+                                            </div>
                                         </div>
                                     </div>
                                     {/* /card */}
 
+
                                 </div>
                                 {/* /Cards Section Ends Here */}
-
-                                {/* Progress Bar */}
-                                <div className="flex flex-1 flex-col md:flex-row lg:flex-row mx-2 mt-2">
-                                    <div className="rounded overflow-hidden shadow bg-white mx-2 w-full pt-2">
-                                        <div className="px-6 py-2 border-b border-light-grey">
-                                            <div className="font-bold text-xl">Progress Among Projects</div>
-                                        </div>
-                                        <div className="">
-                                            <div className="w-full">
-
-                                                <div className="shadow w-full bg-grey-light">
-                                                    <div
-                                                        className="bg-blue-500 text-xs leading-none py-1 text-center text-white"
-                                                        style={{width: "45%"}}>45%
-                                                    </div>
-                                                </div>
-
-
-                                                <div className="shadow w-full bg-grey-light mt-2">
-                                                    <div
-                                                        className="bg-teal-500 text-xs leading-none py-1 text-center text-white"
-                                                        style={{width: "55%"}}>55%
-                                                    </div>
-                                                </div>
-
-
-                                                <div className="shadow w-full bg-grey-light mt-2">
-                                                    <div
-                                                        className="bg-orange-500 text-xs leading-none py-1 text-center text-white"
-                                                        style={{width: "65%"}}>65%
-                                                    </div>
-                                                </div>
-
-
-                                                <div className="shadow w-full bg-grey-300 mt-2">
-                                                    <div
-                                                        className="bg-red-800 text-xs leading-none py-1 text-center text-white"
-                                                        style={{width: "75%"}}>75%
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                {/*Profile Tabs*/}
                                 <div
                                     className="flex flex-1 flex-col md:flex-row lg:flex-row mx-2 p-1 mt-2 mx-auto lg:mx-2 md:mx-2 justify-between">
-                                    {/*Top user 1*/}
-                                    <div className="rounded rounded-t-lg overflow-hidden shadow max-w-xs my-3">
-                                        <img src="https://i.imgur.com/w1Bdydo.jpg" alt="" className="w-full"/>
-                                        <div className="flex justify-center -mt-8">
-                                            <img src="https://i.imgur.com/8Km9tLL.jpg" alt=""
-                                                 className="rounded-full border-solid border-white border-2 -mt-3"/>
-                                        </div>
-                                        <div className="text-center px-3 pb-6 pt-2">
-                                            <h3 className="text-black text-sm bold font-sans">Olivia Dunham</h3>
-                                            <p className="mt-2 font-sans font-light text-grey-700">Hello, i'm from
-                                                another the other
-                                                side!</p>
-                                        </div>
-                                        <div className="flex justify-center pb-3 text-grey-dark">
-                                            <div className="text-center mr-3 border-r pr-3">
-                                                <h2>34</h2>
-                                                <span>Photos</span>
-                                            </div>
-                                            <div className="text-center">
-                                                <h2>42</h2>
-                                                <span>Friends</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {/*Top user 2*/}
-                                    <div className="rounded rounded-t-lg overflow-hidden shadow max-w-xs my-3">
-                                        <img src="https://i.imgur.com/w1Bdydo.jpg" alt="" className="w-full"/>
-                                        <div className="flex justify-center -mt-8">
-                                            <img src="https://i.imgur.com/8Km9tLL.jpg" alt=""
-                                                 className="rounded-full border-solid border-white border-2 -mt-3"/>
-                                        </div>
-                                        <div className="text-center px-3 pb-6 pt-2">
-                                            <h3 className="text-black text-sm bold font-sans">Olivia Dunham</h3>
-                                            <p className="mt-2 font-sans font-light text-grey-dark">Hello, i'm from
-                                                another the other
-                                                side!</p>
-                                        </div>
-                                        <div className="flex justify-center pb-3 text-grey-dark">
-                                            <div className="text-center mr-3 border-r pr-3">
-                                                <h2>34</h2>
-                                                <span>Photos</span>
-                                            </div>
-                                            <div className="text-center">
-                                                <h2>42</h2>
-                                                <span>Friends</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    {/*Top user 3*/}
-                                    <div className="rounded rounded-t-lg overflow-hidden shadow max-w-xs my-3">
-                                        <img src="https://i.imgur.com/w1Bdydo.jpg" alt="" className="w-full"/>
-                                        <div className="flex justify-center -mt-8">
-                                            <img src="https://i.imgur.com/8Km9tLL.jpg" alt=""
-                                                 className="rounded-full border-solid border-white border-2 -mt-3"/>
-                                        </div>
-                                        <div className="text-center px-3 pb-6 pt-2">
-                                            <h3 className="text-black text-sm bold font-sans">Olivia Dunham</h3>
-                                            <p className="mt-2 font-sans font-light text-grey-dark">Hello, i'm from
-                                                another the other
-                                                side!</p>
-                                        </div>
-                                        <div className="flex justify-center pb-3 text-grey-dark">
-                                            <div className="text-center mr-3 border-r pr-3">
-                                                <h2>34</h2>
-                                                <span>Photos</span>
-                                            </div>
-                                            <div className="text-center">
-                                                <h2>42</h2>
-                                                <span>Friends</span>
-                                            </div>
-                                        </div>
-                                    </div>
                                 </div>
                                 {/*/Profile Tabs*/}
                             </div>
                         </main>
                         {/*/Main*/}
                     </div>
-                    {/*Footer*/}
-                    <footer className="bg-grey-darkest text-white p-2">
-                        <div className="flex flex-1 mx-auto">&copy; My Design</div>
-                        <div className="flex flex-1 mx-auto">Distributed by: <a href="https://themewagon.com/"
-                                                                                target=" _blank">Themewagon</a></div>
-                    </footer>
-                    {/*/footer*/}
-
+                    <Footer/>
                 </div>
 
             </div>

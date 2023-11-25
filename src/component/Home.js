@@ -41,14 +41,14 @@ export default function Home() {
                 setList(arr)
                 setProducts(arr.slice(0, 10));
                 setShouldCallFindAll(false);
+                getAllMerchantCheckDelete().then(m => {
+                    let arr = m.reverse();
+                    setMerchants(arr.slice(0, 10))
+                })
             });
         }
         getAllCategories().then(category => {
             setCategories(category)
-        })
-        getAllMerchantCheckDelete().then(m => {
-            let arr = m.reverse();
-            setMerchants(arr.slice(0, 10))
         })
         MostPurchasedProducts().then(r => {
             const limitedProducts = r.slice(0, 10);
@@ -160,7 +160,9 @@ export default function Home() {
     const seeAllMerchants = () => {
         getAllMerchantCheckDelete().then(m => {
             let arr = m.reverse();
+            console.log(arr)
             setMerchants(arr)
+            setShouldCallFindAll(false)
         })
     }
 

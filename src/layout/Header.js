@@ -312,7 +312,7 @@ export default function Header() {
                                         </div>
                                         {user ? (
                                             <div className="dropdown">
-                                                <a><img src={user.image} className="profile-picture"/> {user.username}
+                                                <a> <img src={user.image} className="profile-picture" alt={""}/> {user.username}
                                                 </a>
                                                 <div className="dropdown-menu">
                                                     <Link className="user-function" to="/">Profile</Link>
