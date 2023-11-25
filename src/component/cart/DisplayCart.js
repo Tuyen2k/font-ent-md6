@@ -22,6 +22,7 @@ export default function DisplayCart() {
     const [message, setMessage] = useState("");
     const [total, setTotal] = useState(0)
     const [coupon, setCoupon] = useState(undefined)
+    const [quantityBill, setQuantityBill] = useState(0)
 
     const findCartDetail = (id) => {
         let item;
@@ -254,6 +255,15 @@ export default function DisplayCart() {
         setOrders([...orders])
         console.log(orders)
     }
+    function countQuantityBill(list){
+        let count = 1
+        for (let i = 1; i < list.length; i++) {
+            if (list[i].cart.merchant.id_merchant !== list[i-1].cart.merchant.id_merchant){
+                count++
+            }
+        }
+        setQuantityBill(count)
+    }
 
     function handleAddBill() {
         addBill(orders).then(res => {
@@ -275,6 +285,8 @@ export default function DisplayCart() {
         })
     }
 
+
+    //send notification
     async function handleSendNotification(cartDetails){
         let arr = [cartDetails[0].cart.merchant]
         for (let i = 1; i < cartDetails.length; i++) {
@@ -293,6 +305,7 @@ export default function DisplayCart() {
 
     function handleCheckOrder() {
         if (orders.length !== 0) {
+            countQuantityBill(orders)
             setIsOrder(true)
         } else {
             toast.error('Please select the product to make payment.', {containerId: "cart-bill"});
@@ -333,7 +346,7 @@ export default function DisplayCart() {
     return (
         <>
             <Header/>
-            <div className="container">
+            <div className="container" style={{marginBottom :"80px", marginTop:"20px"}}>
                 <ToastContainer enableMultiContainer containerId={"cart-bill"} position="top-right" autoClose={1500}
                                 pauseOnHover={false}
                                 style={{width: "400px"}}/>
@@ -344,29 +357,29 @@ export default function DisplayCart() {
                             <h2>Bill</h2>
                             <section className="row" style={{margin: "10px"}}>
                                 <div className="display-order col-6">
-                                    <h3 className="title">Delivery address</h3>
+                                    <h4 className="title">Delivery address</h4>
                                     <div>
                                         <div className="input mb-3">
-                                            <label htmlFor="name"><h4>Username</h4></label>
+                                            <label htmlFor="name"><h5>Username</h5></label>
                                             <input type="text" className="form-control"
-                                                   value={account.name} aria-label="Username"
+                                                   value={account.username} aria-label="Username"
                                                    aria-describedby="basic-addon1"/>
                                         </div>
                                         <div className="input mb-3">
-                                            <label htmlFor="numberphone"><h4>Number Phone</h4></label>
+                                            <label htmlFor="numberphone"><h5>Number Phone</h5></label>
                                             <input type="text" id="numberphone" className="form-control"
                                                    value={account.phone} aria-label="Username"
                                                    aria-describedby="basic-addon1"/>
                                         </div>
                                         <div className="input mb-3 row" style={{width: "unset"}}>
                                             <div className="input mb-3 col-6">
-                                                <label htmlFor="city"><h4>City</h4></label>
+                                                <label htmlFor="city"><h5>City</h5></label>
                                                 <input type="text" id="city" className="form-control"
                                                        value={account.address.city.name} aria-label="Username"
                                                        aria-describedby="basic-addon1"/>
                                             </div>
                                             <div className="input mb-3 col-6">
-                                                <label htmlFor="district"><h4>District</h4></label>
+                                                <label htmlFor="district"><h5>District</h5></label>
                                                 <input type="text" id="district" className="form-control"
                                                        value={account.address.district.name} aria-label="Username"
                                                        aria-describedby="basic-addon1"/>
@@ -374,13 +387,13 @@ export default function DisplayCart() {
                                         </div>
                                         <div className="input mb-3 row" style={{width: "unset"}}>
                                             <div className="input mb-3 col-6">
-                                                <label htmlFor="ward"><h4>Ward</h4></label>
+                                                <label htmlFor="ward"><h5>Ward</h5></label>
                                                 <input type="text" id="ward" className="form-control"
                                                        value={account.address.ward.name} aria-label="Username"
                                                        aria-describedby="basic-addon1"/>
                                             </div>
                                             <div className="input mb-3 col-6">
-                                                <label htmlFor="detail"><h4>Detail</h4></label>
+                                                <label htmlFor="detail"><h5>Detail</h5></label>
                                                 <input type="text" id="detail" className="form-control"
                                                        value={account.address.address_detail} aria-label="Username"
                                                        aria-describedby="basic-addon1"/>
@@ -391,57 +404,53 @@ export default function DisplayCart() {
                                 <div className="display-order col-6">
                                     <h3 className="title">Summary</h3>
                                     <div>
-                                        <div className="row">
-                                            <span className="text col-6"><h4>The number of products </h4></span>
+                                        <div className="row" style={{marginTop:"5px", marginBottom:"5px"}}>
+                                            <span className="text col-6"><h5>The number of products </h5></span>
                                             <span
-                                                className="right number col-6"><h4><strong>{orders.length}</strong></h4></span>
+                                                className="right number col-6"><h5><strong><em>{orders.length}</em></strong></h5></span>
                                         </div>
-                                        <div className="row">
-                                            <span className="text col-6"><h4>The total amount</h4> </span>
+                                        <div className="row" style={{marginTop:"5px", marginBottom:"5px"}}>
+                                            <span className="text col-6"><h5>The total bill</h5> </span>
                                             <span
-                                                className="right number col-6"><h4><strong><span className="number">{total.toLocaleString()}</span></strong></h4></span>
+                                                className="right number col-6"><h5><strong><span className="number"><em>{quantityBill}</em></span></strong></h5></span>
                                         </div>
-                                        <div className="row">
-                                            <span className="text col-6"><h4>Discount code</h4> </span>
-                                            <h4 className=" col-6"><select name="" id="">
-                                                <option value="">Choice voucher coupon</option>
-                                                <option value="">1</option>
-                                                <option value="">2</option>
-                                                <option value="">3</option>
-                                            </select></h4>
-
-                                        </div>
-                                        <div className="row">
-                                            <span className="text col-6"><h4>Reduced amount</h4> </span>
+                                        <div className="row" style={{marginTop:"5px", marginBottom:"5px"}}>
+                                            <span className="text col-6"><h5>The total amount</h5> </span>
                                             <span
-                                                className="right number col-6"><h4><strong><span className="number">{total.toLocaleString()}</span></strong></h4></span>
+                                                className="right number col-6"><h5><strong><span className="number"><em>{total.toLocaleString()} VND</em></span></strong></h5></span>
                                         </div>
-                                        <div className="row">
-                                            <span className="text col-6"><h4>Total payment amount</h4> </span>
+                                        <div className="row" style={{marginTop:"5px", marginBottom:"5px"}}>
+                                            <span className="text col-6"><h5>Reduced amount</h5> </span>
                                             <span
-                                                className="right number col-6"><h4><strong><span className="number">{total.toLocaleString()}</span></strong></h4></span>
+                                                className="right number col-6"><h5><strong><span className="number"><em>{total.toLocaleString()} VND</em></span></strong></h5></span>
                                         </div>
-                                        <div className="row">
-                                            <div className="col-6"><h4>Payment methods</h4></div>
-                                            <h4 className=" col-6">
-                                                <select aria-label="Default select example">
+                                        <div className="row" style={{marginTop:"5px", marginBottom:"5px"}}>
+                                            <span className="text col-6"><h5>Total payment amount</h5> </span>
+                                            <span
+                                                className="right number col-6"><h5><strong><span className="number"><em>{total.toLocaleString()} VND</em></span></strong></h5></span>
+                                        </div>
+                                        <div className="row" style={{marginTop:"5px", marginBottom:"5px"}}>
+                                            <div className="col-6"><h5>Payment methods</h5></div>
+                                            <h5 className=" col-6">
+                                                <select className="select">
                                                     <option>Choice payment method</option>
                                                     <option value="1">Payment on delivery</option>
                                                     <option value="2">Payment via e-wallet</option>
                                                 </select>
-                                            </h4>
+                                            </h5>
                                         </div>
                                         <hr/>
-                                        <div className="row">
+                                        <div className="row" style={{marginTop:"0px"}}>
                                             <div className="col-6" onClick={() => {
                                                 setIsOrder(false)
                                                 setTotal(0)
                                                 setOrders([])
-                                            }}><h4
-                                                style={{color: "rgb(220,53,69)", paddingTop: "10px"}}>Back cart</h4>
-                                            </div>
+                                            }}><h4 style={{paddingTop: "10px"}}>
+                                                <img style={{height: "20px", width: "20px"}}
+                                                     src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/back.png?alt=media&token=2c33e5a3-f355-4f82-b095-32b64ec48bd1" alt=""/><strong> Back</strong></h4>
+                                           </div>
                                             <div className="col-6" onClick={handleAddBill}>
-                                                <button className="btn btn-outline-danger"><h4>Payment</h4></button>
+                                                <button className="btn btn-outline-danger" style={{paddingBottom:"0px"}}><h4>Payment</h4></button>
                                             </div>
                                         </div>
 
@@ -578,8 +587,7 @@ export default function DisplayCart() {
                                 <div className="container">
                                     <div className="display-cart">
                                         <h5 className="mb-0"><Link to={"/"}
-                                                                   className="text-body"><i
-                                            className="fas fa-long-arrow-alt-left me-2"></i>Back
+                                                                   className="text-body"><img style={{height: "20px", width: "20px"}} src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/back.png?alt=media&token=2c33e5a3-f355-4f82-b095-32b64ec48bd1" alt=""/> Back
                                             Home</Link></h5>
                                         <div className="row">
                                             <div className="col-6"></div>
