@@ -6,7 +6,7 @@ import Header from "../../layout/Header";
 import Footer from "../../layout/Footer";
 import {couponByIdMerchant} from "../../service/CouponService";
 import {toast, ToastContainer} from "react-toastify";
-import {handledSendNotification} from "../../service/Websocket";
+import {handledSendAccountSelf, handledSendNotification} from "../../service/Websocket";
 import {findAccountByMerchant} from "../../service/AccountService";
 
 
@@ -258,6 +258,7 @@ export default function DisplayCart() {
     function handleAddBill() {
         addBill(orders).then(res => {
             if (res === true) {
+                handledSendAccountSelf(account, account)
                 handleSendNotification(orders)
                 setIsOrder(false)
                 setTotal(0)
