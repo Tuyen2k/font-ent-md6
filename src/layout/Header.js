@@ -11,7 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import * as yup from "yup";
 import SockJS from "sockjs-client";
 import {over} from "stompjs";
-import {getAllNotification} from "../service/NotificationService";
+import {getAllNotification, updateWatch} from "../service/NotificationService";
 import {connect} from "../service/Websocket";
 import {getListCart} from "../service/CartService";
 
@@ -237,6 +237,16 @@ export default function Header() {
         toast.error('Please log in!', {containerId: "page"});
     }
 
+    function handleWatchNotification(id_notification){
+        updateWatch(id_notification).then(res =>{
+            if (res === true){
+                setExist(!isExist)
+            }else {
+                console.log("Error")
+            }
+        })
+    }
+
 
     return (
         <>
@@ -270,7 +280,7 @@ export default function Header() {
                                                     notifications.map((item, index) => {
                                                         if (item.link !== "") {
                                                             return (
-                                                                <div className="notification-container row">
+                                                                <div onClick={()=>handleWatchNotification(item.id_notification)} className="notification-container row">
                                                                     <a className="col-11" href={item.link}>
                                                                         <div className="notification-content "><strong>{index+1}. </strong>{item.notification}</div>
                                                                     </a>
@@ -286,7 +296,7 @@ export default function Header() {
                                                                 </div>)
                                                         } else {
                                                             return (
-                                                                <div className="notification-container row">
+                                                                <div onClick={()=>handleWatchNotification(item.id_notification)} className="notification-container row">
                                                                     <div className="col-11">
                                                                         <div className="notification-content"><strong>{index+1}. </strong>{item.notification}</div>
                                                                     </div>

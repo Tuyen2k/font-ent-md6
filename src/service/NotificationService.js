@@ -11,3 +11,15 @@ export function getAllNotification(id_account){
         )
     })
 }
+
+export function updateWatch(id_notification){
+    return new Promise(require=>{
+        require(
+            axios.get(`http://localhost:8080/api/websocket/notification/${id_notification}`).then(res =>{
+                return true
+            }).catch(Error =>{
+                return false
+            })
+        )
+    })
+}
