@@ -274,25 +274,26 @@ export default function Header() {
                                                                                       alt=""/> Notification</span>
                                                 <span className="badge">{quantityNotification}</span>
                                             </div>
-                                            <div className="dropdown-menu" style={{width: "400px"}}>
+                                            <div className="dropdown-menu" style={{width: "400px", height:"510px", overflowY:"auto", overflowX:"hidden"}}>
                                                 {/*list notification*/}
                                                 {notifications.length !== 0 ? (
                                                     notifications.map((item, index) => {
                                                         if (item.link !== "") {
                                                             return (
                                                                 <div onClick={()=>handleWatchNotification(item.id_notification)} className="notification-container row">
-                                                                    <a className="col-11" href={item.link}>
+                                                                    <a className="col-10" href={item.link}>
                                                                         <div className="notification-content "><strong>{index+1}. </strong>{item.notification}</div>
+                                                                        <strong><em><span className="notification-content" style={{color:"gray"}}>{new Date(item.time).toLocaleString(
+                                                                            'en-UK', {
+                                                                                year: 'numeric',
+                                                                                month: '2-digit',
+                                                                                day: '2-digit',
+                                                                                hour: '2-digit',
+                                                                                minute: '2-digit',
+                                                                            })}</span></em></strong>
                                                                     </a>
-                                                                    <div className="col-1" style={{display:"flex", alignItems:"center", justifyContent:"center"}}>{!item.watch&&(<p className="red-dot"></p>)}</div>
-                                                                    <span className="notification-content">{new Date(item.time).toLocaleString(
-                                                                        'en-UK', {
-                                                                            year: 'numeric',
-                                                                            month: '2-digit',
-                                                                            day: '2-digit',
-                                                                            hour: '2-digit',
-                                                                            minute: '2-digit',
-                                                                        })}</span>
+                                                                    <div className="col-2" style={{display:"flex", alignItems:"center", justifyContent:"center"}}>{!item.watch&&(<p className="red-dot"></p>)}</div>
+
                                                                 </div>)
                                                         } else {
                                                             return (
