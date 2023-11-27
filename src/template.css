@@ -6392,23 +6392,49 @@ h1{
 }
 
 /*-------------------------------------------------*/
-.pagination {
+/* Định dạng thanh phân trang chung */
+.pagination-container {
     display: flex;
     justify-content: center;
     margin-top: 20px;
 }
 
+/* Định dạng các nút Previous và Next */
 .pagination a {
-    cursor: pointer;
-    margin: 0 5px;
-    padding: 5px 10px;
-    border: 1px solid #ddd;
-    border-radius: 3px;
+    color: #dc5050;
     text-decoration: none;
+    padding: 8px 16px;
+    border: 1px solid #d9e9ff;
+    border-radius: 5px;
+    margin: 0 4px;
+    cursor: pointer;
 }
 
+/* Định dạng nút Previous khi không thể chuyển đến trang trước */
+.pagination a[aria-disabled="true"] {
+    color: #a8a2a2;
+    cursor: not-allowed;
+}
+
+/* Định dạng nút được chọn */
 .pagination a.active {
-    background-color: #007bff;
-    color: #fff;
+    background-color: whitesmoke;
+    color: #dc5050;
 }
 
+/* Định dạng các dấu chấm "..." */
+.pagination li {
+    display: inline-block;
+    margin: 0 4px;
+    color: #dc5050;
+}
+
+/* Định dạng trang hiện tại */
+.pagination li.active {
+    font-weight: bold;
+}
+
+/* Hover effect cho nút */
+.pagination a:hover {
+    background-color: #ecdcdc;
+}

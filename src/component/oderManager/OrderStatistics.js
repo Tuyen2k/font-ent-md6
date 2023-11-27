@@ -27,59 +27,25 @@ function OrderStatistics() {
     const [data, setData] = useState([])
     const [conversion, setConversion] = useState(true)
     const [list, setList] = useState([])
-    const [currentPage, setCurrentPage] = useState(0)
 
     //phan trang
     const ItemsPerPage = 5;
     const totalPages = Math.ceil(list.length / ItemsPerPage);
-    const DisplayedPages = 3;
     const handlePageChange = (selectedPage) => {
-        setCurrentPage(selectedPage.selected)
         const startIndex = selectedPage.selected * ItemsPerPage;
         const endIndex = startIndex + ItemsPerPage;
         console.log(selectedPage.selected)
         setBillDetail(list.slice(startIndex, endIndex))
         setCheck(false)
     };
-    // const getDisplayedPages = () => {
-    //     const displayedPages = [];
-    //     const totalPagesWithDots = DisplayedPages * 2 + 1; // 3 trang đầu + trang hiện tại + 3 trang cuối
-    //
-    //     if (totalPages <= totalPagesWithDots) {
-    //         for (let i = 0; i < totalPages; i++) {
-    //             displayedPages.push(i);
-    //         }
-    //     } else {
-    //         let startPage = Math.max(0, currentPage - DisplayedPages);
-    //         let endPage = Math.min(totalPages - 1, currentPage + DisplayedPages);
-    //
-    //         if (startPage === 0) {
-    //             endPage = totalPagesWithDots - 1;
-    //         } else if (endPage === totalPages - 1) {
-    //             startPage = totalPages - totalPagesWithDots;
-    //         }
-    //
-    //         for (let i = startPage; i <= endPage; i++) {
-    //             displayedPages.push(i);
-    //         }
-    //
-    //         if (startPage > 0) {
-    //             displayedPages.unshift('...');
-    //         }
-    //         if (endPage < totalPages - 1) {
-    //             displayedPages.push('...');
-    //         }
-    //     }
-    //
-    //     return displayedPages;
-    // };
+
 
     useEffect(() => {
         if (check){
             findAllOrdersByMerchant(id).then(r => {
                 let arr = groupByBill(r)
                 setList(arr)
-                setBillDetail(arr.slice(currentPage, ItemsPerPage))
+                setBillDetail(arr.slice(0, ItemsPerPage))
                 setData(calculateTotalByYear(arr))
                 order(arr.length)
                 money(arr)
@@ -348,7 +314,7 @@ function OrderStatistics() {
                                         </div>
 
 
-                                        <div className="table-responsive">
+                                        <div className="table-responsive" >
                                             <table className="table text-grey-darkest">
                                                 <thead className="bg-grey-dark text-white text-normal">
                                                 <tr style={{textAlign: 'center'}}>
@@ -409,11 +375,11 @@ function OrderStatistics() {
                                             <ReactPaginate
                                                 previousLabel={'Previous'}
                                                 nextLabel={'Next'}
-                                                breakLabel={'...'}
-                                                pageCount={totalPages}
-                                                marginPagesDisplayed={2}
-                                                pageRangeDisplayed={5}
                                                 onPageChange={handlePageChange}
+                                                pageCount={totalPages}
+                                                pageRangeDisplayed={1}
+                                                marginPagesDisplayed={1}
+                                                breakLabel={"..."}
                                                 containerClassName={'pagination'}
                                                 activeClassName={'active'}
                                             />
