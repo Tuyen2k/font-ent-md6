@@ -269,7 +269,9 @@ export default function DisplayCart() {
         addBill(orders).then(res => {
             if (res === true) {
                 handledSendAccountSelf(account, account)
-                handleSendNotification(orders)
+                handleSendNotification(orders).then(res=>{
+                    console.log("send notification success")
+                })
                 setIsOrder(false)
                 setTotal(0)
                 setOrders([])
