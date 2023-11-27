@@ -6,7 +6,9 @@ import {findOneProduct, getAllProductByIdMerchant, getAllProductByMerchant} from
 import Header from "../layout/Header";
 import {toast, ToastContainer} from "react-toastify";
 import {orderNow} from "../service/BillService";
-import {handledSendNotification} from "../service/Websocket";
+import {handledSendAccountSelf, handledSendNotification} from "../service/Websocket";
+import SockJS from "sockjs-client";
+import {over} from "stompjs";
 
 function DetailMerchant() {
     let {id} = useParams();
@@ -19,6 +21,7 @@ function DetailMerchant() {
     const [totalMoney, setTotalMoney] = useState(0);
     const [coupon, setCoupon] = useState(1);
     const [shouldCallFindAll, setShouldCallFindAll] = useState(true);
+    const [isNotification, setNotification] = useState(false)
 
     useEffect(() => {
         findMerchantById(id).then(data => {
@@ -30,9 +33,24 @@ function DetailMerchant() {
             getAllProductByIdMerchant(data.id_merchant).then(r => {
                 setProducts(r)
             })
+                connectDetailMerchant(account)
         }})
-    }, [products, shouldCallFindAll])
+    }, [products, shouldCallFindAll, isNotification])
 
+    //websocket
+    let stompClient = null;
+    const connectDetailMerchant = (sendAcc) => {
+        let Sock = new SockJS('http://localhost:8080/ws')
+        stompClient = over(Sock)
+        stompClient.connect({}, ()=>{
+            stompClient.subscribe('/user/' + sendAcc.username + sendAcc.id + '/private-notification', (payload)=>{
+                setNotification(!isNotification)
+                setShouldCallFindAll(true);
+            })
+        }, (err)=>{
+            console.log(err)
+        });
+    }
     const displayModal = async (id_product) => {
         try {
             const data = await findOneProduct(id_product);
@@ -119,6 +137,7 @@ function DetailMerchant() {
             }
             orderNow(product, account.id, quantityOrder).then(res => {
                 if (res === true) {
+                    handledSendAccountSelf(account, account)
                     let notification = `${account.username} just placed an order with your merchant, please check your merchant`
                     let link = `http://localhost:3000/all-order/${product.merchant.id_merchant}`
                     handledSendNotification(account, product.merchant.account, notification, link)

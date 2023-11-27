@@ -1166,8 +1166,8 @@ div.error {
     background-color: #F6F6F6;
 }
 .red-dot {
-    width: 10px;
-    height: 10px;
+    width: 15px;
+    height: 15px;
     background-color: red;
     border-radius: 50%;
     display: inline-block;

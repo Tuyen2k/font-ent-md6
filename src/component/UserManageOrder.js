@@ -158,7 +158,7 @@ export default function UserManageOrder() {
             <ToastContainer enableMultiContainer containerId={"account-bill"} position="top-right" autoClose={1500}
                             pauseOnHover={false}
                             style={{width: "400px"}}/>
-            <div className="container">
+            <div className="container" style={{marginBottom :"50px"}}>
                 <div className="container">
                     {billDetails === undefined ? (
                         <>

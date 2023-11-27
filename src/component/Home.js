@@ -7,7 +7,9 @@ import {couponByIdMerchant} from "../service/CouponService";
 import {getAllMerchantCheckDelete} from "../service/MerchantService";
 import {orderNow} from "../service/BillService";
 import {toast, ToastContainer} from "react-toastify";
-import {handledSendNotification} from "../service/Websocket";
+import {connect, handledSendAccountSelf, handledSendNotification} from "../service/Websocket";
+import SockJS from "sockjs-client";
+import {over} from "stompjs";
 
 
 export default function Home() {
@@ -31,6 +33,7 @@ export default function Home() {
     const account = JSON.parse(localStorage.getItem("userInfo"))
     const search = useRef()
     const search1 = useRef()
+    const [isNotification, setNotification] = useState(false)
 
 
     useEffect(() => {
@@ -44,6 +47,9 @@ export default function Home() {
                 getAllMerchantCheckDelete().then(m => {
                     let arr = m.reverse();
                     setMerchants(arr.slice(0, 10))
+                    if (account !== null){
+                        connectHome(account)
+                    }
                 })
             });
         }
@@ -57,7 +63,26 @@ export default function Home() {
         fillByPrice().then(r => {
             setProductByPriceSale(r)
         })
-    }, [products, shouldCallFindAll]);
+
+
+    }, [products, shouldCallFindAll, isNotification]);
+
+
+
+
+    let stompClient = null;
+    const connectHome = (sendAcc) => {
+        let Sock = new SockJS('http://localhost:8080/ws')
+        stompClient = over(Sock)
+        stompClient.connect({}, ()=>{
+            stompClient.subscribe('/user/' + sendAcc.username + sendAcc.id + '/private-notification', (payload)=>{
+                setNotification(!isNotification)
+                setShouldCallFindAll(true);
+            })
+        }, (err)=>{
+            console.log(err)
+        });
+    }
 
     const handleInputName = (e) => {
         const inputSearch = document.getElementById("input-search");
@@ -175,6 +200,7 @@ export default function Home() {
             }
             orderNow(product, account.id, quantityOrder).then(res => {
                 if (res === true) {
+                    handledSendAccountSelf(account, account)
                     let notification = `${account.username} just placed an order with your merchant, please check your merchant`
                     let link = `http://localhost:3000/all-order/${product.merchant.id_merchant}`
                     handledSendNotification(account, product.merchant.account, notification, link)
