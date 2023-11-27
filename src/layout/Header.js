@@ -9,6 +9,13 @@ import {findCity, findDistrict, findMerchantByAccount, findWard} from "../servic
 import 'react-toastify/dist/ReactToastify.css';
 
 import * as yup from "yup";
+import SockJS from "sockjs-client";
+import {over} from "stompjs";
+import {getAllNotification, updateWatch} from "../service/NotificationService";
+import {connect} from "../service/Websocket";
+import {getListCart} from "../service/CartService";
+
+let stompClient = null;
 
 export default function Header() {
     const [isExist, setExist] = useState(true)
@@ -25,7 +32,38 @@ export default function Header() {
     const [color, setColor] = useState({borderColor: 'red', color: 'red', backgroundColor: 'white'});
     const inputFile = useRef()
     const [file, setFile] = useState(undefined)
+    const [notifications, setNotification] = useState([])
 
+    const connectHeader = (sendAcc) => {
+        let Sock = new SockJS('http://localhost:8080/ws')
+        stompClient = over(Sock)
+        stompClient.connect({}, () => {
+            stompClient.subscribe('/user/' + sendAcc.username + sendAcc.id + '/private-notification', (payload) => {
+                console.log(JSON.parse(payload.body));
+                setExist(!isExist)
+            })
+        }, (err) => {
+            console.log(err)
+        });
+    }
+
+    // const handledSendNotification = (sendAcc, recAcc, notification) => {
+    //     console.log(recAcc)
+    //     if (stompClient) {
+    //         var notificationSend = {
+    //             sendAcc: {
+    //                 id_account: sendAcc.id,
+    //                 name: sendAcc.username
+    //             },
+    //             recAcc: {
+    //                 id_account: recAcc.id_account,
+    //                 name: recAcc.name
+    //             },
+    //             notification: notification
+    //         };
+    //         stompClient.send("/app/private-notification", {}, JSON.stringify(notificationSend));
+    //     }
+    // }
 
     const [account, setAccount] = useState({
         name: '',
@@ -38,11 +76,35 @@ export default function Header() {
     });
     useEffect(() => {
         const userInfo = JSON.parse(localStorage.getItem('userInfo'));
-        setUser(userInfo);
+        if (userInfo !== null) {
+            getAllNotification(userInfo.id).then(res => {
+                setNotification(res)
+                countNotification(res)
+                console.log(res)
+            })
+            getListCart(userInfo.id).then(res =>{
+                setQuantityCart(res.length)
+            })
+            setUser(userInfo);
+            connectHeader(userInfo)
+            connect(userInfo)
+        }
+
     }, [isExist]);
 
+    const [quantityNotification,setQuantityNotification] = useState(0)
+    const [quantityCart,setQuantityCart] = useState(0)
     const isLoginDisabled = username.trim() === '' || password.trim() === '';
 
+    function countNotification(list){
+        let count = 0
+        for (let i = 0; i < list.length; i++) {
+            if (!list[i].watch){
+                count++
+            }
+        }
+        setQuantityNotification(count)
+    }
     const handledClickInput = () => {
         inputFile.current.click();
     }
@@ -175,6 +237,17 @@ export default function Header() {
         toast.error('Please log in!', {containerId: "page"});
     }
 
+    function handleWatchNotification(id_notification){
+        updateWatch(id_notification).then(res =>{
+            if (res === true){
+                setExist(!isExist)
+            }else {
+                console.log("Error")
+            }
+        })
+    }
+
+
     return (
         <>
             <header>
@@ -194,17 +267,64 @@ export default function Header() {
                                 </div>
                                 <div className="col-md-6 text-lg-right">
                                     <div className="d-inline-flex align-items-center">
+                                        <div className="dropdown" style={{marginRight: "50px"}}>
+                                            <div className="icon-container">
+                                                <span className="icon"><img className="profile-picture"
+                                                                                      src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/notification.png?alt=media&token=476a4839-4b5b-4147-80f6-4ba9702972bf"
+                                                                                      alt=""/> Notification</span>
+                                                <span className="badge">{quantityNotification}</span>
+                                            </div>
+                                            <div className="dropdown-menu" style={{width: "400px"}}>
+                                                {/*list notification*/}
+                                                {notifications.length !== 0 ? (
+                                                    notifications.map((item, index) => {
+                                                        if (item.link !== "") {
+                                                            return (
+                                                                <div onClick={()=>handleWatchNotification(item.id_notification)} className="notification-container row">
+                                                                    <a className="col-11" href={item.link}>
+                                                                        <div className="notification-content "><strong>{index+1}. </strong>{item.notification}</div>
+                                                                    </a>
+                                                                    <div className="col-1" style={{display:"flex", alignItems:"center", justifyContent:"center"}}>{!item.watch&&(<p className="red-dot"></p>)}</div>
+                                                                    <span className="notification-content">{new Date(item.time).toLocaleString(
+                                                                        'en-UK', {
+                                                                            year: 'numeric',
+                                                                            month: '2-digit',
+                                                                            day: '2-digit',
+                                                                            hour: '2-digit',
+                                                                            minute: '2-digit',
+                                                                        })}</span>
+                                                                </div>)
+                                                        } else {
+                                                            return (
+                                                                <div onClick={()=>handleWatchNotification(item.id_notification)} className="notification-container row">
+                                                                    <div className="col-11">
+                                                                        <div className="notification-content"><strong>{index+1}. </strong>{item.notification}</div>
+                                                                    </div>
+                                                                    <div className="col-1" style={{display:"flex", alignItems:"center", justifyContent:"center"}}>{!item.watch&&(<p className="red-dot"></p>)}</div>
+                                                                </div>
+                                                            )
+                                                        }
+                                                    })
+                                                ) : (
+                                                    <em style={{marginLeft: "5px"}}>You not notification</em>
+                                                )}
+                                            </div>
+                                        </div>
                                         {user ? (
                                             <div className="dropdown">
-                                                <a> <img src={user.image} className="profile-picture" alt={""}/> {user.username}</a>
+                                                <a> <img src={user.image} className="profile-picture" alt={""}/> {user.username}
+                                                </a>
                                                 <div className="dropdown-menu">
                                                     <Link className="user-function" to="/">Profile</Link>
                                                     {localStorage.getItem("merchant") === null ? (
-                                                        <Link className="user-function" to="/merchant/register">Register Merchant</Link>
+                                                        <Link className="user-function" to="/merchant/register">Register
+                                                            Merchant</Link>
                                                     ) : (
-                                                        <Link className="user-function" to="/list">Detail Merchant</Link>
+                                                        <Link className="user-function" to="/list">Detail
+                                                            Merchant</Link>
                                                     )}
-                                                    {user && <a className="user-function" onClick={handleLogout}>Logout</a>}
+                                                    {user &&
+                                                        <a className="user-function" onClick={handleLogout}>Logout</a>}
                                                 </div>
                                             </div>
                                         ) : (
@@ -246,9 +366,9 @@ export default function Header() {
                                 Hà Nội
                                 <i className="fa-solid fa-sort-down"></i>
                                 <ul className="menu-nav-city-select">
-                                    <li className="city-item" style={{marginLeft:"5px"}}>Hồ Chí Minh</li>
-                                    <li className="city-item" style={{marginLeft:"5px"}}>Hải Phòng</li>
-                                    <li className="city-item" style={{marginLeft:"5px"}}>Đà Nẵng</li>
+                                    <li className="city-item" style={{marginLeft: "5px"}}>Hồ Chí Minh</li>
+                                    <li className="city-item" style={{marginLeft: "5px"}}>Hải Phòng</li>
+                                    <li className="city-item" style={{marginLeft: "5px"}}>Đà Nẵng</li>
                                 </ul>
                             </div>
 
@@ -284,10 +404,11 @@ export default function Header() {
                                                     data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
                                         </div>
-                                        <div className="modal-body" style={{marginBottom:"20px"}}>
+                                        <div className="modal-body" style={{marginBottom: "20px"}}>
                                             <form>
                                                 <div className="row">
-                                                    <div className="col-4" style={{paddingRight : "0px", marginLeft: "10px"}}>
+                                                    <div className="col-4"
+                                                         style={{paddingRight: "0px", marginLeft: "10px"}}>
                                                         <div className="form-group">
                                                             <label>Username</label>
                                                             <input className="input-login-form" type="text"
@@ -316,11 +437,16 @@ export default function Header() {
                                                                 now</a></p>
                                                         </div>
                                                     </div>
-                                                    <div className="col-7" style={{position:"relative", marginLeft: "20px"}}>
+                                                    <div className="col-7"
+                                                         style={{position: "relative", marginLeft: "20px"}}>
                                                         <img
                                                             src="https://firebasestorage.googleapis.com/v0/b/react-firebase-storage-f6ec9.appspot.com/o/file%2FdoAnNgon.jpg?alt=media&token=e3c3377c-463d-481d-bb04-ba2d890e27b9"
                                                             alt="login"
-                                                            style={{width: "480px", marginTop: "13px", position:"absolute"}}/>
+                                                            style={{
+                                                                width: "480px",
+                                                                marginTop: "13px",
+                                                                position: "absolute"
+                                                            }}/>
                                                     </div>
                                                 </div>
                                             </form>
@@ -328,14 +454,17 @@ export default function Header() {
                                     </div>
                                 </div>
                             </div>
-                            <div className="user-nav-menu">
-                                {user ? (
-                                    <Link to={"/cart/account"}><i className="fa-solid fa-cart-shopping fa-lg"
-                                                                  style={{color: "#ff0000"}}></i></Link>
-                                ) : (
-                                    <span onClick={notificationLogin}><i className="fa-solid fa-cart-shopping fa-lg"
-                                                                         style={{color: "#ff0000"}}></i></span>
-                                )}
+                            <div className="user-nav-menu icon-container">
+                                <div className="icon">
+                                    {user ? (
+                                        <Link to={"/cart/account"}><i className="fa-solid fa-cart-shopping fa-lg"
+                                                                      style={{color: "#ff0000"}}></i></Link>
+                                    ) : (
+                                        <span onClick={notificationLogin}><i className="fa-solid fa-cart-shopping fa-lg"
+                                                                             style={{color: "#ff0000"}}></i></span>
+                                    )}
+                                </div>
+                                <span className="badge">{quantityCart}</span>
                             </div>
                             {/*End login modal*/}
                             {/*Register modal*/}

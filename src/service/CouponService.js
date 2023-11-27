@@ -6,6 +6,7 @@ export function couponByIdMerchant(id_merchant){
             axios.get(`http://localhost:8080/api/coupons/${id_merchant}`).then(res =>{
                 return res.data;
             }).catch(Error =>{
+                return [];
             })
         )
     })

@@ -14,6 +14,7 @@ import {over} from "stompjs";
 import Pagination from "../pagination/Pagination";
 import {getList} from "../../service/PageService";
 import Footer from "../../layout/Footer";
+import {handledSendNotification} from "../../service/Websocket";
 
 
 let stompClient = null;
@@ -30,6 +31,7 @@ function AllOrders() {
             setBillDetail(getList(arr, page, limit))
             setList(arr)
             connect()
+            connectNotification(account)
         })
     }, [status, changePage]);
 
@@ -72,6 +74,22 @@ function AllOrders() {
         }
     }
 
+
+    //notification websocket
+    let stompClientNotification = null
+    const connectNotification = (sendAcc) => {
+        let Sock = new SockJS('http://localhost:8080/ws')
+        stompClientNotification = over(Sock)
+        stompClientNotification.connect({}, ()=>{
+            stompClientNotification.subscribe('/user/' + sendAcc.username + sendAcc.id + '/private-notification', (payload)=>{
+                console.log(JSON.parse(payload.body));
+                setStatus(!status);
+            })
+        }, (err)=>{
+            console.log(err)
+        });
+    }
+
     const search = () => {
         let value = document.getElementById("valueSearch").value;
         if (value === "") {
@@ -92,12 +110,15 @@ function AllOrders() {
         }
     }
 
-    function handleCancel(id_bill, account) {
+    function handleCancel(id_bill, accountRec) {
         if (window.confirm("Are you sure you want to cancel this order?")){
-            receiver = account
+            receiver = accountRec
             cancelBill(id_bill)
                 .then(success => {
                     if (success) {
+                        let notification = `Your order has been cancelled`
+                        let link = "http://localhost:3000/user/manage-order"
+                        handledSendNotification(account, receiver, notification, link)
                         handledSend()
                         setStatus(!status)
                         // The status was successfully updated
@@ -110,12 +131,15 @@ function AllOrders() {
         }
     }
 
-    function handleConfirm(id_bill, account) {
-        receiver = account
+    function handleConfirm(id_bill, accountRec) {
+        receiver = accountRec
         let statusUpdate = {id_status : 2}
         updateStatus(id_bill, statusUpdate)
             .then(success => {
                 if (success) {
+                    let notification = `Your order has been confirmed and is being shipped`
+                    let link = "http://localhost:3000/user/manage-order"
+                    handledSendNotification(account, receiver, notification, link)
                     handledSend()
                     setStatus(!status)
                     // The status was successfully updated

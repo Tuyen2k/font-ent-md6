@@ -1149,3 +1149,45 @@ div.error {
     text-overflow: ellipsis; /* Hiển thị ba dấu chấm ở cuối */
 }
 
+.notification-content{
+    margin-left: 10px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Số dòng muốn hiển thị */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.notification-container:hover{
+    margin-left: 0px;
+    background-color: #F6F6F6;
+}
+.red-dot {
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+    display: inline-block;
+}
+.icon-container {
+    position: relative;
+    display: inline-block;
+}
+
+.icon {
+    display: inline-block;
+}
+
+.badge {
+    position: absolute;
+    top: -8px;
+    right: -25px;
+    background-color: red;
+    color: white;
+    border-radius: 50% !important;
+    padding: 4px;
+    font-size: 11px !important;
+    font-weight: bold;
+}
+
+

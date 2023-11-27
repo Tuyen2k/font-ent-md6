@@ -4,6 +4,10 @@ import {Link} from "react-router-dom";
 import {addBill} from "../../service/BillService";
 import Header from "../../layout/Header";
 import Footer from "../../layout/Footer";
+import {couponByIdMerchant} from "../../service/CouponService";
+import {toast, ToastContainer} from "react-toastify";
+import {handledSendAccountSelf, handledSendNotification} from "../../service/Websocket";
+import {findAccountByMerchant} from "../../service/AccountService";
 
 
 export default function DisplayCart() {
@@ -17,7 +21,7 @@ export default function DisplayCart() {
     const btn_modal = useRef()
     const [message, setMessage] = useState("");
     const [total, setTotal] = useState(0)
-
+    const [coupon, setCoupon] = useState(undefined)
 
     const findCartDetail = (id) => {
         let item;
@@ -40,8 +44,9 @@ export default function DisplayCart() {
                     console.log("Update success!!!")
                     setCheck(!check)
                 } else {
-                    setMessage("An error occurred. Please check again")
-                    btn_modal.current.click()
+                    toast.error('An error occurred. Please check again.', {containerId: "cart-bill"});
+                    // setMessage("An error occurred. Please check again")
+                    // btn_modal.current.click()
                 }
             })
         } else {
@@ -51,8 +56,9 @@ export default function DisplayCart() {
                         console.log("Update success!!!")
                         setCheck(!check)
                     } else {
-                        setMessage("An error occurred. Please check again")
-                        btn_modal.current.click()
+                        toast.error('An error occurred. Please check again.', {containerId: "cart-bill"});
+                        // setMessage("An error occurred. Please check again")
+                        // btn_modal.current.click()
                     }
                 })
             }
@@ -63,32 +69,36 @@ export default function DisplayCart() {
         setTotal(0)
         setOrders([])
         let item = findCartDetail(id)
-        if (item.quantity < 30) {
+        if (item.quantity < 20) {
             let quantity = item.quantity + 1
             updateQuantity(id, quantity).then(res => {
                 if (res === true) {
                     console.log("Update success!!!")
                     setCheck(!check)
                 } else {
-                    setMessage("An error occurred. Please check again")
-                    btn_modal.current.click()
+                    toast.error('An error occurred. Please check again.', {containerId: "cart-bill"});
+                    // setMessage("An error occurred. Please check again")
+                    // btn_modal.current.click()
                 }
             })
         } else {
-            setMessage("If you want to order a quantity over 30, please contact the merchant!")
-            btn_modal.current.click()
+            toast.warning('If you want to order a quantity over 20, please contact the merchant.', {containerId: "cart-bill"});
+            // setMessage("If you want to order a quantity over 30, please contact the merchant!")
+            // btn_modal.current.click()
         }
     }
     const deleteCart = (id) => {
         if (window.confirm("Are you sure?")) {
             deleteCartDetail(id).then(res => {
                 if (res === true) {
-                    setMessage("Delete success!!!")
-                    btn_modal.current.click()
+                    toast.success('Delete success.', {containerId: "cart-bill"});
+                    // setMessage("Delete success!!!")
+                    // btn_modal.current.click()
                     setCheck(!check)
                 } else {
-                    setMessage("An error occurred. Please check again")
-                    btn_modal.current.click()
+                    toast.error('An error occurred. Please check again.', {containerId: "cart-bill"});
+                    // setMessage("An error occurred. Please check again")
+                    // btn_modal.current.click()
                 }
             })
         }
@@ -118,8 +128,12 @@ export default function DisplayCart() {
                 count++
             }
         }
+        handleGetCouponByMerchant(arr).then(res=>{
+            setCoupon(res)
+        })
         console.log(arr)
         setCart(arr)
+
     }
 
     const handleAllOrder = () => {
@@ -156,6 +170,7 @@ export default function DisplayCart() {
         }
         setTotal(totalAmount)
         console.log(orders)
+        handleTotalOrder()
     }
     const handleOrderByMerchant = (id_merchant) => {
         let totalAmount = 0
@@ -243,33 +258,86 @@ export default function DisplayCart() {
     function handleAddBill() {
         addBill(orders).then(res => {
             if (res === true) {
+                handledSendAccountSelf(account, account)
+                handleSendNotification(orders)
                 setIsOrder(false)
+                setTotal(0)
+                setOrders([])
                 setCheck(!check)
-                setMessage("Order success. Waiting for merchant confirm!")
-                btn_modal.current.click()
+                toast.success('Order success. Waiting for merchant confirm.', {containerId: "cart-bill"});
+                // setMessage("Order success. Waiting for merchant confirm!")
+                // btn_modal.current.click()
             } else {
-                setMessage("An error occurred. Please check again!")
-                btn_modal.current.click()
+                toast.error('An error occurred. Please check again.', {containerId: "cart-bill"});
+                // setMessage("An error occurred. Please check again!")
+                // btn_modal.current.click()
             }
         })
+    }
+
+    async function handleSendNotification(cartDetails){
+        let arr = [cartDetails[0].cart.merchant]
+        for (let i = 1; i < cartDetails.length; i++) {
+            if (cartDetails[i].cart.merchant.id_merchant !== cartDetails[i-1].cart.merchant.id_merchant){
+                let merchant =  cartDetails[i].cart.merchant
+                arr.push(merchant)
+            }
+        }
+        for (let i = 0; i < arr.length; i++) {
+            let recAcc = await findAccountByMerchant(arr[i].id_merchant)
+            let notification = `${account.username} just placed an order with your merchant, please check your merchant`
+            let link = `http://localhost:3000/all-order/${arr[i].id_merchant}`
+            handledSendNotification(account, recAcc, notification, link)
+        }
     }
 
     function handleCheckOrder() {
         if (orders.length !== 0) {
             setIsOrder(true)
         } else {
-            setMessage("Please select the product to make payment!")
-            btn_modal.current.click()
+            toast.error('Please select the product to make payment.', {containerId: "cart-bill"});
+            // setMessage("")
+            // btn_modal.current.click()
         }
     }
 
+    async function handleGetCouponByMerchant(list){
+        let arr = []
+        let item = {merchant: {},coupons:[], total: 0, discount:0}
+        for (let i = 0; i < list.length; i++) {
+            item.merchant = list[i].merchant
+            item.coupons = await couponByIdMerchant(list[i].merchant.id_merchant)
+            arr.push({...item})
+        }
+        console.log(arr)
+        return arr
+    }
+
+
+    //coupon chưa xong
+    function handleTotalOrder(){
+        for (let i = 0; i < orders.length; i++) {
+            for (let j = 0; j < coupon.length; j++) {
+                if (orders[i].cart.merchant.id_merchant === coupon[j].merchant.id_merchant){
+                    coupon[j].total += orders[i].quantity * orders[i].price
+                }
+            }
+        }
+        console.log(coupon)
+    }
+
+    function handleDiscount(id_merchant, id_coupon){
+        console.log(id_merchant, id_coupon)
+    }
 
     return (
         <>
             <Header/>
             <div className="container">
-
-                {carts !== undefined ? (
+                <ToastContainer enableMultiContainer containerId={"cart-bill"} position="top-right" autoClose={1500}
+                                pauseOnHover={false}
+                                style={{width: "400px"}}/>
+                {carts !== undefined && coupon !== undefined ? (
                     orders.length !== 0 && isOrder ? (
                         // order
                         <div className="container">
@@ -365,7 +433,11 @@ export default function DisplayCart() {
                                         </div>
                                         <hr/>
                                         <div className="row">
-                                            <div className="col-6" onClick={() => setIsOrder(false)}><h4
+                                            <div className="col-6" onClick={() => {
+                                                setIsOrder(false)
+                                                setTotal(0)
+                                                setOrders([])
+                                            }}><h4
                                                 style={{color: "rgb(220,53,69)", paddingTop: "10px"}}>Back cart</h4>
                                             </div>
                                             <div className="col-6" onClick={handleAddBill}>
@@ -419,7 +491,22 @@ export default function DisplayCart() {
                                                                                       id={`checkbox-${cart.merchant.id_merchant}`}
                                                                                       type="checkbox"/>
                                                         </div>
-                                                        <div className="col-11">{cart.merchant.name}</div>
+                                                        <div className="col-2">{cart.merchant.name}</div>
+
+                                                        <div className="col-8" >
+                                                            {cart.merchant.id_merchant === coupon[index].merchant.id_merchant && coupon[index].coupons.length !== 0 && (
+                                                                <div className="row" >
+                                                                    <label className="col-2">Discount: </label>
+                                                                    <select onChange={(e)=>handleDiscount(coupon[index].merchant.id_merchant, e.target.value)} className="col-2" name="">
+                                                                    <option value="">Choice</option>
+                                                                    {coupon[index].coupons.map((item, count)=>{
+                                                                        return(
+                                                                            <option key={count} value={`${item.id}`}>{item.name}</option>
+                                                                        )
+                                                                    })}
+                                                                </select></div>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div className="item-list">
@@ -496,8 +583,8 @@ export default function DisplayCart() {
                                             Home</Link></h5>
                                         <div className="row">
                                             <div className="col-6"></div>
-                                            <h4 className="col-4" style={{color: "red"}}>Total amount: <strong><span
-                                                className="number">{total.toLocaleString()}</span></strong> VND</h4>
+                                            <h5 className="col-4" style={{color: "red"}}>Total amount: <strong><span
+                                                className="number">{total.toLocaleString()}</span></strong> VND</h5>
                                             <button className="btn btn-outline-danger col-2"
                                                     onClick={handleCheckOrder}>Order
                                             </button>

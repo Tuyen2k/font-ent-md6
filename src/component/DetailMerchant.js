@@ -6,6 +6,7 @@ import {findOneProduct, getAllProductByIdMerchant, getAllProductByMerchant} from
 import Header from "../layout/Header";
 import {toast, ToastContainer} from "react-toastify";
 import {orderNow} from "../service/BillService";
+import {handledSendNotification} from "../service/Websocket";
 
 function DetailMerchant() {
     let {id} = useParams();
@@ -118,6 +119,9 @@ function DetailMerchant() {
             }
             orderNow(product, account.id, quantityOrder).then(res => {
                 if (res === true) {
+                    let notification = `${account.username} just placed an order with your merchant, please check your merchant`
+                    let link = `http://localhost:3000/all-order/${product.merchant.id_merchant}`
+                    handledSendNotification(account, product.merchant.account, notification, link)
                     toast.success('Order success!', {containerId: 'merchant-detail'});
                 } else {
                     toast.error('An error occurred. Please check again!', {containerId: 'merchant-detail'});
@@ -504,126 +508,128 @@ function DetailMerchant() {
                             </div>
                         </div>
                         {product !== undefined &&(
-                            <div className="modal-body">
-                                <div style={{marginTop: '30px'}} className="now-detail-restaurant clearfix">
-                                    <div className="container">
-                                        <div className="row">
-                                            <div className="col-5">
-                                                <div id="product-carousel" className="carousel slide" data-ride="carousel">
-                                                    <div style={{
-                                                        // width: '480px',
-                                                        // height: '500px',
-                                                        position: 'relative',
-                                                        float: 'left'
-                                                    }}>
-                                                        {/*<div className="carousel-item active">*/}
-                                                        <img style={{width: '300px', height: '250px'}}
-                                                             src={product.image} alt="Image"/>
-                                                        {/*</div>*/}
+                            <div>
+                                <div className="modal-body">
+                                    <div style={{marginTop: '30px'}} className="now-detail-restaurant clearfix">
+                                        <div className="container">
+                                            <div className="row">
+                                                <div className="col-5">
+                                                    <div id="product-carousel" className="carousel slide" data-ride="carousel">
+                                                        <div style={{
+                                                            // width: '480px',
+                                                            // height: '500px',
+                                                            position: 'relative',
+                                                            float: 'left'
+                                                        }}>
+                                                            {/*<div className="carousel-item active">*/}
+                                                            <img style={{width: '300px', height: '250px'}}
+                                                                 src={product.image} alt="Image"/>
+                                                            {/*</div>*/}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div className="col-lg-7">
-                                                <h3 className="font-weight-semi-bold">{product.name}</h3>
-                                                {/*link dẫn tới merchant, cần có cả id merchant để lấy dữ liệu. */}
+                                                <div className="col-lg-7">
+                                                    <h3 className="font-weight-semi-bold">{product.name}</h3>
+                                                    {/*link dẫn tới merchant, cần có cả id merchant để lấy dữ liệu. */}
 
-                                                <Link to={`/detail_merchant/${merchant.id_merchant}`}><h5>{merchant.name} - Shop
-                                                    Online</h5></Link>
-                                                <div style={{marginTop: '8px'}} className="d-flex">
-                                                    <div className="text-primary mr-2">
-                                                        <small style={{color: '#d1d124'}} className="fas fa-star"></small>
-                                                        <small style={{color: '#d1d124'}} className="fas fa-star"></small>
-                                                        <small style={{color: '#d1d124'}} className="fas fa-star"></small>
-                                                        <small style={{color: '#d1d124'}}
-                                                               className="fas fa-star-half-alt"></small>
-                                                        <small style={{color: '#d1d124'}} className="far fa-star"></small>
+                                                    <Link to={`/detail_merchant/${merchant.id_merchant}`}><h5>{merchant.name} - Shop
+                                                        Online</h5></Link>
+                                                    <div style={{marginTop: '8px'}} className="d-flex">
+                                                        <div className="text-primary mr-2">
+                                                            <small style={{color: '#d1d124'}} className="fas fa-star"></small>
+                                                            <small style={{color: '#d1d124'}} className="fas fa-star"></small>
+                                                            <small style={{color: '#d1d124'}} className="fas fa-star"></small>
+                                                            <small style={{color: '#d1d124'}}
+                                                                   className="fas fa-star-half-alt"></small>
+                                                            <small style={{color: '#d1d124'}} className="far fa-star"></small>
+                                                        </div>
+                                                        <small className="pt-1">{product.view}</small>
                                                     </div>
-                                                    <small className="pt-1">{product.view}</small>
-                                                </div>
-                                                <div className="row">
+                                                    <div className="row">
                                                     <span className="number col-4" style={{marginTop:"3px"}}>
                                                         <h5 className="font-weight-semi-bold text-muted">
                                                             <del><em><span className="number">{product.price.toLocaleString()} VND</span></em></del>
                                                     </h5></span>
-                                                    <h5 className="font-weight-semi-bold col-6" style={{marginLeft :"0px"}}>
-                                                        <span className="number"/>{product.priceSale.toLocaleString()} VND</h5>
-                                                    <div className="col-2"></div>
-                                                </div>
-                                                <div className="d-flex mb-3">
-                                                    <h5 className="text-dark font-weight-medium mb-0 mr-3">Category: </h5>
-                                                    {product.categories && product.categories.map((item, index) => {
-                                                        if (index < product.categories.length -1){
-                                                            return(
-                                                                <div
-                                                                    className="custom-control custom-radio custom-control-inline">
-                                                                    <label style={{marginLeft: '5px'}}
-                                                                           htmlFor="size-1">{item.name},</label>
-                                                                </div>
-                                                            )
-                                                        }else {
-                                                            return (
-                                                                <div
-                                                                    className="custom-control custom-radio custom-control-inline">
-                                                                    <label style={{marginLeft: '5px'}}
-                                                                           htmlFor="size-1">{item.name}</label>
-                                                                </div>
-                                                            )
-                                                        }
-                                                    })}
-                                                </div>
-                                                <div className="d-flex mb-3">
-                                                    <h5 className="text-dark font-weight-medium mb-0 mr-3">Purchase: </h5>
-                                                    <form>
-                                                        <div className="custom-control custom-radio custom-control-inline">
-                                                            <label htmlFor="color-1">{product.purchase}</label>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                                <div className="d-flex mb-3">
-                                                    <h5 className="text-dark font-weight-medium mb-0 mr-3">Time make: </h5>
-                                                    <form>
-                                                        <div className="custom-control custom-radio custom-control-inline">
-                                                            <label htmlFor="color-1">{product.timeMake}</label>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                                <div className="d-flex align-items-center mb-3 pt-2">
-                                                    <div className="input-group quantity mr-3" style={{width: '130px'}}>
-                                                        <div className="input-group-btn" id="minus_div">
-                                                            <button onClick={subtraction} style={{
-                                                                backgroundColor: '#ff3d3d',
-                                                                padding: '5px',
-                                                                display: 'inline-block',
-                                                                borderRadius: '10px',
-                                                                width: '35px',
-                                                                border: 'none'
-                                                            }}>
-                                                                {/*tru*/}
-                                                                <i style={{color: "white"}} className="fa fa-minus"></i>
-                                                            </button>
-                                                        </div>
-                                                        <input style={{
-                                                            borderRadius: '8px',
-                                                            marginLeft: '10px',
-                                                            color: 'white',
-                                                            backgroundColor: '#df8686'
-                                                        }} type="text" className="form-control bg-secondary text-center"
-                                                               id="quantity_p"
-                                                               defaultValue={1}
-                                                               onChange={handleQuantityChange}/>
-                                                        <div style={{marginLeft: '10px'}} className="input-group-btn"
-                                                             id="plus_div">
-                                                            <button onClick={addition} style={{
-                                                                backgroundColor: '#ff3d3d',
-                                                                padding: '5px',
-                                                                display: 'inline-block',
-                                                                borderRadius: '10px',
-                                                                width: '35px',
-                                                                border: 'none'
-                                                            }}>
-                                                                {/*cong*/}
-                                                                <i style={{color: "white"}} className="fa fa-plus"></i>
-                                                            </button>
+                                                        <h5 className="font-weight-semi-bold col-6" style={{marginLeft :"0px"}}>
+                                                            <span className="number"/>{product.priceSale.toLocaleString()} VND</h5>
+                                                        <div className="col-2"></div>
+                                                    </div>
+                                                    <div className="d-flex mb-3">
+                                                        <h5 className="text-dark font-weight-medium mb-0 mr-3">Category: </h5>
+                                                        {product.categories && product.categories.map((item, index) => {
+                                                            if (index < product.categories.length -1){
+                                                                return(
+                                                                    <div
+                                                                        className="custom-control custom-radio custom-control-inline">
+                                                                        <label style={{marginLeft: '5px'}}
+                                                                               htmlFor="size-1">{item.name},</label>
+                                                                    </div>
+                                                                )
+                                                            }else {
+                                                                return (
+                                                                    <div
+                                                                        className="custom-control custom-radio custom-control-inline">
+                                                                        <label style={{marginLeft: '5px'}}
+                                                                               htmlFor="size-1">{item.name}</label>
+                                                                    </div>
+                                                                )
+                                                            }
+                                                        })}
+                                                    </div>
+                                                    <div className="d-flex mb-3">
+                                                        <h5 className="text-dark font-weight-medium mb-0 mr-3">Purchase: </h5>
+                                                        <form>
+                                                            <div className="custom-control custom-radio custom-control-inline">
+                                                                <label htmlFor="color-1">{product.purchase}</label>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                    <div className="d-flex mb-3">
+                                                        <h5 className="text-dark font-weight-medium mb-0 mr-3">Time make: </h5>
+                                                        <form>
+                                                            <div className="custom-control custom-radio custom-control-inline">
+                                                                <label htmlFor="color-1">{product.timeMake}</label>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                    <div className="d-flex align-items-center mb-3 pt-2">
+                                                        <div className="input-group quantity mr-3" style={{width: '130px'}}>
+                                                            <div className="input-group-btn" id="minus_div">
+                                                                <button onClick={subtraction} style={{
+                                                                    backgroundColor: '#ff3d3d',
+                                                                    padding: '5px',
+                                                                    display: 'inline-block',
+                                                                    borderRadius: '10px',
+                                                                    width: '35px',
+                                                                    border: 'none'
+                                                                }}>
+                                                                    {/*tru*/}
+                                                                    <i style={{color: "white"}} className="fa fa-minus"></i>
+                                                                </button>
+                                                            </div>
+                                                            <input style={{
+                                                                borderRadius: '8px',
+                                                                marginLeft: '10px',
+                                                                color: 'white',
+                                                                backgroundColor: '#df8686'
+                                                            }} type="text" className="form-control bg-secondary text-center"
+                                                                   id="quantity_p"
+                                                                   defaultValue={1}
+                                                                   onChange={handleQuantityChange}/>
+                                                            <div style={{marginLeft: '10px'}} className="input-group-btn"
+                                                                 id="plus_div">
+                                                                <button onClick={addition} style={{
+                                                                    backgroundColor: '#ff3d3d',
+                                                                    padding: '5px',
+                                                                    display: 'inline-block',
+                                                                    borderRadius: '10px',
+                                                                    width: '35px',
+                                                                    border: 'none'
+                                                                }}>
+                                                                    {/*cong*/}
+                                                                    <i style={{color: "white"}} className="fa fa-plus"></i>
+                                                                </button>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -631,49 +637,67 @@ function DetailMerchant() {
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        )}
-
-
-                        <div className="modal-footer" style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            marginTop: '10px'
-                        }}>
-                            <div className="row">
-                                <div className="col-6">
-                                    <button style={{backgroundColor: 'white', border: "none"}}>
-                                        <span style={{marginLeft: '40px'}}> Coupon</span>
-                                        <div>
-                                            <svg style={{marginLeft: '50px'}} xmlns="http://www.w3.org/2000/svg" width="45"
-                                                 height="45"
-                                                 fill="currentColor" className="bi bi-credit-card" viewBox="0 0 16 16">
-                                                <path
-                                                    d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"/>
-                                                <path
-                                                    d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
-                                            </svg>
+                                <div className="modal-footer" style={{
+                                    display: 'flex',
+                                    justifyContent: 'space-between',
+                                    alignItems: 'center',
+                                    marginTop: '10px'
+                                }}>
+                                    <div className="row">
+                                        <div className="col-6">
+                                            <button style={{backgroundColor: 'white', border: "none"}}>
+                                                <span style={{marginLeft: '40px'}}> Coupon</span>
+                                                <div>
+                                                    <svg style={{marginLeft: '50px'}} xmlns="http://www.w3.org/2000/svg" width="45"
+                                                         height="45"
+                                                         fill="currentColor" className="bi bi-credit-card" viewBox="0 0 16 16">
+                                                        <path
+                                                            d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"/>
+                                                        <path
+                                                            d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
+                                                    </svg>
+                                                </div>
+                                            </button>
                                         </div>
-                                    </button>
-                                </div>
-                                <div className="col-6">
-                                    <div >
-                                        <h5>
-                                            Total order money: <span style={{color: 'red', marginLeft: '5px', marginRight: '5px'}}>
+                                        <div className="col-6">
+                                            <div >
+                                                {totalOderMoney !== 0 ? (
+                                                    <h5>
+                                                        Total order money: <span
+                                                        style={{color: 'red', marginLeft: '5px', marginRight: '5px'}}>
                                         {totalOderMoney.toLocaleString()}</span> VND
-                                        </h5>
-                                        <h5>
-                                            Discount: <span style={{color: 'red'}}></span> VND
-                                        </h5>
-                                        <h5>
-                                            Total money: <span style={{color: 'red'}}>{totalMoney.toLocaleString()}</span> VND
-                                        </h5>
-                                        {/*<h6 style={{ marginBottom: 0 }}>thrifty: {} </h6>*/}
+                                                    </h5>
+                                                ) : (
+                                                    <h5>
+                                                        Total order money: <span
+                                                        style={{color: 'red', marginLeft: '5px', marginRight: '5px'}}>
+                                                {product.priceSale.toLocaleString()}</span> VND</h5>
+                                                )}
+
+                                                <h5>
+                                                    Discount: <span style={{color: 'red'}}></span> VND
+                                                </h5>
+                                                {totalMoney !== 0 ? (
+                                                    <h5>
+                                                        Total money: <span
+                                                        style={{color: 'red'}}>{totalMoney.toLocaleString()}</span> VND
+                                                    </h5>
+                                                ) : (
+                                                    <h5>
+                                                        Total money: <span
+                                                        style={{color: 'red'}}>{product.priceSale.toLocaleString()}</span> VND
+                                                    </h5>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+
+                        )}
+
+
+
 
 
 

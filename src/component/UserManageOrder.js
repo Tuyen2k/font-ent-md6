@@ -1,7 +1,7 @@
 import Header from "../layout/Header";
 import Footer from "../layout/Footer";
 import React, {useEffect, useRef, useState} from "react";
-import {getAllBillDetailByAccount, groupByBill} from "../service/BillService";
+import {getAllBillDetailByAccount, groupByBill, updateStatus} from "../service/BillService";
 import {toast, ToastContainer} from "react-toastify";
 import {getList} from "../service/PageService";
 import Pagination from "./pagination/Pagination";
@@ -21,17 +21,17 @@ export default function UserManageOrder() {
     const [check, setCheck] = useState(true)
     const [changePage, setChangePage] = useState(false);
     let receiver;
-    const connect=()=>{
+    const connect = () => {
         let Sock = new SockJS('http://localhost:8080/ws')
         stompClient = over(Sock)
-        stompClient.connect({},onConnected, onError);
+        stompClient.connect({}, onConnected, onError);
     }
     const onConnected = () => {
-        stompClient.subscribe('/user/'+account.username+account.id +'/private', onPrivateMessage);
+        stompClient.subscribe('/user/' + account.username + account.id + '/private', onPrivateMessage);
     }
-    const onPrivateMessage = (payload)=>{
+    const onPrivateMessage = (payload) => {
         let payloadData = JSON.parse(payload.body);
-        if (payloadData.sendAcc.id_account !== account.id){
+        if (payloadData.sendAcc.id_account !== account.id) {
             setCheck(!check);
             console.log(payloadData)
         }
@@ -39,7 +39,7 @@ export default function UserManageOrder() {
     const onError = (err) => {
         console.log(err);
     }
-    const  handledSend=()=>{
+    const handledSend = () => {
         console.log(receiver)
         if (stompClient) {
             var chatMessage = {
@@ -47,8 +47,8 @@ export default function UserManageOrder() {
                     id_account: account.id,
                     name: account.username
                 },
-                receiverAcc:{
-                    id_account:receiver.id_account,
+                receiverAcc: {
+                    id_account: receiver.id_account,
                     name: receiver.name
                 },
                 message: "true"
@@ -62,12 +62,12 @@ export default function UserManageOrder() {
 
     useEffect(() => {
         getAllBillDetailByAccount(account.id).then(res => {
-            if(res !== undefined){
+            if (res !== undefined) {
                 let arr = groupByBill(res)
                 setBillDetails(getList(arr, page, limit));
                 setList(arr)
                 setItem(arr[0])
-            }else {
+            } else {
                 setBillDetails([])
             }
             connect()
@@ -116,10 +116,29 @@ export default function UserManageOrder() {
     }
 
     function handleCancel(id_bill, id_merchant) {
-        findAccountByMerchant(id_merchant).then(res =>{
+        findAccountByMerchant(id_merchant).then(res => {
             receiver = res
         })
         cancelBill(id_bill)
+            .then(success => {
+                if (success) {
+                    setCheck(!check)
+                    handledSend()
+                    // The status was successfully updated
+                    console.log('Bill status updated successfully');
+                } else {
+                    // The status update failed
+                    console.log('Failed to update bill status');
+                }
+            });
+    }
+
+    function handleReceived(id_bill, id_merchant) {
+        findAccountByMerchant(id_merchant).then(res => {
+            receiver = res
+        })
+        let statusUpdate = {id_status: 3}
+        updateStatus(id_bill, statusUpdate)
             .then(success => {
                 if (success) {
                     setCheck(!check)
@@ -141,16 +160,18 @@ export default function UserManageOrder() {
                             style={{width: "400px"}}/>
             <div className="container">
                 <div className="container">
-                    {billDetails === undefined ?(
+                    {billDetails === undefined ? (
                         <>
-                            <div style={{display :"flex", alignItems :"center", justifyContent: "center"}}>
-                                <h3 style={{textAlign: "center", marginTop: "20vh", marginBottom: "20vh"}}>Your bill is empty.
-                                    <Link to={"/"} style={{ fontStyle: 'italic', color : "#ff5757"}}> Go to shopping now!!!
+                            <div style={{display: "flex", alignItems: "center", justifyContent: "center"}}>
+                                <h3 style={{textAlign: "center", marginTop: "20vh", marginBottom: "20vh"}}>Your bill is
+                                    empty.
+                                    <Link to={"/"} style={{fontStyle: 'italic', color: "#ff5757"}}> Go to shopping
+                                        now!!!
                                     </Link>
                                 </h3>
                             </div>
                         </>
-                    ):(
+                    ) : (
                         <div>
                             <div style={{marginTop: "15px"}}>
                                 <Pagination totalPage={totalPage} page={page} limit={limit} siblings={1}
@@ -167,8 +188,8 @@ export default function UserManageOrder() {
                                         <th>Time purchase</th>
                                         <th>Total amount</th>
                                         <th>Status</th>
-                                    <th></th>
-                            </tr>
+                                        <th></th>
+                                    </tr>
                                     </thead>
                                     <tbody>
                                     {billDetails.map((bill, index) => {
@@ -192,31 +213,48 @@ export default function UserManageOrder() {
                                                         minute: '2-digit',
                                                     }
                                                 )}</td>
-                                                <td><span className="number">{bill.total.toLocaleString()} VND</span></td>
+                                                <td><span className="number">{bill.total.toLocaleString()} VND</span>
+                                                </td>
                                                 <td>{bill.bill.status.name}</td>
-                                        <td>
-                                            <div className="row">
-                                                <div className="col-6">
-                                                    <button
-                                                        className="btn btn-sm btn-primary"
-                                                        onClick={() => {
-                                                            if (window.confirm("Are you sure you want   to cancel?")) {
-                                                                handleCancel(bill.bill.id_bill, bill.bill.merchant.id_merchant);
-                                                            }
-                                                        }}
-                                                        disabled={bill.bill.status.id_status !== 1}
-                                                    >Cancel
-                                                    </button>
-                                                </div>
-                                                <div className="col-6">
-                                                    <button className="btn btn-sm btn-primary" style={{width :"96px"}}
-                                                            onClick={() => {handleModal(bill)}}>View Details
-                                                    </button>
+                                                <td>
+                                                    <div className="row">
+                                                        <div className="col-6">
+                                                            {bill.bill.status.id_status === 1 ? (
+                                                                <button
+                                                                    className="btn btn-sm btn-primary"
+                                                                    onClick={() => {
+                                                                        if (window.confirm("Are you sure you want to cancel?")) {
+                                                                            handleCancel(bill.bill.id_bill, bill.bill.merchant.id_merchant);
+                                                                        }
+                                                                    }}
+                                                                >Cancel
+                                                                </button>
+                                                            ) : (
+                                                                bill.bill.status.id_status !== 2 ? (
+                                                                    <></>
+                                                                ) : (
+                                                                    <button
+                                                                        className="btn btn-sm btn-outline-danger"
+                                                                        onClick={() => {
+                                                                            handleReceived(bill.bill.id_bill, bill.bill.merchant.id_merchant);
+                                                                        }}
+                                                                    >Received
+                                                                    </button>
+                                                                )
+                                                            )}
+                                                        </div>
+                                                        <div className="col-6">
+                                                            <button className="btn btn-sm btn-primary"
+                                                                    style={{width: "96px"}}
+                                                                    onClick={() => {
+                                                                        handleModal(bill)
+                                                                    }}>View Details
+                                                            </button>
 
-                                                </div>
-                                            </div>
+                                                        </div>
+                                                    </div>
 
-                                        </td>
+                                                </td>
                                             </tr>
                                         )
                                     })}
@@ -253,8 +291,9 @@ export default function UserManageOrder() {
                                                 <td colSpan="2">Order Status : {item.bill.status.name}</td>
                                             </tr>
                                             <tr>
-                                                {address !== undefined &&(
-                                                    <td colSpan="4">Delivery Address : {address.city.name}, {address.district.name}, {address.ward.name}, {address.address_detail}</td>
+                                                {address !== undefined && (
+                                                    <td colSpan="4">Delivery Address
+                                                        : {address.city.name}, {address.district.name}, {address.ward.name}, {address.address_detail}</td>
                                                 )}
                                             </tr>
                                             <tr>
@@ -287,7 +326,7 @@ export default function UserManageOrder() {
                                 </div>
                             </div>
                         </div>
-                        )}
+                    )}
 
                 </>
 
