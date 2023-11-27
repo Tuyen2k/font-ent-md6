@@ -132,7 +132,7 @@ export default function Profile() {
             <Header/>
             <ToastContainer enableMultiContainer containerId={"update-profile"} position="top-right" autoClose={2000}
                             pauseOnHover={false}
-                            style={{width: "400px"}}/>
+                            style={{width: "300px"}}/>
             <MDBContainer className="custom-my-4">
                 <MDBCard>
                     <Formik initialValues={account} onSubmit={(e) => handleUpdateProfile(e)}
