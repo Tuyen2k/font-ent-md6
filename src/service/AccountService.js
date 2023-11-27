@@ -29,6 +29,19 @@ export const saveAccount = (account) => {
         )
     })
 }
+export const updateAccount = (account) => {
+    return new Promise((resolve) => {
+        resolve(
+            axios.post("http://localhost:8080/api/accounts/update", account)
+                .then(response => {
+                        return true
+                    }
+                ).catch(() => {
+                return false
+            })
+        )
+    })
+}
 
 export function findAccountByMerchant(id_merchant){
     return new Promise((resolve) => {

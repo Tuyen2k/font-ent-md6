@@ -25,7 +25,7 @@ import '@fortawesome/fontawesome-free/css/all.css';
 import AllOrders from "./component/oderManager/AllOrders";
 import OrderStatistics from "./component/oderManager/OrderStatistics";
 import NewCouponList from "./component/NewCouponList";
-
+import Profile from "./component/Profile";
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
     <BrowserRouter>
@@ -58,6 +58,7 @@ root.render(
             </Route>
 
             <Route path={'/user/manage-order'} element={<UserManageOrder/>}/>
+            <Route path={'/profile/:id'} element={<Profile/>}></Route>
 
         </Routes>
     </BrowserRouter>
