@@ -198,7 +198,7 @@ export default function Header() {
                                             <div className="dropdown">
                                                 <a><img src={user.image} className="profile-picture"/> {user.username}</a>
                                                 <div className="dropdown-menu">
-                                                    <Link className="user-function" to="/">Profile</Link>
+                                                    <Link className="user-function" to={`/profile/${user.id}`}>Profile</Link>
                                                     {localStorage.getItem("merchant") === null ? (
                                                         <Link className="user-function" to="/merchant/register">Register Merchant</Link>
                                                     ) : (
