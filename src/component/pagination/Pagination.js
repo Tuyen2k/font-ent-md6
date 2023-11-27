@@ -11,7 +11,7 @@ export default function Pagination(props) {
 
     return (
         <>
-            <div className="pagination-container">
+            <div className="pagination-container-bill">
                 <select className="select" onChange={(e) => props.onChangeItem(e.target.value)}
                         aria-label="Default select example">
                     <option value="5">5</option>
