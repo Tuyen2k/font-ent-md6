@@ -26,7 +26,7 @@ export function getProductById(id){
 export function getAllProductByIdMerchant(id){
     return new Promise(resolve => {
         resolve(
-            axios.get(`http://localhost:8080/api/products/${id}`).then(res =>{
+            axios.get(`http://localhost:8080/api/products/purchase/${id}`).then(res =>{
                 return res.data;
             }).catch(Error =>{
             })

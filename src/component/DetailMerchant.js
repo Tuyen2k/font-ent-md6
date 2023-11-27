@@ -238,7 +238,6 @@ function DetailMerchant() {
                                     </div>
                                     <div className="content">
                                         <div style={{
-                                            textAlign: 'center',
                                             marginTop: '8px',
                                             color: 'black'
                                         }}
