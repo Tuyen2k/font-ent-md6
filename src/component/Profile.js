@@ -8,6 +8,7 @@ import {findAccountById,updateAccount} from "../service/AccountService";
 import {findCity, findDistrict, findWard} from "../service/MerchantService";
 import {upImageFirebase} from "../firebase/Upfirebase";
 import Footer from "../layout/Footer";
+import {handledSendAccountSelf} from "../service/Websocket";
 
 export default function Profile() {
     const [account, setAccount] = useState({})
@@ -21,24 +22,39 @@ export default function Profile() {
     const [image, setImage] = useState(undefined)
     let {id} = useParams();
     const btn_modal = useRef()
-    const [load, setLoad] = useState(true)
-    const [isFirstClick, setIsFirstClick] = useState(true);
-    const [isDisabled, setIsDisabled] = useState(true);
     useEffect(() => {
-        findAccountById(id).then(account => {
-            setAccount(account)
-            setAddressDB(account.addressDelivery)
-            findCity().then(city => {
-                setCity(city)
-            })
-            findDistrict(account.addressDelivery.city.id_city).then(dataDistrict => {
-                setDistrict(dataDistrict)
-            })
-            findWard(account.addressDelivery.district.id_district).then(dataWard => {
-                setWard(dataWard)
-            })
-        })
+        const fetchData = async () => {
+            try {
+                const account = await findAccountById(id);
+                if (account) {
+                    setAccount(account);
+                    setAddressDB(account.addressDelivery);
 
+                    const city = await findCity();
+                    if (city) {
+                        setCity(city);
+
+                        if (account.addressDelivery && account.addressDelivery.city) {
+                            const dataDistrict = await findDistrict(account.addressDelivery.city.id_city);
+                            if (dataDistrict) {
+                                setDistrict(dataDistrict);
+
+                                if (dataDistrict && dataDistrict.id_district) {
+                                    const dataWard = await findWard(dataDistrict.id_district);
+                                    if (dataWard) {
+                                        setWard(dataWard);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
     }, []);
 
     const handleUpdateProfile = async (e) => {
@@ -55,10 +71,10 @@ export default function Profile() {
             };
             const updateResult = await updateAccount(updateProfile);
             if (updateResult) {
+                const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+                handledSendAccountSelf(userInfo, userInfo)
                 toast.success("Update Successfully!",{containerId: "update-profile"})
-                setTimeout(() => {
-                    window.location.reload();
-                },2800)
+
             }
         } catch (error) {
             console.error("Error updating profile:", error);

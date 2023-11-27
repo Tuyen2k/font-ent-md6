@@ -2,7 +2,6 @@ import {Link, useParams} from "react-router-dom";
 import Header from "../../layout/Header";
 import React, {useEffect, useState} from "react";
 import {
-    findAllBillByMerchant,
     findAllOrdersByMerchant,
     findOrderByProduct, findOrderByStatus, findOrderByUser, findUser,
     getAllStatus,
@@ -12,6 +11,7 @@ import {getAllProductByIdMerchant} from "../../service/ProductService";
 import Footer from "../../layout/Footer";
 import Chart from "./Chart";
 import MyBarChar from "./Test";
+import ReactPaginate from "react-paginate";
 function OrderStatistics() {
     let {id} = useParams();
     const [billDetail, setBillDetail] = useState([]);
@@ -26,12 +26,26 @@ function OrderStatistics() {
     const [totalUser, setTotalUser] = useState(0);
     const [data, setData] = useState([])
     const [conversion, setConversion] = useState(true)
+    const [list, setList] = useState([])
+
+    //phan trang
+    const ItemsPerPage = 10;
+    const totalPages = Math.ceil(list.length / ItemsPerPage);
+    const handlePageChange = (selectedPage) => {
+        const startIndex = selectedPage.selected * ItemsPerPage;
+        const endIndex = startIndex + ItemsPerPage;
+        console.log(selectedPage.selected)
+        setBillDetail(list.slice(startIndex, endIndex))
+        setCheck(false)
+    };
+
 
     useEffect(() => {
         if (check){
             findAllOrdersByMerchant(id).then(r => {
                 let arr = groupByBill(r)
-                setBillDetail(arr)
+                setList(arr)
+                setBillDetail(arr.slice(0, ItemsPerPage))
                 setData(calculateTotalByYear(arr))
                 order(arr.length)
                 money(arr)
@@ -98,11 +112,11 @@ function OrderStatistics() {
             }
         })
     }
-
     const setBill = (r) => {
         if (r.length > 0) {
             let arr = groupByBill(r);
-            setBillDetail(arr);
+            setList(arr)
+            setBillDetail(arr.slice(0, ItemsPerPage))
             order(arr.length);
             money(arr);
             setData(calculateTotalByYear(arr))
@@ -297,11 +311,10 @@ function OrderStatistics() {
                                             </span>
 
                                             </div>
-
-
-
                                         </div>
-                                        <div className="table-responsive">
+
+
+                                        <div className="table-responsive" >
                                             <table className="table text-grey-darkest">
                                                 <thead className="bg-grey-dark text-white text-normal">
                                                 <tr style={{textAlign: 'center'}}>
@@ -356,6 +369,20 @@ function OrderStatistics() {
                                                 ))}
                                                 </tbody>
                                             </table>
+                                        </div>
+
+                                        <div className="pagination-container">
+                                            <ReactPaginate
+                                                previousLabel={'Previous'}
+                                                nextLabel={'Next'}
+                                                onPageChange={handlePageChange}
+                                                pageCount={totalPages}
+                                                pageRangeDisplayed={1}
+                                                marginPagesDisplayed={1}
+                                                breakLabel={"..."}
+                                                containerClassName={'pagination'}
+                                                activeClassName={'active'}
+                                            />
                                         </div>
                                     </div>
                                     {/* /card */}

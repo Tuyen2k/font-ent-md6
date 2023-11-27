@@ -15,6 +15,8 @@ import Pagination from "../pagination/Pagination";
 import {getList} from "../../service/PageService";
 import Footer from "../../layout/Footer";
 import {handledSendNotification} from "../../service/Websocket";
+import ReactPaginate from "react-paginate";
+import {reverse} from "lodash/array";
 
 
 let stompClient = null;
@@ -24,16 +26,35 @@ function AllOrders() {
     let {id} = useParams();
     const [billDetail, setBillDetail] = useState([]);
     const [status, setStatus] = useState(true)
-    const [changePage, setChangePage] = useState(false);
+    const [conversion, setConversion] = useState(true)
+    const [check, setCheck] = useState(true)
+    const [mess, setMess] = useState("")
+    const [list, setList] = useState([])
+
+    //phan trang
+    const ItemsPerPage = 10;
+    const totalPages = Math.ceil(list.length / ItemsPerPage);
+    const handlePageChange = (selectedPage) => {
+        const startIndex = selectedPage.selected * ItemsPerPage;
+        const endIndex = startIndex + ItemsPerPage;
+        console.log(selectedPage.selected)
+        setBillDetail(list.slice(startIndex, endIndex))
+        setCheck(false)
+    };
+
     useEffect(() => {
-        findAllOrdersByMerchant(id).then(r => {
-            let arr = groupByBill(r)
-            setBillDetail(getList(arr, page, limit))
-            setList(arr)
-            connect()
-            connectNotification(account)
-        })
-    }, [status, changePage]);
+        if (check){
+            findAllOrdersByMerchant(id).then(r => {
+                let arr = groupByBill(r)
+                setList(arr)
+                setBillDetail(arr.slice(0, ItemsPerPage))
+                setMess("All list orders")
+            })
+        }
+        connect()
+        connectNotification(account)
+    }, [status, check]);
+
 
     //websocket
     let receiver;
@@ -93,18 +114,19 @@ function AllOrders() {
     const search = () => {
         let value = document.getElementById("valueSearch").value;
         if (value === "") {
-            findAllOrdersByMerchant(id).then(r => {
-                setBillDetail(groupByBill(r))
-                console.log(r)
-            })
+            setCheck(true)
         } else {
-            console.log(value)
             searchByNameAndPhone(id, value).then(r => {
                 if (r !== undefined) {
-                    setBillDetail(groupByBill(r))
-                    console.log(r)
+                    if (r.length > 0){
+                        let arr = groupByBill(r)
+                        setList(arr.reverse())
+                        setBillDetail(arr.slice(0, ItemsPerPage))
+                        setMess("Result")
+                    } else {
+                        setMess("No Orders")
+                    }
                 } else {
-
                 }
             })
         }
@@ -151,41 +173,7 @@ function AllOrders() {
             });
     }
 
-    const [list, setList] = useState([]);
-    const [page, setPage] = useState(1)
-    const [limit, setLimit] = useState(5)
-    const totalPage = Math.ceil(list.length / limit)
-    if (totalPage !== 0 && page > totalPage) {
-        setPage(totalPage)
-    }
 
-    const handleChangeItem = (value) => {
-        setLimit(value)
-        setChangePage(!changePage)
-    }
-
-    // useEffect(() => {
-    //     let arr = groupByBill(list)
-    //     setBillDetail(getList(arr, page, limit));
-    // }, [changePage])
-    const handlePageChange = (value) => {
-        if (value === "&laquo;" || value === " ...") {
-            setPage(1)
-        } else if (value === "&lsaquo;") {
-            if (page !== 1) {
-                setPage(page - 1)
-            }
-        } else if (value === "&raquo;" || value === "... ") {
-            setPage(totalPage)
-        } else if (value === "&rsaquo;") {
-            if (page !== totalPage) {
-                setPage(page + 1)
-            }
-        } else {
-            setPage(value)
-        }
-        setChangePage(!changePage)
-    }
 
     return (
         <>
@@ -247,7 +235,7 @@ function AllOrders() {
 
                                         <div className="rounded overflow-hidden shadow bg-white mx-2 w-full">
                                             <div style={{height: '60px'}} className="px-6 py-2 border-b border-light-grey flex items-center justify-between">
-                                                <div className="font-bold text-xl">All list orders</div>
+                                                <div className="font-bold text-xl">{mess}</div>
                                                 {/* search */}
                                                 <div className="flex items-center"> {/* Updated this line to use 'items-center' */}
                                                     <div style={{width: '400px'}} className="font-bold text-xl">
@@ -344,9 +332,19 @@ function AllOrders() {
                                                 ))}
                                                 </tbody>
                                             </table>
-                                            {/* end search */}
-                                            <div style={{marginTop: '14px'}}>
-                                                <Pagination totalPage={totalPage} page={page} limit={limit} siblings={1} onPageChange={handlePageChange} onChangeItem={handleChangeItem}/>
+                                             {/*end search*/}
+                                            <div className="pagination-container">
+                                                <ReactPaginate
+                                                    previousLabel={'Previous'}
+                                                    nextLabel={'Next'}
+                                                    onPageChange={handlePageChange}
+                                                    pageCount={totalPages}
+                                                    pageRangeDisplayed={1}
+                                                    marginPagesDisplayed={1}
+                                                    breakLabel={"..."}
+                                                    containerClassName={'pagination'}
+                                                    activeClassName={'active'}
+                                                />
                                             </div>
                                         </div>
                                     </div>

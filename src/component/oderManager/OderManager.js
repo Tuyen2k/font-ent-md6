@@ -13,6 +13,7 @@ import Footer from "../../layout/Footer";
 import Chart from "../../component/oderManager/Chart"
 import Test from "./Test";
 import MyBarChar from "./Test";
+import ReactPaginate from "react-paginate";
 
 function OrderManager(effect, deps) {
     let {id} = useParams();
@@ -34,12 +35,26 @@ function OrderManager(effect, deps) {
     const [endTime, setEndTime] = useState(undefined);
     const [data, setData] = useState([])
     const [conversion, setConversion] = useState(true)
+    const [list, setList] = useState([])
+
+    //phan trang
+    const ItemsPerPage = 10;
+    const totalPages = Math.ceil(list.length / ItemsPerPage);
+    const handlePageChange = (selectedPage) => {
+        const startIndex = selectedPage.selected * ItemsPerPage;
+        const endIndex = startIndex + ItemsPerPage;
+        console.log(selectedPage.selected)
+        setBillDetail(list.slice(startIndex, endIndex))
+        setCheck(false)
+    };
+
     useEffect(() => {
         if (check) {
             findAllOrdersByMerchant(id).then(r => {
                 let arr = groupByBill(r)
+                setList(arr)
+                setBillDetail(arr.slice(0, ItemsPerPage))
                 setData(calculateTotalByYear(arr))
-                setBillDetail(arr)
                 order(arr.length)
                 money(arr)
                 setYear(new Date().getFullYear())
@@ -160,7 +175,8 @@ function OrderManager(effect, deps) {
     const setBill = (r) => {
         if (r.length > 0) {
             let arr = groupByBill(r);
-            setBillDetail(arr)
+            setList(arr)
+            setBillDetail(arr.slice(0, ItemsPerPage))
             order(arr.length);
             money(arr);
             setMessage("Result search");
@@ -532,10 +548,22 @@ function OrderManager(effect, deps) {
                                                 </tbody>
                                             </table>
                                         </div>
+                                        <div className="pagination-container">
+                                            <ReactPaginate
+                                                previousLabel={'Previous'}
+                                                nextLabel={'Next'}
+                                                onPageChange={handlePageChange}
+                                                pageCount={totalPages}
+                                                pageRangeDisplayed={1}
+                                                marginPagesDisplayed={1}
+                                                breakLabel={"..."}
+                                                containerClassName={'pagination'}
+                                                activeClassName={'active'}
+                                            />
+                                        </div>
                                     </div>
                                     {/* /card */}
                                 </div>
-
                             </div>
 
                             <div id="chart-manage" style={{marginTop: '20px',backgroundColor: 'white', marginLeft: '15px', marginRight: '15px', borderRadius: '5px'}} className="footer-wraper">
