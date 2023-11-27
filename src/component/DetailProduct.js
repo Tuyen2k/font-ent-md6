@@ -99,7 +99,7 @@ function DetailProduct() {
     return (
         <>
             <Header/>
-            <ToastContainer enableMultiContainer containerId="detail-product" position="top-right"
+            <ToastContainer enableMultiContainer containerId="detail-product" position="top-center"
                             autoClose={2000} pauseOnHover={false}
                             style={{width: "300px"}}/>
             <div onLoad={window.scrollTo({ top: 0, behavior: 'instant' })} className="now-detail-restaurant clearfix" >

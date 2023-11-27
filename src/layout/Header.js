@@ -431,11 +431,11 @@ export default function Header() {
                                                             </button>
                                                         </div>
                                                         <div>
-                                                            <p>New to our website? <a data-bs-dismiss="modal"
+                                                            <a>New to our website? <a data-bs-dismiss="modal"
                                                                                       data-bs-toggle="modal"
                                                                                       data-bs-target="#registerModal"
                                                                                       style={{color: "red"}}>Register
-                                                                now</a></p>
+                                                                now</a></a>
                                                         </div>
                                                     </div>
                                                     <div className="col-7"
