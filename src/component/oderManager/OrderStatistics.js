@@ -34,7 +34,7 @@ function OrderStatistics() {
                 setBillDetail(arr)
                 setData(calculateTotalByYear(arr))
                 order(arr.length)
-                money(r)
+                money(arr)
                 setMessage("Statistics")
             })
         }
@@ -104,7 +104,7 @@ function OrderStatistics() {
             let arr = groupByBill(r);
             setBillDetail(arr);
             order(arr.length);
-            money(r);
+            money(arr);
             setData(calculateTotalByYear(arr))
             setMessage("Result search");
             setCheck(false);
@@ -123,7 +123,7 @@ function OrderStatistics() {
     const money = (r) => {
         let count = 0;
         for (let i = 0; i < r.length; i++) {
-            count += r[i].price
+            count += r[i].total
         }
         setTotalMoNey(count)
     }

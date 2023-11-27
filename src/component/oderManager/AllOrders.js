@@ -84,7 +84,6 @@ function AllOrders() {
             searchByNameAndPhone(id, value).then(r => {
                 if (r !== undefined) {
                     setBillDetail(groupByBill(r))
-
                     console.log(r)
                 } else {
 
