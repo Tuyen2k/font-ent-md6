@@ -6401,7 +6401,7 @@ h1{
 
 /* Định dạng các nút Previous và Next */
 .pagination a {
-    color: #dc5050;
+    color: #ff3d3d;
     text-decoration: none;
     padding: 8px 16px;
     border: 1px solid #d9e9ff;
@@ -6419,18 +6419,19 @@ h1{
 /* Định dạng nút được chọn */
 .pagination a.active {
     background-color: whitesmoke;
-    color: #dc5050;
+    color: #ff3d3d;
 }
 
 /* Định dạng các dấu chấm "..." */
 .pagination li {
     display: inline-block;
     margin: 0 4px;
-    color: #dc5050;
+    color: #ff3d3d;
 }
 
 /* Định dạng trang hiện tại */
-.pagination li.active {
+.pagination li.active a {
+    background-color: #ecdcdc;
     font-weight: bold;
 }
 

@@ -38,7 +38,7 @@ function OrderManager(effect, deps) {
     const [list, setList] = useState([])
 
     //phan trang
-    const ItemsPerPage = 5;
+    const ItemsPerPage = 10;
     const totalPages = Math.ceil(list.length / ItemsPerPage);
     const handlePageChange = (selectedPage) => {
         const startIndex = selectedPage.selected * ItemsPerPage;

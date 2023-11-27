@@ -16,6 +16,7 @@ import {getList} from "../../service/PageService";
 import Footer from "../../layout/Footer";
 import {handledSendNotification} from "../../service/Websocket";
 import ReactPaginate from "react-paginate";
+import {reverse} from "lodash/array";
 
 
 let stompClient = null;
@@ -26,11 +27,12 @@ function AllOrders() {
     const [billDetail, setBillDetail] = useState([]);
     const [status, setStatus] = useState(true)
     const [conversion, setConversion] = useState(true)
-    const [list, setList] = useState([])
     const [check, setCheck] = useState(true)
+    const [mess, setMess] = useState("")
+    const [list, setList] = useState([])
 
     //phan trang
-    const ItemsPerPage = 5;
+    const ItemsPerPage = 10;
     const totalPages = Math.ceil(list.length / ItemsPerPage);
     const handlePageChange = (selectedPage) => {
         const startIndex = selectedPage.selected * ItemsPerPage;
@@ -40,18 +42,18 @@ function AllOrders() {
         setCheck(false)
     };
 
-
     useEffect(() => {
         if (check){
             findAllOrdersByMerchant(id).then(r => {
                 let arr = groupByBill(r)
                 setList(arr)
                 setBillDetail(arr.slice(0, ItemsPerPage))
-                connect()
-                connectNotification(account)
+                setMess("All list orders")
             })
         }
-    }, [status]);
+        connect()
+        connectNotification(account)
+    }, [status, check]);
 
 
     //websocket
@@ -112,15 +114,19 @@ function AllOrders() {
     const search = () => {
         let value = document.getElementById("valueSearch").value;
         if (value === "") {
-           setCheck(true)
+            setCheck(true)
         } else {
             searchByNameAndPhone(id, value).then(r => {
                 if (r !== undefined) {
-                    let arr = groupByBill(r)
-                    setList(arr)
-                    setBillDetail(arr.slice(0, ItemsPerPage))
+                    if (r.length > 0){
+                        let arr = groupByBill(r)
+                        setList(arr.reverse())
+                        setBillDetail(arr.slice(0, ItemsPerPage))
+                        setMess("Result")
+                    } else {
+                        setMess("No Orders")
+                    }
                 } else {
-
                 }
             })
         }
@@ -229,7 +235,7 @@ function AllOrders() {
 
                                         <div className="rounded overflow-hidden shadow bg-white mx-2 w-full">
                                             <div style={{height: '60px'}} className="px-6 py-2 border-b border-light-grey flex items-center justify-between">
-                                                <div className="font-bold text-xl">All list orders</div>
+                                                <div className="font-bold text-xl">{mess}</div>
                                                 {/* search */}
                                                 <div className="flex items-center"> {/* Updated this line to use 'items-center' */}
                                                     <div style={{width: '400px'}} className="font-bold text-xl">
@@ -326,7 +332,7 @@ function AllOrders() {
                                                 ))}
                                                 </tbody>
                                             </table>
-                                            {/* end search */}
+                                             {/*end search*/}
                                             <div className="pagination-container">
                                                 <ReactPaginate
                                                     previousLabel={'Previous'}
