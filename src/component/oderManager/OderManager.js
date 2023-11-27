@@ -41,7 +41,7 @@ function OrderManager(effect, deps) {
                 setData(calculateTotalByYear(arr))
                 setBillDetail(arr)
                 order(arr.length)
-                money(r)
+                money(arr)
                 setYear(new Date().getFullYear())
                 setMessage("Statistics")
                 setWeek(totalWeek(year));
@@ -162,7 +162,7 @@ function OrderManager(effect, deps) {
             let arr = groupByBill(r);
             setBillDetail(arr)
             order(arr.length);
-            money(r);
+            money(arr);
             setMessage("Result search");
             setCheck(false);
             return true
@@ -295,7 +295,7 @@ function OrderManager(effect, deps) {
     const money = (r) => {
         let count = 0;
         for (let i = 0; i < r.length; i++) {
-            count += r[i].price
+            count += r[i].total
         }
         setTotalMoNey(count)
     }
