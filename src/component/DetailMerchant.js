@@ -19,7 +19,8 @@ function DetailMerchant() {
     const [load, setLoad] = useState(false);
     const [totalOderMoney, setTotalOderMoney] = useState(0);
     const [totalMoney, setTotalMoney] = useState(0);
-    const [coupon, setCoupon] = useState(1);
+    const [coupon, setCoupon] = useState(undefined);
+    const [discount, setDiscount] = useState(0);
     const [shouldCallFindAll, setShouldCallFindAll] = useState(true);
     const [isNotification, setNotification] = useState(false)
 
@@ -55,13 +56,12 @@ function DetailMerchant() {
         try {
             const data = await findOneProduct(id_product);
             setProduct(data);
+            setDiscount(0)
+            const coupon = await couponByIdMerchant(data.merchant.id_merchant)
+            setCoupons(coupon)
             document.getElementById("quantity_p").value = 1
             setMerchant(data.merchant);
             setTotalOderMoney(data.priceSale)
-            const total = data.priceSale - coupon
-            setTotalMoney(total)
-            const coupon = await couponByIdMerchant(data.merchant.id_merchant)
-            setCoupons(coupon)
             if (product) {
                 setLoad(true);
             }
@@ -74,30 +74,48 @@ function DetailMerchant() {
     const addition = () => {
         let quantityInput = document.getElementById("quantity_p");
         let currentValue = parseInt(quantityInput.value, 10);
+        let total;
         if (currentValue <= 19) {
             let newValue = currentValue + 1;
             quantityInput.value = newValue;
-            let total = product.priceSale * newValue;
-            setTotalOderMoney(total)
+            total = product.priceSale * newValue;
         } else {
             quantityInput.value = currentValue
-            let total = product.priceSale * currentValue;
-            setTotalOderMoney(total)
+            total = product.priceSale * currentValue;
         }
+        setTotalOderMoney(total)
+        let totalDiscount = 0
+        if (coupon !== undefined) {
+            if (coupon.discountAmount !== null) {
+                totalDiscount = coupon.discountAmount;
+            } else {
+                totalDiscount = total * coupon.percentageDiscount / 100
+            }
+        }
+        setDiscount(totalDiscount)
     }
     const subtraction = () => {
         let quantityInput = document.getElementById("quantity_p");
         let currentValue = parseInt(quantityInput.value, 10);
+        let total;
         if (currentValue >= 2) {
             let newValue = currentValue - 1;
             quantityInput.value = newValue;
-            let total = product.priceSale * newValue;
-            setTotalOderMoney(total)
+            total = product.priceSale * newValue;
         } else {
             quantityInput.value = currentValue
-            let total = product.priceSale * currentValue;
-            setTotalOderMoney(total)
+            total = product.priceSale * currentValue;
         }
+        setTotalOderMoney(total)
+        let totalDiscount = 0
+        if (coupon !== undefined) {
+            if (coupon.discountAmount !== null) {
+                totalDiscount = coupon.discountAmount;
+            } else {
+                totalDiscount = total * coupon.percentageDiscount / 100
+            }
+        }
+        setDiscount(totalDiscount)
     }
 
     const handleQuantityChange = (event) => {
@@ -135,7 +153,7 @@ function DetailMerchant() {
                 toast.error('Your action is not authorized, please try again later!', {containerId: 'merchant-detail'});
                 return
             }
-            orderNow(product, account.id, quantityOrder).then(res => {
+            orderNow(product, account.id, quantityOrder, discount).then(res => {
                 if (res === true) {
                     handledSendAccountSelf(account, account)
                     let notification = `${account.username} just placed an order with your merchant, please check your merchant`
@@ -149,6 +167,24 @@ function DetailMerchant() {
         } else {
             toast.error('Please login!', {containerId: 'merchant-detail'});
         }
+    }
+
+    function findCoupon(id_coupon) {
+        let item;
+        for (let i = 0; i < coupons.length; i++) {
+            if (coupons[i].id == id_coupon) {
+                item = coupons[i]
+                break
+            }
+        }
+        setCoupon(item)
+        let totalDiscount = 0
+        if (item.discountAmount !== null) {
+            totalDiscount = item.discountAmount;
+        } else {
+            totalDiscount = totalOderMoney * item.percentageDiscount / 100
+        }
+        setDiscount(totalDiscount)
     }
 
 
@@ -665,21 +701,41 @@ function DetailMerchant() {
                                     <div className="row">
                                         <div className="col-6">
                                             <button style={{backgroundColor: 'white', border: "none"}}>
-                                                <span style={{marginLeft: '40px'}}> Coupon</span>
-                                                <div>
-                                                    <svg style={{marginLeft: '50px'}} xmlns="http://www.w3.org/2000/svg" width="45"
+                                                <div style={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center"
+                                                }}>
+                                                    <h5>Coupon</h5>
+                                                </div>
+
+                                                <div style={{display: "flex"}}>
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                         width="45"
                                                          height="45"
-                                                         fill="currentColor" className="bi bi-credit-card" viewBox="0 0 16 16">
+                                                         fill="currentColor" className="bi bi-credit-card"
+                                                         viewBox="0 0 16 16">
                                                         <path
                                                             d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"/>
                                                         <path
                                                             d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
                                                     </svg>
+                                                    {coupons !== undefined && (
+                                                        <select onChange={(e) => findCoupon(e.target.value)}
+                                                                className="select"
+                                                                style={{marginLeft: "10px", marginTop: "5px"}}>
+                                                            <option>Choice</option>
+                                                            {coupons.map((item, index) => (
+                                                                <option key={index} value={item.id}>{item.name}</option>
+                                                            ))}
+                                                        </select>
+                                                    )}
+
                                                 </div>
                                             </button>
                                         </div>
                                         <div className="col-6">
-                                            <div >
+                                            <div>
                                                 {totalOderMoney !== 0 ? (
                                                     <h5>
                                                         Total order money: <span
@@ -694,12 +750,13 @@ function DetailMerchant() {
                                                 )}
 
                                                 <h5>
-                                                    Discount: <span style={{color: 'red'}}></span> VND
+                                                    Discount: <span
+                                                    style={{color: 'red'}}>{discount.toLocaleString()}</span> VND
                                                 </h5>
-                                                {totalMoney !== 0 ? (
+                                                {totalOderMoney !== 0 ? (
                                                     <h5>
                                                         Total money: <span
-                                                        style={{color: 'red'}}>{totalMoney.toLocaleString()}</span> VND
+                                                        style={{color: 'red'}}>{(totalOderMoney - discount).toLocaleString()}</span> VND
                                                     </h5>
                                                 ) : (
                                                     <h5>

@@ -317,9 +317,18 @@ export default function UserManageOrder() {
                                             <tr>
                                                 <td><strong>Total amount</strong></td>
                                                 <td colSpan={2}></td>
-                                                <td><strong>{item.total.toLocaleString()} VND</strong></td>
+                                                <td><strong><em>{item.total.toLocaleString()} VND</em></strong></td>
                                             </tr>
-
+                                            <tr>
+                                                <td><strong>Discount</strong></td>
+                                                <td colSpan={2}></td>
+                                                <td><strong><em>{item.bill.discount.toLocaleString()} VND</em></strong></td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Total payment</strong></td>
+                                                <td colSpan={2}></td>
+                                                <td><strong><em>{(item.total - item.bill.discount).toLocaleString()} VND</em></strong></td>
+                                            </tr>
                                             </tbody>
                                         </table>
                                     </div>

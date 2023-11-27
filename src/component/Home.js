@@ -25,8 +25,9 @@ export default function Home() {
     const [merchant, setMerchant] = useState({})
     const [totalOderMoney, setTotalOderMoney] = useState(0);
     const [totalMoney, setTotalMoney] = useState(0);
-    const [coupons, setCoupons] = useState([]);
-    const [coupon, setCoupon] = useState(1);
+    const [coupons, setCoupons] = useState(undefined);
+    const [coupon, setCoupon] = useState(undefined);
+    const [discount, setDiscount] = useState(0);
     const [merchants, setMerchants] = useState([]);
     const [everyoneLikes, setEveryoneLikes] = useState([]);
     const [productByPriceSale, setProductByPriceSale] = useState([]);
@@ -47,7 +48,7 @@ export default function Home() {
                 getAllMerchantCheckDelete().then(m => {
                     let arr = m.reverse();
                     setMerchants(arr.slice(0, 10))
-                    if (account !== null){
+                    if (account !== null) {
                         connectHome(account)
                     }
                 })
@@ -68,18 +69,16 @@ export default function Home() {
     }, [products, shouldCallFindAll, isNotification]);
 
 
-
-
     let stompClient = null;
     const connectHome = (sendAcc) => {
         let Sock = new SockJS('http://localhost:8080/ws')
         stompClient = over(Sock)
-        stompClient.connect({}, ()=>{
-            stompClient.subscribe('/user/' + sendAcc.username + sendAcc.id + '/private-notification', (payload)=>{
+        stompClient.connect({}, () => {
+            stompClient.subscribe('/user/' + sendAcc.username + sendAcc.id + '/private-notification', (payload) => {
                 setNotification(!isNotification)
                 setShouldCallFindAll(true);
             })
-        }, (err)=>{
+        }, (err) => {
             console.log(err)
         });
     }
@@ -119,13 +118,12 @@ export default function Home() {
         try {
             const data = await findOneProduct(id_product);
             setProduct(data);
+            setDiscount(0)
+            const coupon = await couponByIdMerchant(data.merchant.id_merchant)
+            setCoupons(coupon)
             document.getElementById("quantity_p").value = 1
             setMerchant(data.merchant);
             setTotalOderMoney(data.priceSale)
-            const total = data.priceSale - coupon
-            setTotalMoney(total)
-            const coupon = await couponByIdMerchant(data.merchant.id_merchant)
-            setCoupons(coupon)
             if (product) {
                 setLoad(true);
             }
@@ -138,30 +136,48 @@ export default function Home() {
     const addition = () => {
         let quantityInput = document.getElementById("quantity_p");
         let currentValue = parseInt(quantityInput.value, 10);
+        let total;
         if (currentValue <= 19) {
             let newValue = currentValue + 1;
             quantityInput.value = newValue;
-            let total = product.priceSale * newValue;
-            setTotalOderMoney(total)
+            total = product.priceSale * newValue;
         } else {
             quantityInput.value = currentValue
-            let total = product.priceSale * currentValue;
-            setTotalOderMoney(total)
+            total = product.priceSale * currentValue;
         }
+        setTotalOderMoney(total)
+        let totalDiscount = 0
+        if (coupon !== undefined) {
+            if (coupon.discountAmount !== null) {
+                totalDiscount = coupon.discountAmount;
+            } else {
+                totalDiscount = total * coupon.percentageDiscount / 100
+            }
+        }
+        setDiscount(totalDiscount)
     }
     const subtraction = () => {
         let quantityInput = document.getElementById("quantity_p");
         let currentValue = parseInt(quantityInput.value, 10);
+        let total;
         if (currentValue >= 2) {
             let newValue = currentValue - 1;
             quantityInput.value = newValue;
-            let total = product.priceSale * newValue;
-            setTotalOderMoney(total)
+            total = product.priceSale * newValue;
         } else {
             quantityInput.value = currentValue
-            let total = product.priceSale * currentValue;
-            setTotalOderMoney(total)
+            total = product.priceSale * currentValue;
         }
+        setTotalOderMoney(total)
+        let totalDiscount = 0
+        if (coupon !== undefined) {
+            if (coupon.discountAmount !== null) {
+                totalDiscount = coupon.discountAmount;
+            } else {
+                totalDiscount = total * coupon.percentageDiscount / 100
+            }
+        }
+        setDiscount(totalDiscount)
     }
 
     const handleQuantityChange = (event) => {
@@ -198,7 +214,7 @@ export default function Home() {
                 toast.error('Your action is not authorized, please try again later!', {containerId: 'home-notification'});
                 return
             }
-            orderNow(product, account.id, quantityOrder).then(res => {
+            orderNow(product, account.id, quantityOrder, discount).then(res => {
                 if (res === true) {
                     handledSendAccountSelf(account, account)
                     let notification = `${account.username} just placed an order with your merchant, please check your merchant`
@@ -222,6 +238,24 @@ export default function Home() {
                 search.current.scrollIntoView({behavior: "smooth"});
             }
         })
+    }
+
+    function findCoupon(id_coupon) {
+        let item;
+        for (let i = 0; i < coupons.length; i++) {
+            if (coupons[i].id == id_coupon) {
+                item = coupons[i]
+                break
+            }
+        }
+        setCoupon(item)
+        let totalDiscount = 0
+        if (item.discountAmount !== null) {
+            totalDiscount = item.discountAmount;
+        } else {
+            totalDiscount = totalOderMoney * item.percentageDiscount / 100
+        }
+        setDiscount(totalDiscount)
     }
 
 
@@ -816,9 +850,16 @@ export default function Home() {
                                     <div className="row">
                                         <div className="col-6">
                                             <button style={{backgroundColor: 'white', border: "none"}}>
-                                                <span style={{marginLeft: '40px'}}> Coupon</span>
-                                                <div>
-                                                    <svg style={{marginLeft: '50px'}} xmlns="http://www.w3.org/2000/svg"
+                                                <div style={{
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center"
+                                                }}>
+                                                    <h5>Coupon</h5>
+                                                </div>
+
+                                                <div style={{display: "flex"}}>
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
                                                          width="45"
                                                          height="45"
                                                          fill="currentColor" className="bi bi-credit-card"
@@ -828,6 +869,17 @@ export default function Home() {
                                                         <path
                                                             d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
                                                     </svg>
+                                                    {coupons !== undefined && (
+                                                        <select onChange={(e) => findCoupon(e.target.value)}
+                                                                className="select"
+                                                                style={{marginLeft: "10px", marginTop: "5px"}}>
+                                                            <option>Choice</option>
+                                                            {coupons.map((item, index) => (
+                                                                <option key={index} value={item.id}>{item.name}</option>
+                                                            ))}
+                                                        </select>
+                                                    )}
+
                                                 </div>
                                             </button>
                                         </div>
@@ -847,12 +899,13 @@ export default function Home() {
                                                 )}
 
                                                 <h5>
-                                                    Discount: <span style={{color: 'red'}}></span> VND
+                                                    Discount: <span
+                                                    style={{color: 'red'}}>{discount.toLocaleString()}</span> VND
                                                 </h5>
-                                                {totalMoney !== 0 ? (
+                                                {totalOderMoney !== 0 ? (
                                                     <h5>
                                                         Total money: <span
-                                                        style={{color: 'red'}}>{totalMoney.toLocaleString()}</span> VND
+                                                        style={{color: 'red'}}>{(totalOderMoney - discount).toLocaleString()}</span> VND
                                                     </h5>
                                                 ) : (
                                                     <h5>
@@ -868,6 +921,7 @@ export default function Home() {
 
                         )}
 
+                        <hr/>
                         <div>
                             <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
                                 <button onClick={() => handleOrderNow()} style={{

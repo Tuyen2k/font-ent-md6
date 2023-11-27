@@ -1,10 +1,10 @@
 import axios from "axios";
 
 
-export function addBill(cartDetail){
+export function addBill(cartDetail, coupons){
     return new Promise(require =>{
         require(
-            axios.post("http://localhost:8080/api/bill/order",cartDetail).then(res=>{
+            axios.post("http://localhost:8080/api/bill/order",{cartDetailList:cartDetail, coupons:coupons}).then(res=>{
                 return true
             }).catch(Error =>{
                 return false
@@ -95,11 +95,11 @@ export function searchByNameAndPhone(id_merchant,value){
     })
 }
 
-export function orderNow(product, id_account, quantity){
+export function orderNow(product, id_account, quantity, discount){
     return new Promise(require =>{
         require(
             require(
-                axios.post(`http://localhost:8080/api/bill/order-now/${id_account}/quantity/${quantity}`,product).then(res=>{
+                axios.post(`http://localhost:8080/api/bill/order-now/${id_account}/quantity/${quantity}/discount/${discount}`,product).then(res=>{
                     console.log(res)
                     return true
                 }).catch(Error =>{

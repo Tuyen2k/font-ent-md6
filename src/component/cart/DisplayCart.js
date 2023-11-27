@@ -266,7 +266,7 @@ export default function DisplayCart() {
     }
 
     function handleAddBill() {
-        addBill(orders).then(res => {
+        addBill(orders, couponDiscount).then(res => {
             if (res === true) {
                 handledSendAccountSelf(account, account)
                 handleSendNotification(orders).then(res=>{
@@ -276,6 +276,7 @@ export default function DisplayCart() {
                 setTotal(0)
                 setOrders([])
                 setCheck(!check)
+                setDiscount(0)
                 toast.success('Order success. Waiting for merchant confirm.', {containerId: "cart-bill"});
                 // setMessage("Order success. Waiting for merchant confirm!")
                 // btn_modal.current.click()
@@ -307,6 +308,7 @@ export default function DisplayCart() {
 
     function handleCheckOrder() {
         if (orders.length !== 0) {
+            getDiscount(orders)
             countQuantityBill(orders)
             setIsOrder(true)
         } else {
@@ -342,6 +344,7 @@ export default function DisplayCart() {
     }
 
     const [couponDiscount, setCouponDiscount] = useState([])
+    const [discount, setDiscount] = useState(0)
 
     async function handleDiscount(id_merchant, id_coupon){
         let coupon = await findOneCoupon(id_coupon)
@@ -357,6 +360,34 @@ export default function DisplayCart() {
             couponDiscount.splice(index, 1)
         }
         setCouponDiscount(prev=> [...prev, coupon])
+    }
+
+    function getDiscount(list){
+        let discount = 0
+        let arr = [{merchant: list[0].cart.merchant, total:list[0].quantity * list[0].price}]
+        let count = 0
+        for (let i = 1; i < list.length; i++) {
+            if (list[i].cart.merchant.id_merchant === list[i-1].cart.merchant.id_merchant) {
+                arr[count].total += list[i].quantity * list[i].price
+            } else {
+                arr.push({merchant: list[i].cart.merchant,  total:list[i].quantity * list[i].price})
+                count++
+            }
+        }
+        for (let i = 0; i < arr.length; i++) {
+            for (let j = 0; j < couponDiscount.length; j++) {
+                if (arr[i].merchant.id_merchant === couponDiscount[j].merchant.id_merchant){
+                    if (couponDiscount[j].discountAmount !== null){
+                        discount += couponDiscount[j].discountAmount
+                    }
+                    else {
+                        discount += arr[i].total * couponDiscount[j].percentageDiscount/100
+                    }
+                }
+            }
+        }
+        setDiscount(discount)
+        console.log(discount)
     }
 
     return (
@@ -422,29 +453,29 @@ export default function DisplayCart() {
                                     <h3 className="title">Summary</h3>
                                     <div>
                                         <div className="row" style={{marginTop:"5px", marginBottom:"5px"}}>
-                                            <span className="text col-6"><h5>The number of products </h5></span>
+                                            <span className="text col-6"><h5>Number of products </h5></span>
                                             <span
                                                 className="right number col-6"><h5><strong><em>{orders.length}</em></strong></h5></span>
                                         </div>
                                         <div className="row" style={{marginTop:"5px", marginBottom:"5px"}}>
-                                            <span className="text col-6"><h5>The total bill</h5> </span>
+                                            <span className="text col-6"><h5>Total bill</h5> </span>
                                             <span
                                                 className="right number col-6"><h5><strong><span className="number"><em>{quantityBill}</em></span></strong></h5></span>
                                         </div>
                                         <div className="row" style={{marginTop:"5px", marginBottom:"5px"}}>
-                                            <span className="text col-6"><h5>The total amount</h5> </span>
+                                            <span className="text col-6"><h5>Total amount</h5> </span>
                                             <span
                                                 className="right number col-6"><h5><strong><span className="number"><em>{total.toLocaleString()} VND</em></span></strong></h5></span>
                                         </div>
                                         <div className="row" style={{marginTop:"5px", marginBottom:"5px"}}>
-                                            <span className="text col-6"><h5>Reduced amount</h5> </span>
+                                            <span className="text col-6"><h5>Discount</h5> </span>
                                             <span
-                                                className="right number col-6"><h5><strong><span className="number"><em>{total.toLocaleString()} VND</em></span></strong></h5></span>
+                                                className="right number col-6"><h5><strong><span className="number"><em>{discount.toLocaleString()} VND</em></span></strong></h5></span>
                                         </div>
                                         <div className="row" style={{marginTop:"5px", marginBottom:"5px"}}>
                                             <span className="text col-6"><h5>Total payment amount</h5> </span>
                                             <span
-                                                className="right number col-6"><h5><strong><span className="number"><em>{total.toLocaleString()} VND</em></span></strong></h5></span>
+                                                className="right number col-6"><h5><strong><span className="number"><em>{(total-discount).toLocaleString()} VND</em></span></strong></h5></span>
                                         </div>
                                         <div className="row" style={{marginTop:"5px", marginBottom:"5px"}}>
                                             <div className="col-6"><h5>Payment methods</h5></div>
@@ -462,6 +493,7 @@ export default function DisplayCart() {
                                                 setIsOrder(false)
                                                 setTotal(0)
                                                 setOrders([])
+                                                setDiscount(0)
                                             }}><h4 style={{paddingTop: "10px"}}>
                                                 <img style={{height: "20px", width: "20px"}}
                                                      src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/back.png?alt=media&token=2c33e5a3-f355-4f82-b095-32b64ec48bd1" alt=""/><strong> Back</strong></h4>
