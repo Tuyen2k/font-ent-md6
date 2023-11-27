@@ -4,7 +4,7 @@ import {Link} from "react-router-dom";
 import {addBill} from "../../service/BillService";
 import Header from "../../layout/Header";
 import Footer from "../../layout/Footer";
-import {couponByIdMerchant} from "../../service/CouponService";
+import {couponByIdMerchant, findOneCoupon} from "../../service/CouponService";
 import {toast, ToastContainer} from "react-toastify";
 import {handledSendAccountSelf, handledSendNotification} from "../../service/Websocket";
 import {findAccountByMerchant} from "../../service/AccountService";
@@ -339,12 +339,27 @@ export default function DisplayCart() {
         console.log(coupon)
     }
 
-    function handleDiscount(id_merchant, id_coupon){
-        console.log(id_merchant, id_coupon)
+    const [couponDiscount, setCouponDiscount] = useState([])
+
+    async function handleDiscount(id_merchant, id_coupon){
+        let coupon = await findOneCoupon(id_coupon)
+        let flag = false
+        let index = -1
+        for (let i = 0; i < couponDiscount.length; i++) {
+            if (couponDiscount[i].merchant.id_merchant === id_merchant){
+                flag = true
+                index = i
+            }
+        }
+        if (flag){
+            couponDiscount.splice(index, 1)
+        }
+        setCouponDiscount(prev=> [...prev, coupon])
     }
 
     return (
         <>
+            {console.log(couponDiscount)}
             <Header/>
             <div className="container" style={{marginBottom :"80px", marginTop:"20px"}}>
                 <ToastContainer enableMultiContainer containerId={"cart-bill"} position="top-right" autoClose={1500}
