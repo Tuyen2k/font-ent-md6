@@ -54,6 +54,7 @@ export default function DisplayCart() {
             if (window.confirm("The quantity reaches 0, it will be removed from the cart")) {
                 deleteCartDetail(id).then(res => {
                     if (res === true) {
+                        handledSendAccountSelf(account, account)
                         console.log("Update success!!!")
                         setCheck(!check)
                     } else {
@@ -483,7 +484,7 @@ export default function DisplayCart() {
                                             <h5 className=" col-6">
                                                 <select className="select">
                                                     <option>Choice payment method</option>
-                                                    <option value="1">Payment on delivery</option>
+                                                    <option value="1">Payment cash on delivery</option>
                                                     <option value="2">Payment via e-wallet</option>
                                                 </select>
                                             </h5>

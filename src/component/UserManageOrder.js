@@ -304,7 +304,6 @@ export default function UserManageOrder() {
                                                 <th>Product</th>
                                                 <th>Price</th>
                                                 <th>Quantity</th>
-                                                <th>Discount</th>
                                                 <th>Amount</th>
                                             </tr>
                                             </thead>
@@ -315,7 +314,6 @@ export default function UserManageOrder() {
                                                         <td>{billDetail.product.name}</td>
                                                         <td>{billDetail.price.toLocaleString()} VND</td>
                                                         <td>{billDetail.quantity}</td>
-                                                        <td></td>
                                                         <td>{(billDetail.quantity * billDetail.price).toLocaleString()} VND</td>
                                                     </tr>
                                                 )
