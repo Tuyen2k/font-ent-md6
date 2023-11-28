@@ -255,7 +255,7 @@ function DetailProduct() {
                                         </div>
                                     ))}
                                 </div>
-                                <a className="btn-view-all" href="">
+                                <a className="btn-view-all">
                                     See all <i className="fa-solid fa-angle-right fa-bounce fa-lg"></i>
                                 </a>
                             </div>
@@ -290,13 +290,13 @@ function DetailProduct() {
                                                 <p>Discount: {item.discountAmount ? item.discountAmount.toLocaleString() + " VND" : item.percentageDiscount + "%"}
                                                 </p>
                                                 <div className="promotion">
-                                                    <h5>Quantity: {item.quantity}</h5>
+                                                    <p>Quantity: {item.quantity}</p>
                                                 </div>
                                             </div>
                                         </div>
                                     ))}
                                 </div>
-                                <a className="btn-view-all" href="">
+                                <a className="btn-view-all">
                                     See all <i className="fa-solid fa-angle-right fa-bounce fa-lg"></i>
                                 </a>
                             </div>
@@ -344,7 +344,7 @@ function DetailProduct() {
                                         </div>
                                     ))}
                                 </div>
-                                <a className="btn-view-all" href="">
+                                <a className="btn-view-all">
                                     See all <i className="fa-solid fa-angle-right fa-bounce fa-lg"></i>
                                 </a>
                             </div>
