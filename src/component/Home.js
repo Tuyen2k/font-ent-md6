@@ -879,7 +879,7 @@ export default function Home() {
                                                         <path
                                                             d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
                                                     </svg>
-                                                    {coupons !== undefined && (
+                                                    {coupons !== undefined && coupons.length !== 0 && (
                                                         <select onChange={(e) => findCoupon(e.target.value)}
                                                                 className="select" id="select-coupon"
                                                                 style={{marginLeft: "10px", marginTop: "5px"}}>
