@@ -69,6 +69,10 @@ function FormRegister() {
                         mailRegisterSuccess(e.email)
                         setLoad(true)
                         setExist(false)
+                        setTimeout(()=>{
+                            navigate("/")
+                            window.location.reload()
+                        },2500)
                     }  else {
                         toast.error("Register error, try again!!!", {containerId : "register-merchant"})
                         setLoad(true)
