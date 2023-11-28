@@ -45,19 +45,23 @@ function AllOrders() {
     useEffect(() => {
         if (check){
             findAllOrdersByMerchant(id).then(r => {
-                let arr = groupByBill(r)
-                setList(arr)
-                const startIndex = page * ItemsPerPage;
-                const endIndex = startIndex + ItemsPerPage;
-                setBillDetail(arr.slice(startIndex, endIndex))
-                setMess("All list orders")
+                if (r.length !== 0){
+                    let arr = groupByBill(r)
+                    setList(arr)
+                    const startIndex = page * ItemsPerPage;
+                    const endIndex = startIndex + ItemsPerPage;
+                    setBillDetail(arr.slice(startIndex, endIndex))
+                    setMess("All list orders")
+                }
             })
         }else {
             findAllOrdersByMerchant(id).then(r => {
-                let arr = groupByBill(r)
-                setList(arr)
-                setBillDetail(arr.slice(0, ItemsPerPage))
-                setMess("All list orders")
+                if (r.length !== 0){
+                    let arr = groupByBill(r)
+                    setList(arr)
+                    setBillDetail(arr.slice(0, ItemsPerPage))
+                    setMess("All list orders")
+                }
             })
         }
         connect()

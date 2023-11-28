@@ -51,15 +51,17 @@ function OrderManager(effect, deps) {
     useEffect(() => {
         if (check) {
             findAllOrdersByMerchant(id).then(r => {
-                let arr = groupByBill(r)
-                setList(arr)
-                setBillDetail(arr.slice(0, ItemsPerPage))
-                setData(calculateTotalByYear(arr))
-                order(arr.length)
-                money(arr)
-                setYear(new Date().getFullYear())
-                setMessage("Statistics")
-                setWeek(totalWeek(year));
+                if (r.length !== 0){
+                    let arr = groupByBill(r)
+                    setList(arr)
+                    setBillDetail(arr.slice(0, ItemsPerPage))
+                    setData(calculateTotalByYear(arr))
+                    order(arr.length)
+                    money(arr)
+                    setYear(new Date().getFullYear())
+                    setMessage("Statistics")
+                    setWeek(totalWeek(year));
+                }
             })
 
         }
@@ -68,8 +70,10 @@ function OrderManager(effect, deps) {
             setTotalProduct(re.length)
         })
         findUser(id).then(r => {
-            setUser(r.reverse())
-            setTotalUser(r.length)
+            if (r !== undefined){
+                setUser(r.reverse())
+                setTotalUser(r.length)
+            }
         })
     }, [check]);
 
