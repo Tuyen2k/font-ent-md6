@@ -34,9 +34,11 @@ function DetailMerchant() {
             getAllProductByIdMerchant(data.id_merchant).then(r => {
                 setProducts(r)
             })
-                connectDetailMerchant(account)
+                if (account !== null){
+                    connectDetailMerchant(account)
+                }
         }})
-    }, [products, shouldCallFindAll, isNotification])
+    }, [shouldCallFindAll, isNotification])
 
     //websocket
     let stompClient = null;
@@ -146,6 +148,7 @@ function DetailMerchant() {
                 return productName.includes(value);
             });
             setProducts(filteredProducts);
+            setNotification(!isNotification)
             setShouldCallFindAll(false)
         }
     }
