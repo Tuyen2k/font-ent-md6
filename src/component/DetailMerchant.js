@@ -65,11 +65,17 @@ function DetailMerchant() {
             if (product) {
                 setLoad(true);
             }
+            selectFirstOption()
         } catch (error) {
             console.error('Error fetching product:', error);
         }
     };
 
+    function selectFirstOption(){
+        let select = document.getElementById("select-coupon")
+        const firstOption = select.querySelector("option:first-child");
+        firstOption.selected = true;
+    }
 
     const addition = () => {
         let quantityInput = document.getElementById("quantity_p");
@@ -170,6 +176,10 @@ function DetailMerchant() {
     }
 
     function findCoupon(id_coupon) {
+        if (id_coupon == 0){
+            setDiscount(0)
+            return
+        }
         let item;
         for (let i = 0; i < coupons.length; i++) {
             if (coupons[i].id == id_coupon) {
@@ -721,9 +731,9 @@ function DetailMerchant() {
                                                     </svg>
                                                     {coupons !== undefined && (
                                                         <select onChange={(e) => findCoupon(e.target.value)}
-                                                                className="select"
+                                                                className="select" id="select-coupon"
                                                                 style={{marginLeft: "10px", marginTop: "5px"}}>
-                                                            <option>Choice</option>
+                                                            <option value="0">Choice</option>
                                                             {coupons.map((item, index) => (
                                                                 <option key={index} value={item.id}>{item.name}</option>
                                                             ))}

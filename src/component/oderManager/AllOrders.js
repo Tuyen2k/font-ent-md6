@@ -105,6 +105,7 @@ function AllOrders() {
             stompClientNotification.subscribe('/user/' + sendAcc.username + sendAcc.id + '/private-notification', (payload)=>{
                 console.log(JSON.parse(payload.body));
                 setStatus(!status);
+                setCheck(true)
             })
         }, (err)=>{
             console.log(err)

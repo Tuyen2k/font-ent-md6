@@ -11,6 +11,7 @@ import SockJS from "sockjs-client";
 import {over} from "stompjs";
 import {findMerchantById} from "../service/MerchantService";
 import {findAccountByMerchant} from "../service/AccountService";
+import {handledSendNotification} from "../service/Websocket";
 
 
 let stompClient = null;
@@ -123,6 +124,9 @@ export default function UserManageOrder() {
             .then(success => {
                 if (success) {
                     setCheck(!check)
+                    let notification = `Customer ${account.username} has canceled the order placed at your merchant`
+                    let link = `http://localhost:3000/all-order/${id_merchant}`
+                    handledSendNotification(account, receiver, notification, link)
                     handledSend()
                     // The status was successfully updated
                     console.log('Bill status updated successfully');
