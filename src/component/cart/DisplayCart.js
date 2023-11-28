@@ -92,6 +92,7 @@ export default function DisplayCart() {
         if (window.confirm("Are you sure?")) {
             deleteCartDetail(id).then(res => {
                 if (res === true) {
+                    handledSendAccountSelf(account, account)
                     toast.success('Delete success.', {containerId: "cart-bill"});
                     // setMessage("Delete success!!!")
                     // btn_modal.current.click()
