@@ -34,16 +34,25 @@ function AllOrders() {
     //phan trang
     const ItemsPerPage = 10;
     const totalPages = Math.ceil(list.length / ItemsPerPage);
+    let [page, setPage] = useState(0)
     const handlePageChange = (selectedPage) => {
+        setPage(selectedPage.selected)
         const startIndex = selectedPage.selected * ItemsPerPage;
         const endIndex = startIndex + ItemsPerPage;
-        console.log(selectedPage.selected)
         setBillDetail(list.slice(startIndex, endIndex))
-        setCheck(false)
     };
 
     useEffect(() => {
         if (check){
+            findAllOrdersByMerchant(id).then(r => {
+                let arr = groupByBill(r)
+                setList(arr)
+                const startIndex = page * ItemsPerPage;
+                const endIndex = startIndex + ItemsPerPage;
+                setBillDetail(arr.slice(startIndex, endIndex))
+                setMess("All list orders")
+            })
+        }else {
             findAllOrdersByMerchant(id).then(r => {
                 let arr = groupByBill(r)
                 setList(arr)
@@ -70,6 +79,7 @@ function AllOrders() {
         let payloadData = JSON.parse(payload.body);
         if (payloadData.sendAcc.id_account !== account.id) {
             setStatus(!status);
+            setCheck(true)
             console.log(payloadData)
         }
     }
@@ -115,7 +125,7 @@ function AllOrders() {
     const search = () => {
         let value = document.getElementById("valueSearch").value;
         if (value === "") {
-            setCheck(true)
+            setCheck(false)
         } else {
             searchByNameAndPhone(id, value).then(r => {
                 if (r !== undefined) {
@@ -243,7 +253,7 @@ function AllOrders() {
                                                         <input
                                                             type="search"
                                                             className="form-control rounded"
-                                                            placeholder="Search"
+                                                            placeholder="Type name or phone"
                                                             aria-label="Search"
                                                             aria-describedby="search-addon"
                                                             id="valueSearch"
