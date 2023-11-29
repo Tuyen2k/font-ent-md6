@@ -39,6 +39,7 @@ function OrderStatistics() {
         setCheck(false)
     };
 
+    const [defaultSelect, setDefaultSelect] = useState(true)
 
     useEffect(() => {
         if (check){
@@ -68,8 +69,13 @@ function OrderStatistics() {
                 setTotalUser(r.length)
             }
         })
-    }, [check]);
+    }, [check, defaultSelect]);
     const selectProduct = (e) => {
+        if (e.target.value == 0){
+            setCheck(true)
+            setDefaultSelect(!defaultSelect)
+            return
+        }
         findOrderByProduct(e.target.value).then(r => {
             if (r !== undefined){
                 setBill(r)
@@ -86,6 +92,11 @@ function OrderStatistics() {
     }
 
     const selectStatus = (e) => {
+        if (e.target.value == 0){
+            setCheck(true)
+            setDefaultSelect(!defaultSelect)
+            return
+        }
         findOrderByStatus(id, e.target.value).then(r => {
             if (r !== undefined){
                 setBill(r)
@@ -102,6 +113,11 @@ function OrderStatistics() {
     }
 
     const selectUser = (e) => {
+        if (e.target.value == 0){
+            setCheck(true)
+            setDefaultSelect(!defaultSelect)
+            return
+        }
         findOrderByUser(id, e.target.value).then(r => {
             if (r !== undefined){
                 setBill(r)
@@ -279,7 +295,7 @@ function OrderStatistics() {
                                                </div>
                                             <div style={{marginLeft: '90px', width: '300px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
                                                 <select onChange={selectProduct}  className="form-select">
-                                                    <option>Product</option>
+                                                    <option value="0">Product</option>
                                                     {product && product.map(item => (
                                                         <option value={item.id_product}>{item.name}</option>
                                                     ))}
@@ -287,7 +303,7 @@ function OrderStatistics() {
                                             </div>
                                             <div style={{marginLeft: '30px', width: '300px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
                                                 <select onChange={selectUser} className="form-select">
-                                                    <option>Customer</option>
+                                                    <option value="0">Customer</option>
                                                     {user && user.map(item => (
                                                         <option value={item.account.id_account}>{item.account.name}</option>
                                                     ))}
@@ -295,7 +311,7 @@ function OrderStatistics() {
                                             </div>
                                             <div style={{marginLeft: '30px', width: '300px'}} className="ml-4"> {/* Thêm margin-left để tạo khoảng cách giữa div và select */}
                                                 <select onChange={selectStatus} className="form-select">
-                                                    <option>Status</option>
+                                                    <option value="0">Status</option>
                                                     {status && status.map(item => {
                                                         if(item.id_status !== 7) {
                                                             return(
