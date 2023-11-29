@@ -32,7 +32,7 @@ function AllOrders() {
     const [list, setList] = useState([])
 
     //phan trang
-    const ItemsPerPage = 5;
+    const ItemsPerPage = 10;
     const totalPages = Math.ceil(list.length / ItemsPerPage);
     let [page, setPage] = useState(0)
     const handlePageChange = (selectedPage) => {
@@ -56,10 +56,14 @@ function AllOrders() {
         }else {
 
             findAllOrdersByMerchant(id).then(r => {
-                let arr = groupByBill(r)
-                setList(arr)
-                setBillDetail(arr.slice(0, ItemsPerPage))
-                setMess("All list orders")
+                if (r.length !== 0){
+                    let arr = groupByBill(r)
+                    setList(arr)
+                    const startIndex = page * ItemsPerPage;
+                    const endIndex = startIndex + ItemsPerPage;
+                    setBillDetail(arr.slice(startIndex, endIndex))
+                    setMess("All list orders")
+                }
             })
         }
         connect()
@@ -81,6 +85,8 @@ function AllOrders() {
         let payloadData = JSON.parse(payload.body);
         if (payloadData.sendAcc.id_account !== account.id) {
             setStatus(!status);
+            setCheck(true)
+            console.log(payloadData)
         }
     }
     const onError = (err) => {
@@ -115,6 +121,7 @@ function AllOrders() {
             stompClientNotification.subscribe('/user/' + sendAcc.username + sendAcc.id + '/private-notification', (payload)=>{
                 console.log(JSON.parse(payload.body));
                 setStatus(!status);
+                setCheck(true)
             })
         }, (err)=>{
             console.log(err)

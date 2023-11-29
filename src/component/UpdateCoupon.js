@@ -44,20 +44,24 @@ function UpdateCoupon() {
                 updateCoupon = {...e, image: i.name};
                 const r = await editCoupon(updateCoupon);
                 if (r === true) {
+                    setLoad(true);
                     toast.success("Update Success!", {containerId:"update-coupon"})
 
                 } else {
+                    setLoad(true);
                     toast.error("Update Unsuccessfully! Try again", {containerId:"update-coupon"})
                     btn_modal.current.click();
                 }
             } else {
                 const edit = await editCoupon(e);
                 if (edit === true) {
+                    setLoad(true);
                     toast.success("Update Success!", {containerId:"update-coupon"})
                     setTimeout(() => {
                     navigate(`/list_coupon/${merchant.id_merchant}`)},2800)
 
                 } else {
+                    setLoad(true);
                     toast.error("Update Unsuccessfully! Try again", {containerId:"update-coupon"})
                 }
             }
@@ -73,7 +77,7 @@ function UpdateCoupon() {
     }
 
     const schema = yup.object().shape({
-        name: yup.string().required().max(20),
+        name: yup.string().required().max(250),
         quantity: yup.number().required()
     });
 

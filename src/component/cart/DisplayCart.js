@@ -54,6 +54,7 @@ export default function DisplayCart() {
             if (window.confirm("The quantity reaches 0, it will be removed from the cart")) {
                 deleteCartDetail(id).then(res => {
                     if (res === true) {
+                        handledSendAccountSelf(account, account)
                         console.log("Update success!!!")
                         setCheck(!check)
                     } else {
@@ -92,6 +93,7 @@ export default function DisplayCart() {
         if (window.confirm("Are you sure?")) {
             deleteCartDetail(id).then(res => {
                 if (res === true) {
+                    handledSendAccountSelf(account, account)
                     toast.success('Delete success.', {containerId: "cart-bill"});
                     // setMessage("Delete success!!!")
                     // btn_modal.current.click()
@@ -409,42 +411,42 @@ export default function DisplayCart() {
                                     <div>
                                         <div className="input mb-3">
                                             <label htmlFor="name"><h5>Username</h5></label>
-                                            <input type="text" className="form-control"
-                                                   value={account.username} aria-label="Username"
-                                                   aria-describedby="basic-addon1"/>
+                                            <div style={{backgroundColor:"#F6F6F6"}} className="form-control"><h6>{account.username}</h6></div>
                                         </div>
                                         <div className="input mb-3">
                                             <label htmlFor="numberphone"><h5>Number Phone</h5></label>
-                                            <input type="text" id="numberphone" className="form-control"
-                                                   value={account.phone} aria-label="Username"
-                                                   aria-describedby="basic-addon1"/>
+                                            <div style={{backgroundColor:"#F6F6F6"}} className="form-control"><h6>{account.phone}</h6></div>
                                         </div>
                                         <div className="input mb-3 row" style={{width: "unset"}}>
                                             <div className="input mb-3 col-6">
                                                 <label htmlFor="city"><h5>City</h5></label>
-                                                <input type="text" id="city" className="form-control"
-                                                       value={account.address.city.name} aria-label="Username"
-                                                       aria-describedby="basic-addon1"/>
+                                                {/*<input type="text" id="city" className="form-control"*/}
+                                                {/*       value={account.address.city.name} aria-label="Username"*/}
+                                                {/*       aria-describedby="basic-addon1"/>*/}
+                                                <div style={{backgroundColor:"#F6F6F6"}} className="form-control"><h6>{account.address.city.name}</h6></div>
                                             </div>
                                             <div className="input mb-3 col-6">
                                                 <label htmlFor="district"><h5>District</h5></label>
-                                                <input type="text" id="district" className="form-control"
-                                                       value={account.address.district.name} aria-label="Username"
-                                                       aria-describedby="basic-addon1"/>
+                                                {/*<input type="text" id="district" className="form-control"*/}
+                                                {/*       value={account.address.district.name} aria-label="Username"*/}
+                                                {/*       aria-describedby="basic-addon1"/>*/}
+                                                <div style={{backgroundColor:"#F6F6F6"}} className="form-control"><h6>{account.address.district.name}</h6></div>
                                             </div>
                                         </div>
                                         <div className="input mb-3 row" style={{width: "unset"}}>
                                             <div className="input mb-3 col-6">
                                                 <label htmlFor="ward"><h5>Ward</h5></label>
-                                                <input type="text" id="ward" className="form-control"
-                                                       value={account.address.ward.name} aria-label="Username"
-                                                       aria-describedby="basic-addon1"/>
+                                                {/*<input type="text" id="ward" className="form-control"*/}
+                                                {/*       value={account.address.ward.name} aria-label="Username"*/}
+                                                {/*       aria-describedby="basic-addon1"/>*/}
+                                                <div style={{backgroundColor:"#F6F6F6"}} className="form-control"><h6>{account.address.ward.name}</h6></div>
                                             </div>
                                             <div className="input mb-3 col-6">
                                                 <label htmlFor="detail"><h5>Detail</h5></label>
-                                                <input type="text" id="detail" className="form-control"
-                                                       value={account.address.address_detail} aria-label="Username"
-                                                       aria-describedby="basic-addon1"/>
+                                                {/*<input type="text" id="detail" className="form-control"*/}
+                                                {/*       value={account.address.address_detail} aria-label="Username"*/}
+                                                {/*       aria-describedby="basic-addon1"/>*/}
+                                                <div style={{backgroundColor:"#F6F6F6"}} className="form-control"><h6>{account.address.address_detail}</h6></div>
                                             </div>
                                         </div>
                                     </div>
@@ -482,7 +484,7 @@ export default function DisplayCart() {
                                             <h5 className=" col-6">
                                                 <select className="select">
                                                     <option>Choice payment method</option>
-                                                    <option value="1">Payment on delivery</option>
+                                                    <option value="1">Payment cash on delivery</option>
                                                     <option value="2">Payment via e-wallet</option>
                                                 </select>
                                             </h5>

@@ -51,15 +51,17 @@ function OrderManager(effect, deps) {
     useEffect(() => {
         if (check) {
             findAllOrdersByMerchant(id).then(r => {
-                let arr = groupByBill(r)
-                setList(arr)
-                setBillDetail(arr.slice(0, ItemsPerPage))
-                setData(calculateTotalByYear(arr))
-                order(arr.length)
-                money(arr)
-                setYear(new Date().getFullYear())
-                setMessage("Statistics")
-                setWeek(totalWeek(year));
+                if (r.length !== 0){
+                    let arr = groupByBill(r)
+                    setList(arr)
+                    setBillDetail(arr.slice(0, ItemsPerPage))
+                    setData(calculateTotalByYear(arr))
+                    order(arr.length)
+                    money(arr)
+                    setYear(new Date().getFullYear())
+                    setMessage("Statistics")
+                    setWeek(totalWeek(year));
+                }
             })
 
         }
@@ -68,8 +70,10 @@ function OrderManager(effect, deps) {
             setTotalProduct(re.length)
         })
         findUser(id).then(r => {
-            setUser(r.reverse())
-            setTotalUser(r.length)
+            if (r !== undefined){
+                setUser(r.reverse())
+                setTotalUser(r.length)
+            }
         })
     }, [check]);
 
@@ -380,8 +384,7 @@ function OrderManager(effect, deps) {
                                         className="shadow-lg bg-red-vibrant border-l-8 hover:bg-red-vibrant-dark border-red-vibrant-dark mb-2 p-2 md:w-1/4 mx-2">
                                         <div className="p-4 flex flex-col">
                                             <a href="#" className="no-underline text-white text-2xl">
-                                                <span className="number">{totalMoNey.toLocaleString()}</span>
-                                                VND
+                                                <span className="number">{totalMoNey.toLocaleString()}</span> VND
                                             </a>
                                             <a href="#" className="no-underline text-white text-lg">
                                                 Total Money

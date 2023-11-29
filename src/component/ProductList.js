@@ -8,6 +8,7 @@ import Footer from "../layout/Footer";
 import Pagination from "./pagination/Pagination";
 import {value} from "lodash/seq";
 import {getList} from "../service/PageService";
+import {toast, ToastContainer} from "react-toastify";
 
 export default function ProductList(props) {
     const [products, setProducts] = useState([]);
@@ -51,6 +52,7 @@ export default function ProductList(props) {
             if (r === true) {
                 setModalDelete(false)
                 setDelete(!isDelete)
+                // toast.success("Delete product success!",{containerId: "product-list"})
                 setMessage("Delete product success!!!")
                 btn_modal.current.click();
             } else {
@@ -108,7 +110,10 @@ export default function ProductList(props) {
     return (
         <>
             <Header/>
-            <div className="container">
+            {/*<ToastContainer enableMultiContainer containerId={"product-list"} position="top-right" autoClose={2000}*/}
+            {/*                pauseOnHover={false}*/}
+            {/*                style={{width: "400px"}}/>*/}
+            <div className="container" style={{marginBottom:"50px"}}>
                 <section className="section-newsfeed" style={{marginTop : "20px", marginBottom : "20px"}}>
                     <Pagination totalPage={totalPage} page={page} limit={limit} siblings={1}
                                 onPageChange={handlePageChange} onChangeItem={handleChangeItem}/>
@@ -226,7 +231,7 @@ export default function ProductList(props) {
                                                             <div className="modal-content">
                                                                 <div className="modal-header">
                                                                     <h5 className="modal-title"
-                                                                        id="staticBackdropLabel">Modal Delete</h5>
+                                                                        id="staticBackdropLabel">Delete</h5>
                                                                     <button type="button" className="btn-close"
                                                                             data-bs-dismiss="modal"
                                                                             aria-label="Close"></button>
