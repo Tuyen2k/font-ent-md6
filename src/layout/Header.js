@@ -413,7 +413,7 @@ export default function Header() {
                                                         <div className="form-group">
                                                             <label>Username</label>
                                                             <input className="input-login-form" type="text"
-                                                                   placeholder="Enter Password"
+                                                                   placeholder="Enter Username"
                                                                    name="user" value={username}
                                                                    onChange={(e) => setUsername(e.target.value)}/>
                                                         </div>
