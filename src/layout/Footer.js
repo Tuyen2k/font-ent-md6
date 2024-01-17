@@ -6,7 +6,7 @@ export default function Footer(){
                 <section className="footer">
                     <div className="footer-wraper">
                         <div className="col main">
-                            <img className="logo-loship" src="https://firebasestorage.googleapis.com/v0/b/react-firebase-storage-f6ec9.appspot.com/o/file%2Flogo--web.png?alt=media&token=372f9a0c-25f3-4f56-9019-21ba8c8e607a" alt="logo"/>
+                            <img className="logo-loship" src="https://firebasestorage.googleapis.com/v0/b/project-md6-cg.appspot.com/o/logo--web.png?alt=media&token=b9d84070-f28d-4b7b-baa8-862ee25181f9" alt="logo"/>
                             <p>Yummy Joint Stock Company</p>
                             <p></p>
                             <p><b>Nhà số 23, Lô TT-01, Khu đô thị MonCity, P. Hàm Nghi, Hà Nội, Vietnam</b></p>
